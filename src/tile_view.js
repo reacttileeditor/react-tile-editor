@@ -15,7 +15,7 @@ class Tile_View {
 		
 		this.consts = {
 			tile_width: 38, //38
-			tile_height: 30, //21
+			tile_height: 15, //21
 			row_length: 8,
 			col_height: 6,
 		}
@@ -126,9 +126,10 @@ class Tile_View {
 				}
 					//this.ctx.fillStyle = "#ffff00";
 					let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
-					console.log(assets_meta);
+					let universal_hex_offset = col_index % 2 == 1 ? Math.floor(this.consts.tile_width / 2) : 0;
+
 					this.ctx.translate	(
-											(row_index + 0) * this.consts.tile_width,
+											(row_index + 0) * this.consts.tile_width + universal_hex_offset,
 											(col_index + 0) * this.consts.tile_height
 										);
 					this.ctx.drawImage	(
