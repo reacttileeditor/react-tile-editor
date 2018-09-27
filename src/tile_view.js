@@ -14,8 +14,8 @@ class Tile_View {
 		};
 		
 		this.consts = {
-			tile_width: 50,
-			tile_height: 30,
+			tile_width: 38, //38
+			tile_height: 30, //21
 			row_length: 8,
 			col_height: 6,
 		}
@@ -23,7 +23,10 @@ class Tile_View {
 		this.static = {
 			asset_list: [{
 				url: "test.png",
-				name: "tile",
+				name: "tile1",
+			},{
+				url: "test2.png",
+				name: "tile2",
 			}],
 			assets: {},
 			assets_meta: {},
@@ -51,7 +54,7 @@ class Tile_View {
 			temp_image.onload = () => {
 				this.static.assets[ value.name ] = temp_image;
 				
-				this.static.assets_meta[ value.name ] = { dim: { w: temp_image.scrollWidth, h: temp_image.scrollHeight }};
+				this.static.assets_meta[ value.name ] = { dim: { w: temp_image.naturalWidth, h: temp_image.naturalHeight }};
 				this.launch_if_all_assets_are_loaded(do_once_app_ready);
 			};
 		});
@@ -113,25 +116,27 @@ class Tile_View {
 
 		this.state.tileStatus.map( (row_value, row_index) => {
 			row_value.map( (col_value, col_index) => {
+				let tile_name = '';
+
 				this.ctx.save();
 				if(col_value == 0){
-					this.ctx.fillStyle = "#ff0000";
-					this.ctx.fillRect(
-										(row_index + 0) * this.consts.tile_width,
-										(col_index + 0) * this.consts.tile_height,
-										this.consts.tile_width,
-										this.consts.tile_height
-									);
+					tile_name = 'tile1';
 				} else {
+					tile_name = 'tile2';
+				}
 					//this.ctx.fillStyle = "#ffff00";
-					let dim = assets_meta[ 'tile' ] ? assets_meta[ 'tile' ].dim : { w: 20, h: 20 };  //safe-access
+					let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
+					console.log(assets_meta);
 					this.ctx.translate	(
 											(row_index + 0) * this.consts.tile_width,
 											(col_index + 0) * this.consts.tile_height
 										);
-					this.ctx.drawImage( assets['tile'],  -(dim.w/2),  -(dim.h/2));
+					this.ctx.drawImage	(
+											assets[ tile_name ],
+											-(dim.w/2) + this.consts.tile_width/2,
+											-(dim.h/2) + this.consts.tile_height/2,
+										);
 
-				}
 				this.ctx.restore();
 			
 			});
