@@ -2,7 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
+var PATH_PREFIX = "/dist/assets/"
+
 class Tile_View {
+/*----------------------- initialization and asset loading -----------------------*/
 	constructor( ctx ) {
 		this.ctx = ctx;
 		
@@ -16,6 +19,15 @@ class Tile_View {
 			row_length: 8,
 			col_height: 6,
 		}
+
+		this.static = {
+			asset_list: [{
+				url: "test.png",
+				name: "tile",
+			}],
+			assets: {},
+			assets_meta: {},
+		};
 		
 		this.initialize_tiles();
 	}
@@ -28,6 +40,37 @@ class Tile_View {
 		});
 	}
 
+	launch_app = ( do_once_app_ready ) => {
+		this.static.asset_list.map( ( value, index ) => {
+
+			var temp_image = new Image();
+			var temp_url = PATH_PREFIX + value.url;
+			
+			temp_image.src = temp_url;
+
+			temp_image.onload = () => {
+				this.static.assets[ value.name ] = temp_image;
+				
+				this.static.assets_meta[ value.name ] = { dim: { w: temp_image.scrollWidth, h: temp_image.scrollHeight }};
+				this.launch_if_all_assets_are_loaded(do_once_app_ready);
+			};
+		});
+	}
+
+	launch_if_all_assets_are_loaded = ( do_once_app_ready ) => {
+		/*
+			There's a big problem most canvas apps have, which is that the canvas will start doing its thing right away and start trying to render, even if you haven't loaded any of the images yet.  What we want to do is have it wait until all the images are done loading, so we're rolling a minimalist "asset manager" here.  The only way (I'm aware of) to tell if an image has loaded is the onload callback.  Thus, we register one of these on each and every image, before attempting to load it.
+
+			Because we carefully wait to populate the values of `loadedAssets` until we're actually **in** the callback, we can just do a size comparison to determine if all of the loaded images are there.
+		*/
+
+		if( _.size( this.static.asset_list ) == _.size( this.static.assets ) ) {
+			do_once_app_ready();
+		}
+	}
+
+
+/*----------------------- state mutation -----------------------*/
 	modify_tile_status = ( pos ) => {
 		if(
 			pos.x >= 0 &&
@@ -44,6 +87,7 @@ class Tile_View {
 	}
 
 
+/*----------------------- draw ops -----------------------*/
 	fill_canvas_with_solid_color = () => {
 		this.ctx.save();
 	    this.ctx.fillStyle = "#000000";
@@ -65,26 +109,34 @@ class Tile_View {
 	}
 	
 	draw_tiles = () => {
-		this.ctx.save();
+		let { assets, asset_list, assets_meta } = this.static;
 
 		this.state.tileStatus.map( (row_value, row_index) => {
 			row_value.map( (col_value, col_index) => {
+				this.ctx.save();
 				if(col_value == 0){
 					this.ctx.fillStyle = "#ff0000";
+					this.ctx.fillRect(
+										(row_index + 0) * this.consts.tile_width,
+										(col_index + 0) * this.consts.tile_height,
+										this.consts.tile_width,
+										this.consts.tile_height
+									);
 				} else {
-					this.ctx.fillStyle = "#ffff00";
+					//this.ctx.fillStyle = "#ffff00";
+					let dim = assets_meta[ 'tile' ] ? assets_meta[ 'tile' ].dim : { w: 20, h: 20 };  //safe-access
+					this.ctx.translate	(
+											(row_index + 0) * this.consts.tile_width,
+											(col_index + 0) * this.consts.tile_height
+										);
+					this.ctx.drawImage( assets['tile'],  -(dim.w/2),  -(dim.h/2));
+
 				}
+				this.ctx.restore();
 			
-				this.ctx.fillRect(
-									(row_index + 0) * this.consts.tile_width,
-									(col_index + 0) * this.consts.tile_height,
-									this.consts.tile_width,
-									this.consts.tile_height
-								);
 			});
 		});
 	
-		this.ctx.restore();
 	}
 	
 	do_core_render_loop = () => {
@@ -127,12 +179,6 @@ class Canvas_View extends React.Component {
 
 
 	componentWillMount() {
-		this.static = {
-			asset_list: [
-			],
-			assets: {},
-			assets_meta: {},
-		};
 	}
 	
 
@@ -140,43 +186,15 @@ class Canvas_View extends React.Component {
 	componentDidMount() {
 		this.ctx = this.canvas.getContext("2d");
 		this._Tile_View = new Tile_View(this.ctx);
-//		this.launch_app();
-		this.launch_if_all_assets_are_loaded();
+
+		this._Tile_View.launch_app( 
+			() => { this.setState({assets_loaded: true}); }
+		);
 	}
 
 
 	componentDidUpdate() {
 		this.render_canvas();
-	}
-
-
-	launch_app = () => {
-		this.static.asset_list.map( ( value, index ) => {
-
-			var temp_image = new Image();
-			var temp_url = PATH_PREFIX + value.url;
-			
-			temp_image.src = temp_url;
-
-			temp_image.onload = () => {
-				this.static.assets[ value.name ] = temp_image;
-				
-				this.static.assets_meta[ value.name ] = { dim: { w: temp_image.scrollWidth, h: temp_image.scrollHeight }};
-				this.launch_if_all_assets_are_loaded();
-			};
-		});
-	}
-
-	launch_if_all_assets_are_loaded = () => {
-		/*
-			There's a big problem most canvas apps have, which is that the canvas will start doing its thing right away and start trying to render, even if you haven't loaded any of the images yet.  What we want to do is have it wait until all the images are done loading, so we're rolling a minimalist "asset manager" here.  The only way (I'm aware of) to tell if an image has loaded is the onload callback.  Thus, we register one of these on each and every image, before attempting to load it.
-
-			Because we carefully wait to populate the values of `loadedAssets` until we're actually **in** the callback, we can just do a size comparison to determine if all of the loaded images are there.
-		*/
-
-		//if( size( this.static.asset_list ) == size( this.static.assets ) ) {
-			this.setState({assets_loaded: true});
-		//}
 	}
 
 
