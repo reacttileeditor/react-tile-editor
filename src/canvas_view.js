@@ -1,5 +1,116 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import _ from "lodash";
+
+class Tile_View {
+	constructor( ctx ) {
+		this.ctx = ctx;
+		
+		this.state = {
+			tileStatus: null,
+		};
+		
+		this.consts = {
+			tile_width: 50,
+			tile_height: 30,
+			row_length: 8,
+			col_height: 6,
+		}
+		
+		this.initialize_tiles();
+	}
+
+	initialize_tiles = () => {
+		this.state.tileStatus = _.range(this.consts.col_height).map( (row_value, row_index) => {
+			return _.range(this.consts.row_length).map( (col_value, col_index) => {
+				return this.dice(2) - 1;
+			});
+		});
+	}
+
+	modify_tile_status = ( pos ) => {
+		if(
+			pos.x >= 0 &&
+			pos.y >= 0 && 
+			pos.x < this.consts.row_length &&
+			pos.y < this.consts.col_height 
+		){
+			if( this.state.tileStatus[pos.y][pos.x] == 0 ){
+				this.state.tileStatus[pos.y][pos.x] = 1;
+			} else {
+				this.state.tileStatus[pos.y][pos.x] = 0;
+			}
+		}
+	}
+
+
+	fill_canvas_with_solid_color = () => {
+		this.ctx.save();
+	    this.ctx.fillStyle = "#000000";
+		this.ctx.fillRect(0,0, this.ctx.canvas.width, this.ctx.canvas.height);
+		this.ctx.restore();
+	}
+
+	draw_headline_text = () => {
+		this.ctx.save();
+		this.ctx.font = '32px Helvetica, sans-serif';
+		this.ctx.textAlign = 'center';
+		this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+	    this.ctx.shadowOffsetY = 2;
+	    this.ctx.shadowBlur = 3;
+	    this.ctx.fillStyle = "#ffffff";
+		this.ctx.textBaseline = 'middle';
+		this.ctx.fillText("test", this.ctx.canvas.width / 2.0, this.ctx.canvas.height /2.0);
+		this.ctx.restore();
+	}
+	
+	draw_tiles = () => {
+		this.ctx.save();
+
+		this.state.tileStatus.map( (row_value, row_index) => {
+			row_value.map( (col_value, col_index) => {
+				if(col_value == 0){
+					this.ctx.fillStyle = "#ff0000";
+				} else {
+					this.ctx.fillStyle = "#ffff00";
+				}
+			
+				this.ctx.fillRect(
+									(row_index + 0) * this.consts.tile_width,
+									(col_index + 0) * this.consts.tile_height,
+									this.consts.tile_width,
+									this.consts.tile_height
+								);
+			});
+		});
+	
+		this.ctx.restore();
+	}
+	
+	do_core_render_loop = () => {
+		this.fill_canvas_with_solid_color();
+		this.draw_headline_text();
+		this.draw_tiles();
+	}
+	
+	handle_mouse_click = (x_pos, y_pos) => {
+	
+		let click_coords = {
+			y: Math.floor( x_pos / this.consts.tile_width ),
+			x: Math.floor( y_pos / this.consts.tile_height ),
+		};		
+		
+		this.modify_tile_status( click_coords );
+	}
+	
+	annul_current_drag_operation = () => {
+	
+	}
+	
+	dice = (sides) => {
+		return Math.floor( Math.random() * sides ) + 1;
+	}
+}
 
 class Canvas_View extends React.Component {
 /*----------------------- initialization and asset loading -----------------------*/
@@ -10,6 +121,8 @@ class Canvas_View extends React.Component {
 			assets_loaded: false,
 			mousedown_pos: null,
 		}
+		
+		this._Tile_View = null;
 	}
 
 
@@ -26,6 +139,7 @@ class Canvas_View extends React.Component {
 
 	componentDidMount() {
 		this.ctx = this.canvas.getContext("2d");
+		this._Tile_View = new Tile_View(this.ctx);
 //		this.launch_app();
 		this.launch_if_all_assets_are_loaded();
 	}
@@ -70,7 +184,8 @@ class Canvas_View extends React.Component {
 	render_canvas = () => {
 		//let { assets, asset_list, assets_meta } = this.static;
 		//let { sticker_name_to_be_placed, ghost_sticker } = this.state;
-		this.fill_canvas_with_solid_color();
+
+		this._Tile_View.do_core_render_loop();
 
 		/*this.state.applied_stickers.map( (value) => {
 			let dim = assets_meta[ value.name ] ? assets_meta[ value.name ].dim : { w: 20, h: 20 };  //safe-access
@@ -85,28 +200,8 @@ class Canvas_View extends React.Component {
 		});*/
 
 	
-		this.draw_headline_text();
-	}
-
-	draw_headline_text = () => {
-		this.ctx.save();
-		this.ctx.font = '32px Helvetica, sans-serif';
-		this.ctx.textAlign = 'center';
-		this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-	    this.ctx.shadowOffsetY = 2;
-	    this.ctx.shadowBlur = 3;
-	    this.ctx.fillStyle = "#ffffff";
-		this.ctx.textBaseline = 'middle';
-		this.ctx.fillText("test", this.ctx.canvas.width / 2.0, this.ctx.canvas.height /2.0);
-		this.ctx.restore();
 	}
 	
-
-	fill_canvas_with_solid_color = () => {
-		this.ctx.save();
-		this.ctx.fillRect(0,0, this.ctx.canvas.width, this.ctx.canvas.height);
-		this.ctx.restore();
-	}
 
 /*----------------------- event handling -----------------------*/
 	/*
@@ -119,7 +214,7 @@ class Canvas_View extends React.Component {
 		var mousePos = this.get_mouse_pos_for_action(e, true);
 
 		//this is where we had the giant switch statement of actions to perform.
-		console.log("MousePos:", mousePos);
+		//console.log("MousePos:", mousePos);
 	}
 
 	constrain = ( min_limit, value, max_limit ) => {
@@ -130,6 +225,7 @@ class Canvas_View extends React.Component {
 		var mousePos = this.get_mouse_pos_for_action(e, true);
 	
 		//start_any_operation( opname, mousePos.x, mousePos.y );
+		this._Tile_View.handle_mouse_click( mousePos.x, mousePos.y );
 	}
 
 	get_mouse_pos_for_action = ( e, should_constrain ) => {
@@ -182,8 +278,8 @@ class Canvas_View extends React.Component {
 		e.stopPropagation ();
 
 		//annul any in-progress operations here
-		//this.set_secondary_operation_mode(null);
-		//this.set_operation_grabber_index(null);
+		this._Tile_View.annul_current_drag_operation();
+
 		this.setState({mousedown_pos: null});
 	}
 
@@ -204,8 +300,15 @@ class Canvas_View extends React.Component {
 
 	render() {
 		return <div>
-			Canvas:
-			<canvas ref={(node) => {this.canvas = node;}} width="567" height="325"/>
+			<div>Canvas:</div>
+			<canvas
+				ref={(node) => {this.canvas = node;}}
+				width="567"
+				height="325"
+			
+				onMouseDown={ this.mousedownListener }
+				onMouseMove={ this.mousemoveListener }
+			/>
 		</div>;
 	}
 }
