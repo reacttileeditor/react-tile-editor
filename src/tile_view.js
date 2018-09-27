@@ -116,15 +116,10 @@ class Tile_View {
 
 		this.state.tileStatus.map( (row_value, row_index) => {
 			row_value.map( (col_value, col_index) => {
-				let tile_name = '';
 
 				this.ctx.save();
-				if(col_value == 0){
-					tile_name = 'tile1';
-				} else {
-					tile_name = 'tile2';
-				}
-					//this.ctx.fillStyle = "#ffff00";
+
+					let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: col_index, y: row_index}, col_value);
 					let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
 					let universal_hex_offset = col_index % 2 == 1 ? Math.floor(this.consts.tile_width / 2) : 0;
 
@@ -142,8 +137,22 @@ class Tile_View {
 			
 			});
 		});
-	
 	}
+	
+	get_tile_name_for_tile_at_pos_with_data = ( pos, tile_entry ) => {
+		/*
+			Tile_entry is whatever mnemonic or other indicator is stored at that position in the array. 
+			Currently we're just doing 1 0 values because we're in the midst of hacking, but we'll decide on a more 'real' markup later.
+			
+			We may have to transition away from having this passed in, since auto-tiling (if/when it comes) may require us to query adjacent tiles.
+		*/
+		if(tile_entry == 0){
+			return 'tile1';
+		} else {
+			return 'tile2';
+		}
+	}
+	
 	
 	do_core_render_loop = () => {
 		this.fill_canvas_with_solid_color();
