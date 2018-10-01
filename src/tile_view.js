@@ -27,6 +27,12 @@ class Tile_View {
 			},{
 				url: "test2.png",
 				name: "tile2",
+				bounds: {
+					x: 0,
+					y: 0,
+					w: 38,
+					h: 21,
+				},
 			}],
 			assets: {},
 			assets_meta: {},
@@ -54,7 +60,13 @@ class Tile_View {
 			temp_image.onload = () => {
 				this.static.assets[ value.name ] = temp_image;
 				
-				this.static.assets_meta[ value.name ] = { dim: { w: temp_image.naturalWidth, h: temp_image.naturalHeight }};
+				this.static.assets_meta[ value.name ] = {
+					dim: {
+						w: temp_image.naturalWidth,
+						h: temp_image.naturalHeight
+					},
+					bounds: value.bounds,
+				};
 				this.launch_if_all_assets_are_loaded(do_once_app_ready);
 			};
 		});
@@ -120,23 +132,54 @@ class Tile_View {
 				this.ctx.save();
 
 					let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: col_index, y: row_index}, col_value);
-					let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
 					let universal_hex_offset = col_index % 2 == 1 ? Math.floor(this.consts.tile_width / 2) : 0;
 
 					this.ctx.translate	(
 											(row_index + 0) * this.consts.tile_width + universal_hex_offset,
 											(col_index + 0) * this.consts.tile_height
 										);
-					this.ctx.drawImage	(
-											assets[ tile_name ],
-											-(dim.w/2) + this.consts.tile_width/2,
-											-(dim.h/2) + this.consts.tile_height/2,
-										);
+										
+					this.draw_image_for_tile_type( tile_name );
 
 				this.ctx.restore();
 			
 			});
 		});
+	}
+	
+	draw_image_for_tile_type = (tile_name) => {
+		let { assets, asset_list, assets_meta } = this.static;
+		/*
+			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
+			
+			This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
+		*/
+	
+		let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
+
+		if( !assets_meta[ tile_name ].bounds ){
+			this.ctx.drawImage	(
+									assets[ tile_name ],
+									-(dim.w/2) + this.consts.tile_width/2,
+									-(dim.h/2) + this.consts.tile_height/2,
+								);
+		} else {
+			this.ctx.drawImage	(
+				/* file */			assets[ tile_name ],
+
+									
+				/* src xy */		assets_meta[ tile_name ].bounds.x,
+									assets_meta[ tile_name ].bounds.y,
+				/* src wh */		assets_meta[ tile_name ].bounds.w,
+									assets_meta[ tile_name ].bounds.h,
+
+									
+				/* dst xy */		-(dim.w/2) + this.consts.tile_width/2,
+									-(dim.h/2) + this.consts.tile_height/2,
+				/* dst wh */		assets_meta[ tile_name ].bounds.w,
+									assets_meta[ tile_name ].bounds.h,
+								);
+		}
 	}
 	
 	get_tile_name_for_tile_at_pos_with_data = ( pos, tile_entry ) => {
