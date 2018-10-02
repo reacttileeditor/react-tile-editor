@@ -20,9 +20,9 @@ class Tile_View {
 			col_height: 6,
 		}
 
-					this.static = {
+		this.static = {
 			asset_list: [{
-				url: "test.png",
+				url: "test2.png",
 				name: "tile1",
 			},{
 				url: "hex-tile-experiment-tiles.png",
@@ -33,20 +33,57 @@ class Tile_View {
 					w: 54,
 					h: 34,
 				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "tile3",
+				bounds: {
+					x: 1,
+					y: 97,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "tile4",
+				bounds: {
+					x: 1,
+					y: 133,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "tile5",
+				bounds: {
+					x: 1,
+					y: 169,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "tile6",
+				bounds: {
+					x: 1,
+					y: 241,
+					w: 54,
+					h: 34,
+				},
 			}],
 			assets: {},
 			assets_meta: {},
 		};
 		
-		this.initialize_tiles();
 	}
 
 	initialize_tiles = () => {
 		this.state.tileStatus = _.range(this.consts.col_height).map( (row_value, row_index) => {
 			return _.range(this.consts.row_length).map( (col_value, col_index) => {
-				return this.dice(2) - 1;
+				return 'tile' + (this.dice( this.static.asset_list.length )).toString();
 			});
 		});
+		
+		console.log(this.state.tileStatus);
 	}
 
 	launch_app = ( do_once_app_ready ) => {
@@ -80,6 +117,9 @@ class Tile_View {
 		*/
 
 		if( _.size( this.static.asset_list ) == _.size( this.static.assets ) ) {
+			this.initialize_tiles();
+
+
 			do_once_app_ready();
 		}
 	}
@@ -190,11 +230,7 @@ class Tile_View {
 			
 			We may have to transition away from having this passed in, since auto-tiling (if/when it comes) may require us to query adjacent tiles.
 		*/
-		if(tile_entry == 0){
-			return 'tile1';
-		} else {
-			return 'tile2';
-		}
+		return tile_entry;
 	}
 	
 	
