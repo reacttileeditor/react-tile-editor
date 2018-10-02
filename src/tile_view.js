@@ -20,18 +20,18 @@ class Tile_View {
 			col_height: 6,
 		}
 
-		this.static = {
+					this.static = {
 			asset_list: [{
 				url: "test.png",
 				name: "tile1",
 			},{
-				url: "test2.png",
+				url: "hex-tile-experiment-tiles.png",
 				name: "tile2",
 				bounds: {
-					x: 0,
-					y: 0,
-					w: 38,
-					h: 21,
+					x: 1,
+					y: 61,
+					w: 54,
+					h: 34,
 				},
 			}],
 			assets: {},
@@ -156,7 +156,8 @@ class Tile_View {
 		*/
 	
 		let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
-
+		
+		
 		if( !assets_meta[ tile_name ].bounds ){
 			this.ctx.drawImage	(
 									assets[ tile_name ],
@@ -174,8 +175,8 @@ class Tile_View {
 									assets_meta[ tile_name ].bounds.h,
 
 									
-				/* dst xy */		-(dim.w/2) + this.consts.tile_width/2,
-									-(dim.h/2) + this.consts.tile_height/2,
+				/* dst xy */		-Math.floor(assets_meta[ tile_name ].bounds.w/2) + Math.floor(this.consts.tile_width/2),
+									-Math.floor(assets_meta[ tile_name ].bounds.h/2) + Math.floor(this.consts.tile_height/2),
 				/* dst wh */		assets_meta[ tile_name ].bounds.w,
 									assets_meta[ tile_name ].bounds.h,
 								);
