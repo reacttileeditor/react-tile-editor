@@ -79,11 +79,9 @@ class Tile_View {
 	initialize_tiles = () => {
 		this.state.tileStatus = _.range(this.consts.col_height).map( (row_value, row_index) => {
 			return _.range(this.consts.row_length).map( (col_value, col_index) => {
-				return 'tile' + (this.dice( this.static.asset_list.length )).toString();
+				return 'tile' + (this.dice( _.size( this.static.asset_list ) )).toString();
 			});
 		});
-		
-		console.log(this.state.tileStatus);
 	}
 
 	launch_app = ( do_once_app_ready ) => {
@@ -133,11 +131,12 @@ class Tile_View {
 			pos.x < this.consts.row_length &&
 			pos.y < this.consts.col_height 
 		){
-			if( this.state.tileStatus[pos.y][pos.x] == 0 ){
-				this.state.tileStatus[pos.y][pos.x] = 1;
-			} else {
-				this.state.tileStatus[pos.y][pos.x] = 0;
-			}
+			this.state.tileStatus[pos.y][pos.x] =
+				'tile' + (
+					(( ( this.state.tileStatus[pos.y][pos.x] ).match(/\d+/g).map(Number)[0] )  //really javascript?
+					%
+					_.size( this.static.asset_list )) + 1
+				).toString();
 		}
 	}
 
