@@ -4,6 +4,7 @@ import _ from "lodash";
 
 import Canvas_View from "./canvas_view.js";
 import Asset_Manager from "./asset_manager.js";
+import Tile_Palette_Element from "./tile_palette_element.js";
 
 import "./editor_view.scss";
 
@@ -36,8 +37,13 @@ class Editor_View extends React.Component {
 			/>
 			<div className="tile_palette">
 			{
-				_.range(7).map( (value, index) => {
-					return	<div className="tile_cell" />
+				this.state.assets_loaded
+				&&
+				this._Asset_Manager.static_vals.asset_list.map( (value, index) => {
+					return	<Tile_Palette_Element
+								asset_manager={this._Asset_Manager}
+								tile_name={value.name}
+							/>
 				})
 			}
 			</div>
