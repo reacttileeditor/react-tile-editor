@@ -51,6 +51,10 @@
 			margin-bottom: 0px;
 			background: aliceblue;
 			
+			&.active {
+				box-shadow: cadetblue 0px 2px 8px;
+			}
+			
 			&:last-of-type {
 				margin-bottom: 12px;
 			}

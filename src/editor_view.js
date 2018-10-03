@@ -15,6 +15,7 @@ class Editor_View extends React.Component {
 		
 		this.state = {
 			assets_loaded: false,
+			selected_tile_type: '',
 		};
 		
 		this._Asset_Manager = new Asset_Manager();
@@ -34,6 +35,7 @@ class Editor_View extends React.Component {
 				ref={(node) => {this.canvas_view = node;}}
 				assets_loaded={this.state.assets_loaded}
 				asset_manager={this._Asset_Manager}
+				selected_tile_type={this.state.selected_tile_type}
 			/>
 			<div className="tile_palette">
 			{
@@ -43,6 +45,9 @@ class Editor_View extends React.Component {
 					return	<Tile_Palette_Element
 								asset_manager={this._Asset_Manager}
 								tile_name={value.name}
+								key={value.name}
+								selected_tile_type={this.state.selected_tile_type}
+								handle_click={ () => this.setState({selected_tile_type: value.name}) }
 							/>
 				})
 			}

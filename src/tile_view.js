@@ -32,7 +32,7 @@ class Tile_View {
 
 
 /*----------------------- state mutation -----------------------*/
-	modify_tile_status = ( pos ) => {
+	modify_tile_status = ( pos, selected_tile_type ) => {
 		let { consts, static_vals } = this._AM;
 		
 		if(
@@ -41,12 +41,15 @@ class Tile_View {
 			pos.x < consts.row_length &&
 			pos.y < consts.col_height 
 		){
-			this.state.tileStatus[pos.y][pos.x] =
+			if(selected_tile_type && selected_tile_type != ''){
+				this.state.tileStatus[pos.y][pos.x] = selected_tile_type;
+			}
+			/*this.state.tileStatus[pos.y][pos.x] =
 				'tile' + (
 					(( ( this.state.tileStatus[pos.y][pos.x] ).match(/\d+/g).map(Number)[0] )  //really javascript?
 					%
 					_.size( static_vals.asset_list )) + 1
-				).toString();
+				).toString();*/
 		}
 	}
 
@@ -153,7 +156,7 @@ class Tile_View {
 		}
 	}
 	
-	handle_mouse_click = (x_pos, y_pos) => {
+	handle_mouse_click = (x_pos, y_pos, selected_tile_type) => {
 		let { consts } = this._AM;
 	
 		let click_coords = {
@@ -161,7 +164,7 @@ class Tile_View {
 			x: Math.floor( y_pos / consts.tile_height ),
 		};		
 		
-		this.modify_tile_status( click_coords );
+		this.modify_tile_status( click_coords, selected_tile_type );
 	}
 	
 	annul_current_drag_operation = () => {

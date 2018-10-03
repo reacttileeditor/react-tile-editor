@@ -69,12 +69,11 @@ class Tile_Palette_Element extends React.Component {
 	
 		let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
 		
-		
 		if( !assets_meta[ tile_name ].bounds ){
 			this.ctx.drawImage	(
 									assets[ tile_name ],
-									-(dim.w/2) + consts.tile_width/2,
-									-(dim.h/2) + consts.tile_height/2,
+									-(dim.w/2),
+									-(dim.h/2),
 								);
 		} else {
 			this.ctx.drawImage	(
@@ -87,8 +86,8 @@ class Tile_Palette_Element extends React.Component {
 									assets_meta[ tile_name ].bounds.h,
 
 									
-				/* dst xy */		-Math.floor(assets_meta[ tile_name ].bounds.w/2) + Math.floor(consts.tile_width/2),
-									-Math.floor(assets_meta[ tile_name ].bounds.h/2) + Math.floor(consts.tile_height/2),
+				/* dst xy */		-Math.floor(assets_meta[ tile_name ].bounds.w/2),
+									-Math.floor(assets_meta[ tile_name ].bounds.h/2),
 				/* dst wh */		assets_meta[ tile_name ].bounds.w,
 									assets_meta[ tile_name ].bounds.h,
 								);
@@ -96,12 +95,12 @@ class Tile_Palette_Element extends React.Component {
 	}
 	
 	handle_mouse_click = (e) => {
-		
+		this.props.handle_click();
 	}
 	
 
 	render() {
-		return <div className="tile_cell">
+		return <div className={`tile_cell${ this.props.selected_tile_type == this.props.tile_name ? ' active' : ''}`}>
 			<canvas
 				ref={(node) => {this.canvas = node;}}
 				width="100"
