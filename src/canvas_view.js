@@ -20,23 +20,16 @@ class Canvas_View extends React.Component {
 	}
 
 
-	componentWillMount() {
-	}
-	
-
-
 	componentDidMount() {
 		this.ctx = this.canvas.getContext("2d");
-		this._Tile_View = new Tile_View(this.ctx);
-
-		this._Tile_View.launch_app( 
-			() => { this.setState({assets_loaded: true}); }
-		);
+		this._Tile_View = new Tile_View(this.ctx, this.props.asset_manager);
 	}
 
 
 	componentDidUpdate() {
-		this.render_canvas();
+		if(this.props.assets_loaded){
+			this.render_canvas();
+		}
 	}
 
 

@@ -6,136 +6,46 @@ var PATH_PREFIX = "/dist/assets/"
 
 class Tile_View {
 /*----------------------- initialization and asset loading -----------------------*/
-	constructor( ctx ) {
+	constructor( ctx, _Asset_Manager ) {
 		this.ctx = ctx;
 		
 		this.state = {
-			tileStatus: null,
+			tileStatus: [],
+			initialized: false,
 		};
 		
-		this.consts = {
-			tile_width: 38, //38
-			tile_height: 15, //21
-			row_length: 8,
-			col_height: 6,
-		}
+		this._AM = _Asset_Manager;
 
-		this.static = {
-			asset_list: [{
-				url: "test2.png",
-				name: "tile1",
-			},{
-				url: "hex-tile-experiment-tiles.png",
-				name: "tile2",
-				bounds: {
-					x: 1,
-					y: 61,
-					w: 54,
-					h: 34,
-				},
-			},{
-				url: "hex-tile-experiment-tiles.png",
-				name: "tile3",
-				bounds: {
-					x: 1,
-					y: 97,
-					w: 54,
-					h: 34,
-				},
-			},{
-				url: "hex-tile-experiment-tiles.png",
-				name: "tile4",
-				bounds: {
-					x: 1,
-					y: 133,
-					w: 54,
-					h: 34,
-				},
-			},{
-				url: "hex-tile-experiment-tiles.png",
-				name: "tile5",
-				bounds: {
-					x: 1,
-					y: 169,
-					w: 54,
-					h: 34,
-				},
-			},{
-				url: "hex-tile-experiment-tiles.png",
-				name: "tile6",
-				bounds: {
-					x: 1,
-					y: 241,
-					w: 54,
-					h: 34,
-				},
-			}],
-			assets: {},
-			assets_meta: {},
-		};
-		
 	}
 
 	initialize_tiles = () => {
-		this.state.tileStatus = _.range(this.consts.col_height).map( (row_value, row_index) => {
-			return _.range(this.consts.row_length).map( (col_value, col_index) => {
-				return 'tile' + (this.dice( _.size( this.static.asset_list ) )).toString();
+		let { consts, dice, static_vals } = this._AM;
+
+		this.state.tileStatus = _.range(consts.col_height).map( (row_value, row_index) => {
+			return _.range(consts.row_length).map( (col_value, col_index) => {
+				return 'tile' + (dice( _.size( static_vals.asset_list ) )).toString();
 			});
 		});
-	}
-
-	launch_app = ( do_once_app_ready ) => {
-		this.static.asset_list.map( ( value, index ) => {
-
-			var temp_image = new Image();
-			var temp_url = PATH_PREFIX + value.url;
-			
-			temp_image.src = temp_url;
-
-			temp_image.onload = () => {
-				this.static.assets[ value.name ] = temp_image;
-				
-				this.static.assets_meta[ value.name ] = {
-					dim: {
-						w: temp_image.naturalWidth,
-						h: temp_image.naturalHeight
-					},
-					bounds: value.bounds,
-				};
-				this.launch_if_all_assets_are_loaded(do_once_app_ready);
-			};
-		});
-	}
-
-	launch_if_all_assets_are_loaded = ( do_once_app_ready ) => {
-		/*
-			There's a big problem most canvas apps have, which is that the canvas will start doing its thing right away and start trying to render, even if you haven't loaded any of the images yet.  What we want to do is have it wait until all the images are done loading, so we're rolling a minimalist "asset manager" here.  The only way (I'm aware of) to tell if an image has loaded is the onload callback.  Thus, we register one of these on each and every image, before attempting to load it.
-
-			Because we carefully wait to populate the values of `loadedAssets` until we're actually **in** the callback, we can just do a size comparison to determine if all of the loaded images are there.
-		*/
-
-		if( _.size( this.static.asset_list ) == _.size( this.static.assets ) ) {
-			this.initialize_tiles();
-
-
-			do_once_app_ready();
-		}
+		
+		this.state.initialized = true;
 	}
 
 
 /*----------------------- state mutation -----------------------*/
 	modify_tile_status = ( pos ) => {
+		let { consts, static_vals } = this._AM;
+		
 		if(
 			pos.x >= 0 &&
 			pos.y >= 0 && 
-			pos.x < this.consts.row_length &&
-			pos.y < this.consts.col_height 
+			pos.x < consts.row_length &&
+			pos.y < consts.col_height 
 		){
 			this.state.tileStatus[pos.y][pos.x] =
 				'tile' + (
 					(( ( this.state.tileStatus[pos.y][pos.x] ).match(/\d+/g).map(Number)[0] )  //really javascript?
 					%
-					_.size( this.static.asset_list )) + 1
+					_.size( static_vals.asset_list )) + 1
 				).toString();
 		}
 	}
@@ -163,7 +73,7 @@ class Tile_View {
 	}
 	
 	draw_tiles = () => {
-		let { assets, asset_list, assets_meta } = this.static;
+		let { consts } = this._AM;
 
 		this.state.tileStatus.map( (row_value, row_index) => {
 			row_value.map( (col_value, col_index) => {
@@ -171,11 +81,11 @@ class Tile_View {
 				this.ctx.save();
 
 					let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: col_index, y: row_index}, col_value);
-					let universal_hex_offset = col_index % 2 == 1 ? Math.floor(this.consts.tile_width / 2) : 0;
+					let universal_hex_offset = col_index % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 
 					this.ctx.translate	(
-											(row_index + 0) * this.consts.tile_width + universal_hex_offset,
-											(col_index + 0) * this.consts.tile_height
+											(row_index + 0) * consts.tile_width + universal_hex_offset,
+											(col_index + 0) * consts.tile_height
 										);
 										
 					this.draw_image_for_tile_type( tile_name );
@@ -187,7 +97,7 @@ class Tile_View {
 	}
 	
 	draw_image_for_tile_type = (tile_name) => {
-		let { assets, asset_list, assets_meta } = this.static;
+		let { static_vals: {assets, asset_list, assets_meta}, consts } = this._AM;
 		/*
 			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
 			
@@ -200,8 +110,8 @@ class Tile_View {
 		if( !assets_meta[ tile_name ].bounds ){
 			this.ctx.drawImage	(
 									assets[ tile_name ],
-									-(dim.w/2) + this.consts.tile_width/2,
-									-(dim.h/2) + this.consts.tile_height/2,
+									-(dim.w/2) + consts.tile_width/2,
+									-(dim.h/2) + consts.tile_height/2,
 								);
 		} else {
 			this.ctx.drawImage	(
@@ -214,8 +124,8 @@ class Tile_View {
 									assets_meta[ tile_name ].bounds.h,
 
 									
-				/* dst xy */		-Math.floor(assets_meta[ tile_name ].bounds.w/2) + Math.floor(this.consts.tile_width/2),
-									-Math.floor(assets_meta[ tile_name ].bounds.h/2) + Math.floor(this.consts.tile_height/2),
+				/* dst xy */		-Math.floor(assets_meta[ tile_name ].bounds.w/2) + Math.floor(consts.tile_width/2),
+									-Math.floor(assets_meta[ tile_name ].bounds.h/2) + Math.floor(consts.tile_height/2),
 				/* dst wh */		assets_meta[ tile_name ].bounds.w,
 									assets_meta[ tile_name ].bounds.h,
 								);
@@ -234,16 +144,21 @@ class Tile_View {
 	
 	
 	do_core_render_loop = () => {
-		this.fill_canvas_with_solid_color();
-		this.draw_headline_text();
-		this.draw_tiles();
+		if(this.state.initialized){
+			this.fill_canvas_with_solid_color();
+			this.draw_headline_text();
+			this.draw_tiles();
+		} else {
+			this.initialize_tiles();
+		}
 	}
 	
 	handle_mouse_click = (x_pos, y_pos) => {
+		let { consts } = this._AM;
 	
 		let click_coords = {
-			y: Math.floor( x_pos / this.consts.tile_width ),
-			x: Math.floor( y_pos / this.consts.tile_height ),
+			y: Math.floor( x_pos / consts.tile_width ),
+			x: Math.floor( y_pos / consts.tile_height ),
 		};		
 		
 		this.modify_tile_status( click_coords );
