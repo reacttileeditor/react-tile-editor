@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import Canvas_View from "./Canvas_View.js"
+import Editor_View from "./Editor_View.js"
 
 const Index = () => {
-  return <Canvas_View />;
+  return <Editor_View />;
 };
 
 ReactDOM.render(<Index />, document.getElementById("index"));

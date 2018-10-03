@@ -142,8 +142,7 @@ class Canvas_View extends React.Component {
 /*----------------------- react render -----------------------*/
 
 	render() {
-		return <div>
-			<div>Canvas:</div>
+		return <div className="canvas_holder">
 			<canvas
 				ref={(node) => {this.canvas = node;}}
 				width="567"
