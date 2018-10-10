@@ -81,17 +81,19 @@ class Tile_View {
 	draw_tiles = () => {
 		let { consts } = this._AM;
 
+		console.log(this.state.tileStatus);
+
 		this.state.tileStatus.map( (row_value, row_index) => {
 			row_value.map( (col_value, col_index) => {
 
 				this.ctx.save();
 
-					let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: col_index, y: row_index}, col_value);
-					let universal_hex_offset = col_index % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
+					let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
+					let universal_hex_offset = row_index % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 
 					this.ctx.translate	(
-											(row_index + 0) * consts.tile_width + universal_hex_offset,
-											(col_index + 0) * consts.tile_height
+											(col_index + 0) * consts.tile_width + universal_hex_offset,
+											(row_index + 0) * consts.tile_height
 										);
 										
 					this.draw_image_for_tile_type( tile_name );
@@ -163,8 +165,8 @@ class Tile_View {
 		let { consts } = this._AM;
 	
 		let click_coords = {
-			y: Math.floor( x_pos / consts.tile_width ),
-			x: Math.floor( y_pos / consts.tile_height ),
+			x: Math.floor( x_pos / consts.tile_width ),
+			y: Math.floor( y_pos / consts.tile_height ),
 		};		
 		
 		this.modify_tile_status( click_coords, selected_tile_type );
