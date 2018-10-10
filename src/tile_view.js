@@ -19,14 +19,17 @@ class Tile_View {
 	}
 
 	initialize_tiles = () => {
-		let { consts, dice, static_vals } = this._AM;
+		let { consts, dice, yield_tile_name_list, static_vals } = this._AM;
+
 
 		this.state.tileStatus = _.range(consts.col_height).map( (row_value, row_index) => {
 			return _.range(consts.row_length).map( (col_value, col_index) => {
-				return 'tile' + (dice( _.size( static_vals.asset_list ) )).toString();
+				return yield_tile_name_list()[
+					dice( _.size( yield_tile_name_list() ) ) -1 
+				];
 			});
 		});
-		
+	
 		this.state.initialized = true;
 	}
 

@@ -21,6 +21,10 @@ class Asset_Manager {
 
 		this.static_vals = {
 			asset_list: [{
+				url: "map-cursor.png",
+				name: "cursor",
+				not_a_tile: true,
+			},{
 				url: "test2.png",
 				name: "tile1",
 			},{
@@ -75,13 +79,17 @@ class Asset_Manager {
 		
 	}
 
-	initialize_tiles = () => {
-		this.state.tileStatus = _.range(this.consts.col_height).map( (row_value, row_index) => {
-			return _.range(this.consts.row_length).map( (col_value, col_index) => {
-				return 'tile' + (this.dice( _.size( this.static_vals.asset_list ) )).toString();
-			});
-		});
+	yield_tile_name_list = () => {
+		return _.filter(
+			this.static_vals.asset_list,
+			(value, index) => {
+				return value.not_a_tile !== true;
+			}
+		).map( (value,index) => {
+			return value.name;
+		})
 	}
+
 
 	launch_app = ( do_once_app_ready ) => {
 		this.static_vals.asset_list.map( ( value, index ) => {
@@ -114,7 +122,6 @@ class Asset_Manager {
 		*/
 
 		if( _.size( this.static_vals.asset_list ) == _.size( this.static_vals.assets ) ) {
-			this.initialize_tiles();
 
 
 			do_once_app_ready();
