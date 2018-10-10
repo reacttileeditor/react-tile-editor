@@ -51,6 +51,7 @@ class Canvas_View extends React.Component {
 
 		//this is where we had the giant switch statement of actions to perform.
 		//console.log("MousePos:", mousePos);
+		this._Tile_View.handle_mouse_move( mousePos.x, mousePos.y );
 	}
 
 	constrain = ( min_limit, value, max_limit ) => {

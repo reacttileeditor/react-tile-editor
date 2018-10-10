@@ -12,6 +12,7 @@ class Tile_View {
 		this.state = {
 			tileStatus: [],
 			initialized: false,
+			cursor_pos: {x:0, y:0},
 		};
 		
 		this._AM = _Asset_Manager;
@@ -56,6 +57,11 @@ class Tile_View {
 		}
 	}
 
+	set_cursor_pos = (coords) => {
+		this.state.cursor_pos = coords;
+		console.log(this.state.cursor_pos);
+	}
+
 
 /*----------------------- draw ops -----------------------*/
 	fill_canvas_with_solid_color = () => {
@@ -79,29 +85,38 @@ class Tile_View {
 	}
 	
 	draw_tiles = () => {
-		let { consts } = this._AM;
 
-		console.log(this.state.tileStatus);
 
 		this.state.tileStatus.map( (row_value, row_index) => {
 			row_value.map( (col_value, col_index) => {
 
-				this.ctx.save();
+				let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
+					
+				this.draw_tile_at_coords(col_index, row_index, tile_name);
 
-					let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
-					let universal_hex_offset = row_index % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
-
-					this.ctx.translate	(
-											(col_index + 0) * consts.tile_width + universal_hex_offset,
-											(row_index + 0) * consts.tile_height
-										);
-										
-					this.draw_image_for_tile_type( tile_name );
-
-				this.ctx.restore();
 			
 			});
 		});
+	}
+	
+	draw_tile_at_coords = ( x_pos, y_pos, tile_name) => {
+		let { consts } = this._AM;
+		this.ctx.save();
+
+			let universal_hex_offset = y_pos % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
+
+			this.ctx.translate	(
+									(x_pos + 0) * consts.tile_width + universal_hex_offset,
+									(y_pos + 0) * consts.tile_height
+								);
+								
+			this.draw_image_for_tile_type( tile_name );
+
+		this.ctx.restore();	
+	}
+	
+	draw_cursor = () => {
+		this.draw_tile_at_coords( this.state.cursor_pos.x, this.state.cursor_pos.y, 'cursor');
 	}
 	
 	draw_image_for_tile_type = (tile_name) => {
@@ -156,6 +171,7 @@ class Tile_View {
 			this.fill_canvas_with_solid_color();
 			this.draw_headline_text();
 			this.draw_tiles();
+			this.draw_cursor();
 		} else {
 			this.initialize_tiles();
 		}
@@ -171,6 +187,18 @@ class Tile_View {
 		
 		this.modify_tile_status( click_coords, selected_tile_type );
 	}
+
+	handle_mouse_move = (x_pos, y_pos, selected_tile_type) => {
+		let { consts } = this._AM;
+	
+		let move_coords = {
+			x: Math.floor( x_pos / consts.tile_width ),
+			y: Math.floor( y_pos / consts.tile_height ),
+		};		
+		
+		this.set_cursor_pos( move_coords );
+	}
+
 	
 	annul_current_drag_operation = () => {
 	
