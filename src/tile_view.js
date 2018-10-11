@@ -175,27 +175,32 @@ class Tile_View {
 			this.initialize_tiles();
 		}
 	}
+
+	convert_pixel_coords_to_tile_coords = (x_pos, y_pos) => {
+		let { consts } = this._AM;
+
+		let universal_hex_offset = y_pos % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
+	
+		let tile_coords = {
+			x: Math.floor( x_pos / consts.tile_width ),
+			y: Math.floor( y_pos / consts.tile_height ),
+		};
+		
+		//now we do the odd-row offset for the hex tiles
+		let final_coords = {
+			x: tile_coords.x + ((tile_coords.y % 2 == 1) && (x_pos % consts.tile_width < consts.tile_width / 2) ? -1 : 0),
+			y: tile_coords.y
+		};
+		
+		return final_coords;
+	}
 	
 	handle_mouse_click = (x_pos, y_pos, selected_tile_type) => {
-		let { consts } = this._AM;
-	
-		let click_coords = {
-			x: Math.floor( x_pos / consts.tile_width ),
-			y: Math.floor( y_pos / consts.tile_height ),
-		};		
-		
-		this.modify_tile_status( click_coords, selected_tile_type );
+		this.modify_tile_status( this.convert_pixel_coords_to_tile_coords(x_pos, y_pos), selected_tile_type );
 	}
 
-	handle_mouse_move = (x_pos, y_pos, selected_tile_type) => {
-		let { consts } = this._AM;
-	
-		let move_coords = {
-			x: Math.floor( x_pos / consts.tile_width ),
-			y: Math.floor( y_pos / consts.tile_height ),
-		};		
-		
-		this.set_cursor_pos( move_coords );
+	handle_mouse_move = (x_pos, y_pos) => {
+		this.set_cursor_pos( this.convert_pixel_coords_to_tile_coords(x_pos, y_pos) );
 	}
 
 	
