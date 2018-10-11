@@ -59,7 +59,6 @@ class Tile_View {
 
 	set_cursor_pos = (coords) => {
 		this.state.cursor_pos = coords;
-		console.log(this.state.cursor_pos);
 	}
 
 

@@ -17,6 +17,7 @@ class Canvas_View extends React.Component {
 		}
 		
 		this._Tile_View = null;
+		this.render_loop_interval = null;
 	}
 
 
@@ -28,12 +29,18 @@ class Canvas_View extends React.Component {
 
 	componentDidUpdate() {
 		if(this.props.assets_loaded){
-			this.render_canvas();
+			this.start_render_loop();
 		}
 	}
 
 
 /*----------------------- core drawing routines -----------------------*/
+	start_render_loop = () => {
+		if( !this.render_loop_interval ){
+			this.render_loop_interval = window.setInterval( this.render_canvas, 25 );
+		}
+	}
+
 	render_canvas = () => {
 		this._Tile_View.do_core_render_loop();
 	}
