@@ -60,36 +60,37 @@ class Tile_Palette_Element extends React.Component {
 	}
 	
 	draw_image_for_tile_type = (tile_name) => {
-		let { static_vals: {assets, asset_list, assets_meta}, consts } = this.props.asset_manager;
+		let { static_vals: {assets, asset_list, assets_meta}, consts, get_asset_name_for_tile_at_zorder } = this.props.asset_manager;
 		/*
 			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
 			
 			This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
 		*/
+		let asset_name = get_asset_name_for_tile_at_zorder(tile_name, 0);
 	
-		let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
+		let dim = assets_meta[ asset_name ] ? assets_meta[ asset_name ].dim : { w: 20, h: 20 };  //safe-access
 		
-		if( !assets_meta[ tile_name ].bounds ){
+		if( !assets_meta[ asset_name ].bounds ){
 			this.ctx.drawImage	(
-									assets[ tile_name ],
+									assets[ asset_name ],
 									-(dim.w/2),
 									-(dim.h/2),
 								);
 		} else {
 			this.ctx.drawImage	(
-				/* file */			assets[ tile_name ],
+				/* file */			assets[ asset_name ],
 
 									
-				/* src xy */		assets_meta[ tile_name ].bounds.x,
-									assets_meta[ tile_name ].bounds.y,
-				/* src wh */		assets_meta[ tile_name ].bounds.w,
-									assets_meta[ tile_name ].bounds.h,
+				/* src xy */		assets_meta[ asset_name ].bounds.x,
+									assets_meta[ asset_name ].bounds.y,
+				/* src wh */		assets_meta[ asset_name ].bounds.w,
+									assets_meta[ asset_name ].bounds.h,
 
 									
-				/* dst xy */		-Math.floor(assets_meta[ tile_name ].bounds.w/2),
-									-Math.floor(assets_meta[ tile_name ].bounds.h/2),
-				/* dst wh */		assets_meta[ tile_name ].bounds.w,
-									assets_meta[ tile_name ].bounds.h,
+				/* dst xy */		-Math.floor(assets_meta[ asset_name ].bounds.w/2),
+									-Math.floor(assets_meta[ asset_name ].bounds.h/2),
+				/* dst wh */		assets_meta[ asset_name ].bounds.w,
+									assets_meta[ asset_name ].bounds.h,
 								);
 		}
 	}

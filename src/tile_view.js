@@ -109,7 +109,7 @@ class Tile_View {
 									(y_pos + 0) * consts.tile_height
 								);
 								
-			this.draw_image_for_tile_type( tile_name );
+			this._AM.draw_image_for_tile_type_at_zorder( tile_name, this.ctx, 0 );
 
 		this.ctx.restore();	
 	}
@@ -118,41 +118,6 @@ class Tile_View {
 		this.draw_tile_at_coords( this.state.cursor_pos.x, this.state.cursor_pos.y, 'cursor');
 	}
 	
-	draw_image_for_tile_type = (tile_name) => {
-		let { static_vals: {assets, asset_list, assets_meta}, consts } = this._AM;
-		/*
-			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
-			
-			This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
-		*/
-	
-		let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
-		
-		
-		if( !assets_meta[ tile_name ].bounds ){
-			this.ctx.drawImage	(
-									assets[ tile_name ],
-									-(dim.w/2) + consts.tile_width/2,
-									-(dim.h/2) + consts.tile_height/2,
-								);
-		} else {
-			this.ctx.drawImage	(
-				/* file */			assets[ tile_name ],
-
-									
-				/* src xy */		assets_meta[ tile_name ].bounds.x,
-									assets_meta[ tile_name ].bounds.y,
-				/* src wh */		assets_meta[ tile_name ].bounds.w,
-									assets_meta[ tile_name ].bounds.h,
-
-									
-				/* dst xy */		-Math.floor(assets_meta[ tile_name ].bounds.w/2) + Math.floor(consts.tile_width/2),
-									-Math.floor(assets_meta[ tile_name ].bounds.h/2) + Math.floor(consts.tile_height/2),
-				/* dst wh */		assets_meta[ tile_name ].bounds.w,
-									assets_meta[ tile_name ].bounds.h,
-								);
-		}
-	}
 	
 	get_tile_name_for_tile_at_pos_with_data = ( pos, tile_entry ) => {
 		/*

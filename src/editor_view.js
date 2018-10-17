@@ -41,13 +41,13 @@ class Editor_View extends React.Component {
 			{
 				this.state.assets_loaded
 				&&
-				this._Asset_Manager.static_vals.asset_list.map( (value, index) => {
+				this._Asset_Manager.yield_tile_name_list().map( (value, index) => {
 					return	<Tile_Palette_Element
 								asset_manager={this._Asset_Manager}
-								tile_name={value.name}
-								key={value.name}
+								tile_name={value}
+								key={value}
 								selected_tile_type={this.state.selected_tile_type}
-								handle_click={ () => this.setState({selected_tile_type: value.name}) }
+								handle_click={ () => this.setState({selected_tile_type: value}) }
 							/>
 				})
 			}

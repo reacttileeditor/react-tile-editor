@@ -140,7 +140,8 @@ class Asset_Manager {
 		
 	}
 
-	yield_tile_name_list = () => {
+
+	yield_asset_name_list = () => {
 		return _.filter(
 			this.static_vals.asset_list,
 			(value, index) => {
@@ -149,6 +150,14 @@ class Asset_Manager {
 		).map( (value,index) => {
 			return value.name;
 		})
+	}
+
+	yield_tile_name_list = () => {
+		return _.sortedUniq(
+			_.map( this.static_vals.tile_types, (value,index)=>{
+				return value.name;
+			})
+		);
 	}
 
 	yield_full_zorder_list = () => {
@@ -209,9 +218,30 @@ class Asset_Manager {
 
 
 /*----------------------- draw ops -----------------------*/
+	get_asset_name_for_tile_at_zorder = (tile_name, zorder) => {
+		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
+		
+		let myvar = tile_name == 'cursor'
+			?
+			'cursor'
+			:
+			_.first(_.first(
+				_.find( tile_types, (value, index) => {
+					return value.name == tile_name;
+				}).variants
+			).graphics).id;
+		
+		return myvar;
+	}
 	
+	draw_image_for_tile_type_at_zorder = (tile_name, ctx, zorder) => {
+		this.draw_image_for_asset_name(
+			this.get_asset_name_for_tile_at_zorder(tile_name, zorder),
+			ctx
+		);
+	}
 	
-	draw_image_for_tile_type = (tile_name, ctx) => {
+	draw_image_for_asset_name = (asset_name, ctx) => {
 		let { assets, asset_list, assets_meta } = this.static_vals;
 		/*
 			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
@@ -219,30 +249,30 @@ class Asset_Manager {
 			This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
 		*/
 	
-		let dim = assets_meta[ tile_name ] ? assets_meta[ tile_name ].dim : { w: 20, h: 20 };  //safe-access
+		let dim = assets_meta[ asset_name ] ? assets_meta[ asset_name ].dim : { w: 20, h: 20 };  //safe-access
 		
 		
-		if( !assets_meta[ tile_name ].bounds ){
+		if( !assets_meta[ asset_name ].bounds ){
 			ctx.drawImage	(
-									assets[ tile_name ],
+									assets[ asset_name ],
 									-(dim.w/2) + this.consts.tile_width/2,
 									-(dim.h/2) + this.consts.tile_height/2,
 								);
 		} else {
 			ctx.drawImage	(
-				/* file */			assets[ tile_name ],
+				/* file */			assets[ asset_name ],
 
 									
-				/* src xy */		assets_meta[ tile_name ].bounds.x,
-									assets_meta[ tile_name ].bounds.y,
-				/* src wh */		assets_meta[ tile_name ].bounds.w,
-									assets_meta[ tile_name ].bounds.h,
+				/* src xy */		assets_meta[ asset_name ].bounds.x,
+									assets_meta[ asset_name ].bounds.y,
+				/* src wh */		assets_meta[ asset_name ].bounds.w,
+									assets_meta[ asset_name ].bounds.h,
 
 									
-				/* dst xy */		-Math.floor(assets_meta[ tile_name ].bounds.w/2) + Math.floor(this.consts.tile_width/2),
-									-Math.floor(assets_meta[ tile_name ].bounds.h/2) + Math.floor(this.consts.tile_height/2),
-				/* dst wh */		assets_meta[ tile_name ].bounds.w,
-									assets_meta[ tile_name ].bounds.h,
+				/* dst xy */		-Math.floor(assets_meta[ asset_name ].bounds.w/2) + Math.floor(this.consts.tile_width/2),
+									-Math.floor(assets_meta[ asset_name ].bounds.h/2) + Math.floor(this.consts.tile_height/2),
+				/* dst wh */		assets_meta[ asset_name ].bounds.w,
+									assets_meta[ asset_name ].bounds.h,
 								);
 		}
 	}
