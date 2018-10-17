@@ -8,6 +8,10 @@ module.exports = {
 	output: {
 		publicPath: '/'
 	},
+	resolve: {
+		// changed from extensions: [".js", ".jsx"]
+		extensions: [".ts", ".tsx", ".js", ".jsx"]
+	},
 	module: {
 
 		rules: [{
@@ -21,10 +25,14 @@ module.exports = {
 				}]
             },
 			{
-				test: /\.js$/,
+				test: /\.(t|j)sx?$/,
 				exclude: /node_modules/,
 				use: {
-					loader: "babel-loader"
+					loader: "awesome-typescript-loader",
+					options: {
+						useBabel: true,
+						babelCore: "@babel/core",
+					},
 				}
 			}
 		]
