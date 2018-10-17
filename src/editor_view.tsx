@@ -8,8 +8,12 @@ import Tile_Palette_Element from "./tile_palette_element.js";
 
 import "./editor_view.scss";
 
+
+
 class Editor_View extends React.Component {
 /*----------------------- initialization and asset loading -----------------------*/
+	_Asset_Manager: any;
+
 	constructor( props ) {
 		super( props );
 		
@@ -32,7 +36,6 @@ class Editor_View extends React.Component {
 	render() {
 		return <div className="master_node">
 			<Canvas_View
-				ref={(node) => {this.canvas_view = node;}}
 				assets_loaded={this.state.assets_loaded}
 				asset_manager={this._Asset_Manager}
 				selected_tile_type={this.state.selected_tile_type}
