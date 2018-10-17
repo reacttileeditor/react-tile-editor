@@ -29,6 +29,15 @@ class Asset_Manager {
 				name: "dirt1",
 			},{
 				url: "hex-tile-experiment-tiles.png",
+				name: "menhir1",
+				bounds: {
+					x: 1,
+					y: 1,
+					w: 54,
+					h: 58,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
 				name: "grass1",
 				bounds: {
 					x: 1,
@@ -105,13 +114,24 @@ class Asset_Manager {
 					name: "dirt",
 					variants: [{
 						graphics: [{
-							id: 'grass1',
+							id: 'dirt1',
 							zorder: 0,
 						}],
 					},{
 						graphics: [{
-							id: 'grass2',
+							id: 'dirt2',
 							zorder: 0,
+						}],
+					}],
+				},{
+					name: "menhir",
+					variants: [{
+						graphics: [{
+							id: 'dirt1',
+							zorder: 0,
+						},{
+							id: 'menhir1',
+							zorder: 1,
 						}],
 					}],
 				}
