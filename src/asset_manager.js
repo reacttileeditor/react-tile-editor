@@ -75,12 +75,35 @@ class Asset_Manager {
 			}],
 			assets: {},
 			assets_meta: {},
-		};
-		
-		this.tile_types = [
-			{
-				name: "grass",
-				variants: [{
+			
+			tile_types: [
+				{
+					name: "grass",
+					variants: [{
+							graphics: [{
+								id: 'grass1',
+								zorder: 0,
+							}],
+						},{
+							graphics: [{
+								id: 'grass2',
+								zorder: 0,
+							}],
+						},{
+							graphics: [{
+								id: 'grass3',
+								zorder: 0,
+							}],
+						},{
+							graphics: [{
+								id: 'grass4',
+								zorder: 0,
+							}],
+						}
+					],
+				},{
+					name: "dirt",
+					variants: [{
 						graphics: [{
 							id: 'grass1',
 							zorder: 0,
@@ -90,33 +113,11 @@ class Asset_Manager {
 							id: 'grass2',
 							zorder: 0,
 						}],
-					},{
-						graphics: [{
-							id: 'grass3',
-							zorder: 0,
-						}],
-					},{
-						graphics: [{
-							id: 'grass4',
-							zorder: 0,
-						}],
-					}
-				],
-			},{
-				name: "dirt",
-				variants: [{
-					graphics: [{
-						id: 'grass1',
-						zorder: 0,
 					}],
-				},{
-					graphics: [{
-						id: 'grass2',
-						zorder: 0,
-					}],
-				}],
-			}
-		]
+				}
+			]
+		};
+		
 	}
 
 	yield_tile_name_list = () => {
@@ -137,7 +138,7 @@ class Asset_Manager {
 		return _.sortedUniq(
 				_.flatten(
 				_.flatten(
-					_.map( this.tile_types, (value,index)=>{
+					_.map( this.static_vals.tile_types, (value,index)=>{
 						return _.map( value.variants,  (value,index)=>{
 							return _.map( value.graphics, (value,index)=>{
 								return value.zorder;
