@@ -26,10 +26,10 @@ class Asset_Manager {
 				not_a_tile: true,
 			},{
 				url: "test2.png",
-				name: "tile1",
+				name: "dirt1",
 			},{
 				url: "hex-tile-experiment-tiles.png",
-				name: "tile2",
+				name: "grass1",
 				bounds: {
 					x: 1,
 					y: 61,
@@ -38,7 +38,7 @@ class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
-				name: "tile3",
+				name: "grass2",
 				bounds: {
 					x: 1,
 					y: 97,
@@ -47,7 +47,7 @@ class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
-				name: "tile4",
+				name: "grass3",
 				bounds: {
 					x: 1,
 					y: 133,
@@ -56,7 +56,7 @@ class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
-				name: "tile5",
+				name: "grass4",
 				bounds: {
 					x: 1,
 					y: 169,
@@ -65,7 +65,7 @@ class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
-				name: "tile6",
+				name: "dirt2",
 				bounds: {
 					x: 1,
 					y: 241,
@@ -77,6 +77,46 @@ class Asset_Manager {
 			assets_meta: {},
 		};
 		
+		this.tile_types = [
+			{
+				name: "grass",
+				variants: [{
+						graphics: [{
+							id: 'grass1',
+							zorder: 0,
+						}],
+					},{
+						graphics: [{
+							id: 'grass2',
+							zorder: 0,
+						}],
+					},{
+						graphics: [{
+							id: 'grass3',
+							zorder: 0,
+						}],
+					},{
+						graphics: [{
+							id: 'grass4',
+							zorder: 0,
+						}],
+					}
+				],
+			},{
+				name: "dirt",
+				variants: [{
+					graphics: [{
+						id: 'grass1',
+						zorder: 0,
+					}],
+				},{
+					graphics: [{
+						id: 'grass2',
+						zorder: 0,
+					}],
+				}],
+			}
+		]
 	}
 
 	yield_tile_name_list = () => {
@@ -88,6 +128,23 @@ class Asset_Manager {
 		).map( (value,index) => {
 			return value.name;
 		})
+	}
+
+	yield_full_zorder_list = () => {
+			/*
+				Step through each of the levels of the tile_types list, and spit out just the zorder values.   This leaves us with a nested structure (the same as the original tile data object's structure), and what we really want to do is just boil it down to a straight list, and figure out which ones are unique. 
+			*/
+		return _.sortedUniq(
+				_.flatten(
+				_.flatten(
+					_.map( this.tile_types, (value,index)=>{
+						return _.map( value.variants,  (value,index)=>{
+							return _.map( value.graphics, (value,index)=>{
+								return value.zorder;
+							});
+						}) 
+					} )
+			)));
 	}
 
 
@@ -122,7 +179,7 @@ class Asset_Manager {
 		*/
 
 		if( _.size( this.static_vals.asset_list ) == _.size( this.static_vals.assets ) ) {
-
+			console.log( this.yield_full_zorder_list() );
 
 			do_once_app_ready();
 		}
