@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
+import Asset_Manager from "./asset_manager";
+
 var PATH_PREFIX = "/dist/assets/"
 
 interface tileViewState {
@@ -13,7 +15,7 @@ interface tileViewState {
 class Tile_View {
 	ctx: CanvasRenderingContext2D;
 	state: tileViewState;
-	_AM: Asset_Manager; //TODO
+	_AM: Asset_Manager;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( ctx: CanvasRenderingContext2D, _Asset_Manager: Asset_Manager ) {

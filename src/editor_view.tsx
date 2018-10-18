@@ -8,11 +8,18 @@ import Tile_Palette_Element from "./tile_palette_element";
 
 import "./editor_view.scss";
 
+interface Props {
+}
+
+interface State {
+	assets_loaded: boolean,
+	selected_tile_type: string,
+}
 
 
-class Editor_View extends React.Component {
+class Editor_View extends React.Component <Props, State> {
 /*----------------------- initialization and asset loading -----------------------*/
-	_Asset_Manager: any;
+	_Asset_Manager: Asset_Manager;
 
 	constructor( props ) {
 		super( props );

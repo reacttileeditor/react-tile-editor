@@ -4,20 +4,32 @@ import _ from "lodash";
 
 var PATH_PREFIX = "/dist/assets/";
 import Tile_View from "./tile_view";
+import Asset_Manager from "./asset_manager";
 
 
-class Canvas_View extends React.Component {
+interface Props {
+	asset_manager: Asset_Manager,
+	assets_loaded: boolean,
+	selected_tile_type: string,
+}
+
+interface State {
+	mousedown_pos?: {x: number, y: number},
+}
+
+
+class Canvas_View extends React.Component <Props, State> {
 	ctx: CanvasRenderingContext2D;
 	render_loop_interval: number;
 	_Tile_View: Tile_View;
+	canvas: HTMLCanvasElement;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( props ) {
 		super( props );
 		
 		this.state = {
-			assets_loaded: false,
-			mousedown_pos: null,
+			mousedown_pos: undefined,
 		}
 		
 //		this._Tile_View = null;
@@ -26,7 +38,7 @@ class Canvas_View extends React.Component {
 
 
 	componentDidMount() {
-		this.ctx = this.canvas.getContext("2d");
+		this.ctx = this.canvas!.getContext("2d")!;
 		this._Tile_View = new Tile_View(this.ctx, this.props.asset_manager);
 	}
 
@@ -128,7 +140,7 @@ class Canvas_View extends React.Component {
 		//annul any in-progress operations here
 		this._Tile_View.annul_current_drag_operation();
 
-		this.setState({mousedown_pos: null});
+		this.setState({mousedown_pos: undefined});
 	}
 
 	captureMouseEvents = (e) => {
@@ -149,7 +161,7 @@ class Canvas_View extends React.Component {
 	render() {
 		return <div className="canvas_holder">
 			<canvas
-				ref={(node) => {this.canvas = node;}}
+				ref={(node) => {this.canvas = node!;}}
 				width="567"
 				height="325"
 			

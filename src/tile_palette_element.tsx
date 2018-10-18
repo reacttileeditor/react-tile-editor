@@ -2,9 +2,20 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
+import Asset_Manager from "./asset_manager";
 
-class Tile_Palette_Element extends React.Component {
+
+interface Props {
+	asset_manager: Asset_Manager,
+	selected_tile_type: string,
+	tile_name: string,
+	handle_click(): void, 
+}
+
+
+class Tile_Palette_Element extends React.Component <Props> {
 	ctx: CanvasRenderingContext2D;
+	canvas: HTMLCanvasElement;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( props ) {
@@ -16,7 +27,7 @@ class Tile_Palette_Element extends React.Component {
 	}
 
 	componentDidMount() {
-		this.ctx = this.canvas.getContext("2d");
+		this.ctx = this.canvas!.getContext("2d")!;
 		this.draw_canvas();
 	}
 
@@ -105,7 +116,7 @@ class Tile_Palette_Element extends React.Component {
 	render() {
 		return <div className={`tile_cell${ this.props.selected_tile_type == this.props.tile_name ? ' active' : ''}`}>
 			<canvas
-				ref={(node) => {this.canvas = node;}}
+				ref={(node) => {this.canvas = node!;}}
 				width="100"
 				height="100"
 			
