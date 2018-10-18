@@ -21,22 +21,36 @@ interface AssetItem {
 
 interface StaticValues {
 	asset_list: Array<AssetItem>,
-	assets: any,
+	assets: AssetsDict,
 	assets_meta: AssetsMetaDict,
 	tile_types: Array<TileItem>,
 };
 
-interface AssetsMetaDict {
-	[index: string]: AssetsMetaItem
+interface AssetsDict {
+	[index: string]: HTMLImageElement
 }
 
-interface AssetsMetaItem {
-	dim?: {
+interface AssetsMetaDict {
+	[index: string]: AssetsMetaSpritesheetItem|AssetsMetaSingleImageItem,
+}
+
+interface AssetsMetaSpritesheetItem {
+	dim: {
 		w: number,
 		h: number,
 	},
-	bounds?: Rectangle,
+	bounds: Rectangle,
 }
+
+interface AssetsMetaSingleImageItem {
+	dim: {
+		w: number,
+		h: number,
+	},
+}
+
+
+
 
 interface TileItem {
 	name: string,
@@ -199,6 +213,11 @@ class Asset_Manager {
 		
 	}
 
+	//https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
+	isAssetSpritesheet( asset: AssetsMetaSpritesheetItem | AssetsMetaSingleImageItem ): asset is AssetsMetaSpritesheetItem {
+		return (<AssetsMetaSpritesheetItem>asset).bounds !== undefined;
+	}
+
 
 	yield_asset_name_list = () => {
 		return _.filter(
@@ -268,7 +287,7 @@ class Asset_Manager {
 		*/
 
 		if( _.size( this.static_vals.asset_list ) == _.size( this.static_vals.assets ) ) {
-			console.log( this.yield_full_zorder_list() );
+			console.log( this.static_vals.assets_meta );
 
 			do_once_app_ready();
 		}
@@ -302,36 +321,39 @@ class Asset_Manager {
 	
 	draw_image_for_asset_name = (asset_name, ctx) => {
 		let { assets, asset_list, assets_meta } = this.static_vals;
+		let asset = assets[ asset_name ]!;
+		let metadata = assets_meta[ asset_name ]!;
+		
 		/*
 			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
 			
 			This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
 		*/
 	
-		let dim = assets_meta[ asset_name ] ? assets_meta[ asset_name ].dim : { w: 20, h: 20 };  //safe-access
+		let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
 		
 		
-		if( !assets_meta[ asset_name ].bounds ){
+		if( !this.isAssetSpritesheet(metadata) ){
 			ctx.drawImage	(
-									assets[ asset_name ],
+									asset,
 									-(dim.w/2) + this.consts.tile_width/2,
 									-(dim.h/2) + this.consts.tile_height/2,
 								);
 		} else {
 			ctx.drawImage	(
-				/* file */			assets[ asset_name ],
+				/* file */			asset,
 
 									
-				/* src xy */		assets_meta[ asset_name ].bounds.x,
-									assets_meta[ asset_name ].bounds.y,
-				/* src wh */		assets_meta[ asset_name ].bounds.w,
-									assets_meta[ asset_name ].bounds.h,
+				/* src xy */		metadata.bounds.x,
+									metadata.bounds.y,
+				/* src wh */		metadata.bounds.w,
+									metadata.bounds.h,
 
 									
-				/* dst xy */		-Math.floor(assets_meta[ asset_name ].bounds.w/2) + Math.floor(this.consts.tile_width/2),
-									-Math.floor(assets_meta[ asset_name ].bounds.h/2) + Math.floor(this.consts.tile_height/2),
-				/* dst wh */		assets_meta[ asset_name ].bounds.w,
-									assets_meta[ asset_name ].bounds.h,
+				/* dst xy */		-Math.floor(metadata.bounds.w/2) + Math.floor(this.consts.tile_width/2),
+									-Math.floor(metadata.bounds.h/2) + Math.floor(this.consts.tile_height/2),
+				/* dst wh */		metadata.bounds.w,
+									metadata.bounds.h,
 								);
 		}
 	}

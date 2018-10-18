@@ -74,39 +74,43 @@ class Tile_Palette_Element extends React.Component <Props> {
 	
 	draw_image_for_tile_type = (tile_name) => {
 		let { static_vals: {assets, asset_list, assets_meta}, consts, get_asset_name_for_tile_at_zorder } = this.props.asset_manager;
+
+
 		/*
 			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
 			
 			This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
 		*/
 		let asset_name = get_asset_name_for_tile_at_zorder(tile_name, 0);
+
+		let asset = assets[ asset_name ]!;
+		let metadata = assets_meta[ asset_name ]!;
 	
-		let dim = assets_meta[ asset_name ] ? assets_meta[ asset_name ].dim : { w: 20, h: 20 };  //safe-access
+		let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
 		
-		if( !assets_meta[ asset_name ].bounds ){
+		if( !this.props.asset_manager.isAssetSpritesheet(metadata) ){
 			this.ctx.drawImage	(
-									assets[ asset_name ],
+									asset,
 									-(dim.w/2),
 									-(dim.h/2),
 								);
 		} else {
 			this.ctx.drawImage	(
-				/* file */			assets[ asset_name ],
+				/* file */			asset,
 
 									
-				/* src xy */		assets_meta[ asset_name ].bounds.x,
-									assets_meta[ asset_name ].bounds.y,
-				/* src wh */		assets_meta[ asset_name ].bounds.w,
-									assets_meta[ asset_name ].bounds.h,
+				/* src xy */		metadata.bounds.x,
+									metadata.bounds.y,
+				/* src wh */		metadata.bounds.w,
+									metadata.bounds.h,
 
 									
-				/* dst xy */		-Math.floor(assets_meta[ asset_name ].bounds.w/2),
-									-Math.floor(assets_meta[ asset_name ].bounds.h/2),
-				/* dst wh */		assets_meta[ asset_name ].bounds.w,
-									assets_meta[ asset_name ].bounds.h,
+				/* dst xy */		-Math.floor(metadata.bounds.w/2),
+									-Math.floor(metadata.bounds.h/2),
+				/* dst wh */		metadata.bounds.w,
+									metadata.bounds.h,
 								);
-		}
-	}
+		}	}
 	
 	handle_mouse_click = (e) => {
 		this.props.handle_click();
