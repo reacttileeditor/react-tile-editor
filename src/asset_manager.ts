@@ -4,8 +4,55 @@ import _ from "lodash";
 
 var PATH_PREFIX = "/dist/assets/"
 
+interface Rectangle {
+	x: number,
+	y: number,
+	w: number,
+	h: number,
+};
+
+
+interface AssetItem {
+	url: string,
+	not_a_tile?: boolean, 
+	name: string,
+	bounds?: Rectangle,
+};
+
+interface StaticValues {
+	asset_list: Array<AssetItem>,
+	assets: any,
+	assets_meta: AssetsMetaDict,
+	tile_types: Array<TileItem>,
+};
+
+interface AssetsMetaDict {
+	[index: string]: AssetsMetaItem
+}
+
+interface AssetsMetaItem {
+	dim?: {
+		w: number,
+		h: number,
+	},
+	bounds?: Rectangle,
+}
+
+interface TileItem {
+	name: string,
+	variants: Array<VariantItem>,
+};
+
+interface VariantItem {
+	graphics: Array<GraphicItem>,
+};
+
+interface GraphicItem {
+	id: string,
+	zorder: number,
+};
+
 class Asset_Manager {
-	static_vals: any;
 	consts: {
 		tile_width: number,
 		tile_height: number,
@@ -14,7 +61,8 @@ class Asset_Manager {
 	};
 	state: {
 	
-	}
+	};
+	static_vals: StaticValues;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor() {
