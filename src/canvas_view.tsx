@@ -3,10 +3,14 @@ import ReactDOM from "react-dom";
 import _ from "lodash";
 
 var PATH_PREFIX = "/dist/assets/";
-import Tile_View from "./tile_view.js";
+import Tile_View from "./tile_view";
 
 
 class Canvas_View extends React.Component {
+	ctx: CanvasRenderingContext2D;
+	render_loop_interval: number;
+	_Tile_View: Tile_View;
+
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( props ) {
 		super( props );
@@ -16,8 +20,8 @@ class Canvas_View extends React.Component {
 			mousedown_pos: null,
 		}
 		
-		this._Tile_View = null;
-		this.render_loop_interval = null;
+//		this._Tile_View = null;
+//		this.render_loop_interval = null;
 	}
 
 

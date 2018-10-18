@@ -4,13 +4,23 @@ import _ from "lodash";
 
 var PATH_PREFIX = "/dist/assets/"
 
+interface tileViewState {
+	tileStatus: [[number]],
+	initialized: boolean,
+	cursor_pos: {x: number, y: number},
+}
+
 class Tile_View {
+	ctx: CanvasRenderingContext2D;
+	state: tileViewState;
+	_AM: Asset_Manager; //TODO
+
 /*----------------------- initialization and asset loading -----------------------*/
-	constructor( ctx, _Asset_Manager ) {
+	constructor( ctx: CanvasRenderingContext2D, _Asset_Manager: Asset_Manager ) {
 		this.ctx = ctx;
 		
 		this.state = {
-			tileStatus: [],
+			tileStatus: [[0]],
 			initialized: false,
 			cursor_pos: {x:0, y:0},
 		};

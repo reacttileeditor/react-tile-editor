@@ -5,12 +5,23 @@ import _ from "lodash";
 var PATH_PREFIX = "/dist/assets/"
 
 class Asset_Manager {
+	static_vals: any;
+	consts: {
+		tile_width: number,
+		tile_height: number,
+		row_length: number,
+		col_height: number,
+	};
+	state: {
+	
+	}
+
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor() {
 		
-		this.state = {
-			tileStatus: null,
-		};
+//		this.state = {
+//			tileStatus: null,
+//		};
 		
 		this.consts = {
 			tile_width: 38, //38

@@ -4,6 +4,8 @@ import _ from "lodash";
 
 
 class Tile_Palette_Element extends React.Component {
+	ctx: CanvasRenderingContext2D;
+
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( props ) {
 		super( props );
