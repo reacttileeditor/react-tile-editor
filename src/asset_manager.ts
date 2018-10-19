@@ -312,14 +312,15 @@ class Asset_Manager {
 		return myvar;
 	}
 	
-	draw_image_for_tile_type_at_zorder = (tile_name, ctx, zorder) => {
+	draw_image_for_tile_type_at_zorder = (tile_name, ctx, zorder, should_use_tile_offset) => {
 		this.draw_image_for_asset_name(
 			this.get_asset_name_for_tile_at_zorder(tile_name, zorder),
-			ctx
+			ctx,
+			should_use_tile_offset
 		);
 	}
 	
-	draw_image_for_asset_name = (asset_name, ctx) => {
+	draw_image_for_asset_name = (asset_name, ctx, should_use_tile_offset) => {
 		let { assets, asset_list, assets_meta } = this.static_vals;
 		let asset = assets[ asset_name ]!;
 		let metadata = assets_meta[ asset_name ]!;
@@ -336,8 +337,8 @@ class Asset_Manager {
 		if( !this.isAssetSpritesheet(metadata) ){
 			ctx.drawImage	(
 									asset,
-									-(dim.w/2) + this.consts.tile_width/2,
-									-(dim.h/2) + this.consts.tile_height/2,
+									-(dim.w/2) + (should_use_tile_offset ? this.consts.tile_width/2 : 0),
+									-(dim.h/2) + (should_use_tile_offset ? this.consts.tile_height/2 : 0),
 								);
 		} else {
 			ctx.drawImage	(
@@ -350,8 +351,8 @@ class Asset_Manager {
 									metadata.bounds.h,
 
 									
-				/* dst xy */		-Math.floor(metadata.bounds.w/2) + Math.floor(this.consts.tile_width/2),
-									-Math.floor(metadata.bounds.h/2) + Math.floor(this.consts.tile_height/2),
+				/* dst xy */		-Math.floor(metadata.bounds.w/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+									-Math.floor(metadata.bounds.h/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
 				/* dst wh */		metadata.bounds.w,
 									metadata.bounds.h,
 								);

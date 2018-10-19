@@ -121,7 +121,7 @@ class Tile_View {
 									(y_pos + 0) * consts.tile_height
 								);
 								
-			this._AM.draw_image_for_tile_type_at_zorder( tile_name, this.ctx, 0 );
+			this._AM.draw_image_for_tile_type_at_zorder( tile_name, this.ctx, 0, true );
 
 		this.ctx.restore();	
 	}
