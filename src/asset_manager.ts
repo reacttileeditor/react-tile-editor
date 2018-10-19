@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
+import Prando from 'prando';
+
 var PATH_PREFIX = "/dist/assets/"
 
 interface Rectangle {
@@ -77,6 +79,7 @@ class Asset_Manager {
 	
 	};
 	static_vals: StaticValues;
+	TileRNG: Prando;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor() {
@@ -211,6 +214,7 @@ class Asset_Manager {
 			]
 		};
 		
+		this.TileRNG = new Prando();
 	}
 
 	//https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
@@ -304,12 +308,12 @@ class Asset_Manager {
 			return 'cursor';
 		}
 
+		let tile_variants = _.find( tile_types, (value, index) => {
+								return value.name == tile_name;
+							}).variants;
+
 		let tile_data = _.find(
-			_.first(
-				_.find( tile_types, (value, index) => {
-					return value.name == tile_name;
-				}).variants
-			).graphics,
+			tile_variants[this._tile_dice( tile_variants.length ) -1].graphics,
 			(value, index) => {return value.zorder == zorder}
 		);
 		
@@ -399,6 +403,9 @@ class Asset_Manager {
 		}
 	}
 	
+	_tile_dice = (sides) => {
+		return Math.floor( this.TileRNG.next() * sides ) + 1;
+	}
 
 	dice = (sides) => {
 		return Math.floor( Math.random() * sides ) + 1;

@@ -101,6 +101,8 @@ class Tile_View {
 		zorder_list.map( (value,index) => {
 			this.draw_tiles_for_zorder(value);
 		})
+		
+		this._AM.TileRNG.reset();
 	}
 
 	draw_tiles_for_zorder = (zorder) => {
