@@ -67,7 +67,7 @@ class Tile_Palette_Element extends React.Component <Props> {
 									50,
 									50
 								);
-			this.props.asset_manager.draw_image_for_tile_type_at_zorder( this.props.tile_name, this.ctx, 0, false );
+			this.props.asset_manager.draw_all_assets_for_tile_type( this.props.tile_name, this.ctx, false );
 
 		this.ctx.restore();
 	}

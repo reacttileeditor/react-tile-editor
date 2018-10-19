@@ -303,13 +303,44 @@ class Asset_Manager {
 			?
 			'cursor'
 			:
-			_.first(_.first(
+			_.find(
+				_.first(
+					_.find( tile_types, (value, index) => {
+						return value.name == tile_name;
+					}).variants
+				).graphics,
+				(value, index) => {return value.zorder == zorder}
+			).id;
+		
+		return myvar;
+	}
+
+	yield_zorder_list_for_tile = (tile_name) => {
+		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
+		
+		let _array = tile_name == 'cursor'
+			?
+			'cursor'
+			:
+			_.map(_.first(
 				_.find( tile_types, (value, index) => {
 					return value.name == tile_name;
 				}).variants
-			).graphics).id;
+			).graphics,
+				(value,index) =>{ 
+					return value.zorder
+				});
 		
-		return myvar;
+		return _array;
+	}
+
+	
+	draw_all_assets_for_tile_type = (tile_name, ctx, should_use_tile_offset) => {
+		let zorders = this.yield_zorder_list_for_tile(tile_name); 
+	
+		zorders.map( (value,index) => {
+			this.draw_image_for_tile_type_at_zorder(tile_name, ctx, value, should_use_tile_offset);
+		});
 	}
 	
 	draw_image_for_tile_type_at_zorder = (tile_name, ctx, zorder, should_use_tile_offset) => {
