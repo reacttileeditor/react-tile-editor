@@ -96,21 +96,27 @@ class Tile_View {
 	}
 	
 	draw_tiles = () => {
+		let zorder_list = this._AM.yield_full_zorder_list();
 
+		zorder_list.map( (value,index) => {
+			this.draw_tiles_for_zorder(value);
+		})
+	}
+
+	draw_tiles_for_zorder = (zorder) => {
 
 		this.state.tileStatus.map( (row_value, row_index) => {
 			row_value.map( (col_value, col_index) => {
 
 				let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
 					
-				this.draw_tile_at_coords(col_index, row_index, tile_name);
-
-			
+				this.draw_tile_at_coords(col_index, row_index, tile_name, zorder);
 			});
 		});
 	}
+
 	
-	draw_tile_at_coords = ( x_pos, y_pos, tile_name) => {
+	draw_tile_at_coords = ( x_pos, y_pos, tile_name, zorder) => {
 		let { consts } = this._AM;
 		this.ctx.save();
 
@@ -121,13 +127,13 @@ class Tile_View {
 									(y_pos + 0) * consts.tile_height
 								);
 								
-			this._AM.draw_image_for_tile_type_at_zorder( tile_name, this.ctx, 0, true );
+			this._AM.draw_image_for_tile_type_at_zorder( tile_name, this.ctx, zorder, true );
 
 		this.ctx.restore();	
 	}
 	
 	draw_cursor = () => {
-		this.draw_tile_at_coords( this.state.cursor_pos.x, this.state.cursor_pos.y, 'cursor');
+		this.draw_tile_at_coords( this.state.cursor_pos.x, this.state.cursor_pos.y, 'cursor', 0);
 	}
 	
 	

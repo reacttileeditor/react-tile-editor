@@ -299,20 +299,25 @@ class Asset_Manager {
 	get_asset_name_for_tile_at_zorder = (tile_name, zorder) => {
 		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
 		
-		let myvar = tile_name == 'cursor'
-			?
-			'cursor'
-			:
-			_.find(
-				_.first(
-					_.find( tile_types, (value, index) => {
-						return value.name == tile_name;
-					}).variants
-				).graphics,
-				(value, index) => {return value.zorder == zorder}
-			).id;
 		
-		return myvar;
+		if(tile_name == 'cursor'){
+			return 'cursor';
+		}
+
+		let tile_data = _.find(
+			_.first(
+				_.find( tile_types, (value, index) => {
+					return value.name == tile_name;
+				}).variants
+			).graphics,
+			(value, index) => {return value.zorder == zorder}
+		);
+		
+		if(tile_data) {
+			return tile_data.id;
+		} else {
+			return undefined;
+		}
 	}
 
 	yield_zorder_list_for_tile = (tile_name) => {
@@ -344,11 +349,15 @@ class Asset_Manager {
 	}
 	
 	draw_image_for_tile_type_at_zorder = (tile_name, ctx, zorder, should_use_tile_offset) => {
-		this.draw_image_for_asset_name(
-			this.get_asset_name_for_tile_at_zorder(tile_name, zorder),
-			ctx,
-			should_use_tile_offset
-		);
+		let asset_name = this.get_asset_name_for_tile_at_zorder(tile_name, zorder);
+
+		if( asset_name ){
+			this.draw_image_for_asset_name(
+				asset_name,
+				ctx,
+				should_use_tile_offset
+			);
+		}
 	}
 	
 	draw_image_for_asset_name = (asset_name, ctx, should_use_tile_offset) => {
