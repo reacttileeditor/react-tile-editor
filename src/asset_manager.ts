@@ -68,13 +68,18 @@ interface GraphicItem {
 interface GraphicItemAutotiled {
 	id: string,
 	zorder: number,
-	restrictions: TileComparatorSample,
+	restrictions: AutoTileRestrictionSample,
 };
 
 
 interface TileComparatorRow extends Array<string> { 0: string; 1: string; }
 interface TileComparatorRowCenter extends Array<string> { 0: string; 1: string; 2: string; }
-export interface TileComparatorSample extends Array<TileComparatorRow> { 0: TileComparatorRow, 1: TileComparatorRowCenter, 2: TileComparatorRow };
+export interface TileComparatorSample extends Array<TileComparatorRow|TileComparatorRowCenter> { 0: TileComparatorRow, 1: TileComparatorRowCenter, 2: TileComparatorRow };
+
+interface AutoTileRestrictionRow extends Array<RegExp> { 0: RegExp; 1: RegExp; }
+interface AutoTileRestrictionRowCenter extends Array<RegExp> { 0: RegExp; 1: RegExp; 2: RegExp; }
+interface AutoTileRestrictionSample extends Array<AutoTileRestrictionRow|AutoTileRestrictionRowCenter> { 0: AutoTileRestrictionRow, 1: AutoTileRestrictionRowCenter, 2: AutoTileRestrictionRow };
+
 
 export interface Point2D {
 	x: number,
@@ -289,9 +294,9 @@ class Asset_Manager {
 							id: 'water-edge-nw1',
 							zorder: 1,
 							restrictions:	[
-												['.*', '(dirt|grass|menhir)'],
-													['.*', 'water', '.*'],
-														['.*','.*','.*']
+												[/.*/, /(dirt|grass|menhir)/],
+													[/.*/, /water/, /.*/],
+														[/.*/, /.*/, /.*/]
 											]
 						}],
 					}],
@@ -403,9 +408,23 @@ class Asset_Manager {
 	get_asset_name_for_tile_at_zorder = (tile_name, zorder) => {
 		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
 		
+		let tile_data = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
+
+		if(tile_data) {
+			return tile_data.id;
+		} else {
+			return undefined;
+		}
+	}
+
+	get_asset_data_for_tile_at_zorder = (tile_name, zorder) => {
+		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
+		
 		
 		if(tile_name == 'cursor'){
-			return 'cursor';
+			return {
+				id: 'cursor'
+			};
 		}
 
 		let tile_variants = _.find( tile_types, (value, index) => {
@@ -417,12 +436,9 @@ class Asset_Manager {
 			(value, index) => {return value.zorder == zorder}
 		);
 		
-		if(tile_data) {
-			return tile_data.id;
-		} else {
-			return undefined;
-		}
+		return tile_data;
 	}
+
 
 	yield_zorder_list_for_tile = (tile_name) => {
 		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
@@ -454,6 +470,16 @@ class Asset_Manager {
 	
 	draw_image_for_tile_type_at_zorder = (tile_name, ctx, zorder, should_use_tile_offset) => {
 		let asset_name = this.get_asset_name_for_tile_at_zorder(tile_name, zorder);
+		let asset_data = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
+
+		var allow_drawing = true;
+		
+		if(asset_data){
+			if(  this.isGraphicAutotiled(asset_data) ){
+				//this is where 
+				// allow_drawing = this.should_we_draw_this_tile_based_on_its_autotiling_restrictions();
+			} 
+		}
 
 		if( asset_name ){
 			this.draw_image_for_asset_name(
@@ -503,14 +529,16 @@ class Asset_Manager {
 		}
 	}
 /*----------------------- auto-tiling logic -----------------------*/
-	filter_out_invalid_auto_tiled_assets = ( tile_data: TileComparatorSample ) => {
+	should_we_draw_this_tile_based_on_its_autotiling_restrictions = ( tile_data: TileComparatorSample, autotile_restrictions: AutoTileRestrictionSample ): boolean => {
 		/*
 			This goes through all the adjacent tile data, compares it to the assets that are available for the current tile, and returns a subset of these assets - the ones that are valid to draw for this particular arrangement. 
 		
 			`tile_data` is the actual arrangement of tiles on the map.
+			
+			Th
 		*/
 		
-		
+		return autotile_restrictions[0][0].test( tile_data[0][0] );
 	}
 
 	
