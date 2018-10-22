@@ -6,10 +6,12 @@ import Asset_Manager from "./asset_manager";
 
 var PATH_PREFIX = "/dist/assets/"
 
+import { TileComparatorSample, Point2D } from "./asset_manager";
+
 interface tileViewState {
 	tileStatus: [[string]],
 	initialized: boolean,
-	cursor_pos: {x: number, y: number},
+	cursor_pos: Point2D,
 }
 
 class Tile_View {
@@ -139,23 +141,31 @@ class Tile_View {
 	}
 	
 
-	get_tile_comparator_sample_for_pos = ( pos ) => {
+	get_tile_comparator_sample_for_pos = ( pos: Point2D ): TileComparatorSample => {
 		/*
 			This would simply grab all 8 adjacent tiles (and ourselves, for a total of 9 tiles) as a square sample.  The problem here is that, although our tiles are in fact stored as "square" data in an array, we're actually a hex grid.  Because we're a hex grid, we're actually just looking for 7 tiles, so we'll need to adjust the result.  Depending on whether we're on an even or odd row, we need to lop off the first (or last) member of the first and last rows. 	
 		*/
 	
-		let raw_sample = _.range(pos.y - 1, pos.y + 2).map( (row_value, row_index) => {
-			return _.range(pos.x - 1, pos.x + 2).map( (col_value, col_index) => {
+		return _.range(pos.y - 1, pos.y + 2).map( (row_value, row_index) => {
+			let horizontal_tile_indices =	row_index == 1
+											?
+											_.range(pos.x - 1, pos.x + 2)
+											:
+											(	
+												this._AM.is_even( pos.y )
+												?
+												_.range(pos.x - 1, pos.x + 1)
+												:
+												_.range(pos.x - 0, pos.x + 2)
+											);
+			
+			return horizontal_tile_indices.map( (col_value, col_index) => {
 				return this.get_tile_name_for_pos({x: col_value, y: row_value});
 			});
 		});
-		
-		
-		
-		
 	}
 	
-	get_tile_name_for_pos = ( pos ) => {
+	get_tile_name_for_pos = ( pos: Point2D ) => {
 		/*
 			This enforces "safe access", and will always return a string.  If it's outside the bounds of the tile map, we return an empty string.
 		*/

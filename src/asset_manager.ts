@@ -66,10 +66,14 @@ interface GraphicItem {
 };
 
 
-interface TileComparatorRow extends Array<string> { 0: string; 1: string; 2: string; }
-interface TileComparatorSample extends Array<TileComparatorRow> { 0: TileComparatorRow, 1: TileComparatorRow, 2: TileComparatorRow };
+interface TileComparatorRow extends Array<string> { 0: string; 1: string; }
+interface TileComparatorRowCenter extends Array<string> { 0: string; 1: string; 2: string; }
+export interface TileComparatorSample extends Array<TileComparatorRow> { 0: TileComparatorRow, 1: TileComparatorRowCenter, 2: TileComparatorRow };
 
-
+export interface Point2D {
+	x: number,
+	y: number
+}
 
 
 
@@ -428,6 +432,10 @@ class Asset_Manager {
 
 	dice = (sides) => {
 		return Math.floor( Math.random() * sides ) + 1;
+	}
+	
+	is_even = (value : number) => {
+		return value % 2 == 0;
 	}
 }
 
