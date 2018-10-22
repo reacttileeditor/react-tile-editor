@@ -7,7 +7,7 @@ import Asset_Manager from "./asset_manager";
 var PATH_PREFIX = "/dist/assets/"
 
 interface tileViewState {
-	tileStatus: [[number]],
+	tileStatus: [[string]],
 	initialized: boolean,
 	cursor_pos: {x: number, y: number},
 }
@@ -22,7 +22,7 @@ class Tile_View {
 		this.ctx = ctx;
 		
 		this.state = {
-			tileStatus: [[0]],
+			tileStatus: [['']],
 			initialized: false,
 			cursor_pos: {x:0, y:0},
 		};
@@ -137,6 +137,40 @@ class Tile_View {
 	draw_cursor = () => {
 		this.draw_tile_at_coords( this.state.cursor_pos.x, this.state.cursor_pos.y, 'cursor', 0);
 	}
+	
+
+	get_tile_comparator_sample_for_pos = ( pos ) => {
+		/*
+			This would simply grab all 8 adjacent tiles (and ourselves, for a total of 9 tiles) as a square sample.  The problem here is that, although our tiles are in fact stored as "square" data in an array, we're actually a hex grid.  Because we're a hex grid, we're actually just looking for 7 tiles, so we'll need to adjust the result.  Depending on whether we're on an even or odd row, we need to lop off the first (or last) member of the first and last rows. 	
+		*/
+	
+		let raw_sample = _.range(pos.y - 1, pos.y + 2).map( (row_value, row_index) => {
+			return _.range(pos.x - 1, pos.x + 2).map( (col_value, col_index) => {
+				return this.get_tile_name_for_pos({x: col_value, y: row_value});
+			});
+		});
+		
+		
+		
+		
+	}
+	
+	get_tile_name_for_pos = ( pos ) => {
+		/*
+			This enforces "safe access", and will always return a string.  If it's outside the bounds of the tile map, we return an empty string.
+		*/
+		if(
+			pos.y > (_.size(this.state.tileStatus) - 1) ||
+			pos.y < 0 ||
+			pos.x > (_.size(this.state.tileStatus[pos.y]) - 1) ||
+			pos.x < 0
+		){
+			return '';
+		} else {
+			return this.state.tileStatus[pos.y][pos.x];
+		}
+	}
+	
 	
 	
 	get_tile_name_for_tile_at_pos_with_data = ( pos, tile_entry ) => {

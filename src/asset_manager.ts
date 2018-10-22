@@ -51,9 +51,6 @@ interface AssetsMetaSingleImageItem {
 	},
 }
 
-
-
-
 interface TileItem {
 	name: string,
 	variants: Array<VariantItem>,
@@ -67,6 +64,16 @@ interface GraphicItem {
 	id: string,
 	zorder: number,
 };
+
+
+interface TileComparatorRow extends Array<string> { 0: string; 1: string; 2: string; }
+interface TileComparatorSample extends Array<TileComparatorRow> { 0: TileComparatorRow, 1: TileComparatorRow, 2: TileComparatorRow };
+
+
+
+
+
+
 
 class Asset_Manager {
 	consts: {
@@ -402,7 +409,19 @@ class Asset_Manager {
 								);
 		}
 	}
+/*----------------------- auto-tiling logic -----------------------*/
+	filter_out_invalid_auto_tiled_assets = ( tile_data: TileComparatorSample ) => {
+		/*
+			This goes through all the adjacent tile data, compares it to the assets that are available for the current tile, and returns a subset of these assets - the ones that are valid to draw for this particular arrangement. 
+		
+			`tile_data` is the actual arrangement of tiles on the map.
+		*/
+		
+		
+	}
+
 	
+/*----------------------- utility functions -----------------------*/
 	_tile_dice = (sides) => {
 		return Math.floor( this.TileRNG.next() * sides ) + 1;
 	}
