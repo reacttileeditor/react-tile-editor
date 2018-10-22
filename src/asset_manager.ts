@@ -57,12 +57,18 @@ interface TileItem {
 };
 
 interface VariantItem {
-	graphics: Array<GraphicItem>,
+	graphics: Array<GraphicItem|GraphicItemAutotiled>,
 };
 
 interface GraphicItem {
 	id: string,
 	zorder: number,
+};
+
+interface GraphicItemAutotiled {
+	id: string,
+	zorder: number,
+	restrictions: TileComparatorSample,
 };
 
 
@@ -282,6 +288,11 @@ class Asset_Manager {
 						},{
 							id: 'water-edge-nw1',
 							zorder: 1,
+							restrictions:	[
+												['.*', '(dirt|grass|menhir)'],
+													['.*', 'water', '.*'],
+														['.*','.*','.*']
+											]
 						}],
 					}],
 				},{
@@ -305,6 +316,10 @@ class Asset_Manager {
 	//https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
 	isAssetSpritesheet( asset: AssetsMetaSpritesheetItem | AssetsMetaSingleImageItem ): asset is AssetsMetaSpritesheetItem {
 		return (<AssetsMetaSpritesheetItem>asset).bounds !== undefined;
+	}
+
+	isGraphicAutotiled( graphic: GraphicItem | GraphicItemAutotiled ): graphic is GraphicItemAutotiled {
+		return (<GraphicItemAutotiled>graphic).restrictions !== undefined;
 	}
 
 
