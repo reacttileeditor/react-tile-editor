@@ -168,6 +168,69 @@ class Asset_Manager {
 					w: 54,
 					h: 34,
 				},
+			},{
+				url: "water-tiles.png",
+				name: "water-base1",
+				bounds: {
+					x: 1,
+					y: 25,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "water-tiles.png",
+				name: "water-edge-nw1",
+				bounds: {
+					x: 1,
+					y: 61,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "water-tiles.png",
+				name: "water-edge-w1",
+				bounds: {
+					x: 1,
+					y: 97,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "water-tiles.png",
+				name: "water-edge-sw1",
+				bounds: {
+					x: 1,
+					y: 133,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "water-tiles.png",
+				name: "water-edge-se1",
+				bounds: {
+					x: 1,
+					y: 169,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "water-tiles.png",
+				name: "water-edge-e1",
+				bounds: {
+					x: 1,
+					y: 205,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "water-tiles.png",
+				name: "water-edge-ne1",
+				bounds: {
+					x: 1,
+					y: 241,
+					w: 54,
+					h: 34,
+				},
 			}],
 			assets: {},
 			assets_meta: {},
@@ -211,6 +274,14 @@ class Asset_Manager {
 						}],
 					}],
 				},{
+					name: "water",
+					variants: [{
+						graphics: [{
+							id: 'water-base1',
+							zorder: 0,
+						}],
+					}],
+				},{
 					name: "menhir",
 					variants: [{
 						graphics: [{
@@ -218,7 +289,7 @@ class Asset_Manager {
 							zorder: 0,
 						},{
 							id: 'menhir1',
-							zorder: 1,
+							zorder: 2,
 						}],
 					}],
 				}
