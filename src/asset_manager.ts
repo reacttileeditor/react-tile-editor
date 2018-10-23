@@ -86,9 +86,11 @@ export interface Point2D {
 	y: number
 }
 
-
-
-
+let null_tile_comparator: TileComparatorSample =	[
+														['',''],
+														['','',''],
+														['','']
+													];
 
 class Asset_Manager {
 	consts: {
@@ -298,6 +300,14 @@ class Asset_Manager {
 													[/.*/, /water/, /.*/],
 														[/.*/, /.*/, /.*/]
 											]
+						},{
+							id: 'water-edge-ne1',
+							zorder: 1,
+							restrictions:	[
+												[/(dirt|grass|menhir)/, /.*/],
+													[/.*/, /water/, /.*/],
+														[/.*/, /.*/, /.*/]
+											]
 						}],
 					}],
 				},{
@@ -464,11 +474,11 @@ class Asset_Manager {
 		let zorders = this.yield_zorder_list_for_tile(tile_name); 
 	
 		zorders.map( (value,index) => {
-			this.draw_image_for_tile_type_at_zorder(tile_name, ctx, value, should_use_tile_offset);
+			this.draw_image_for_tile_type_at_zorder(tile_name, ctx, value, should_use_tile_offset, null_tile_comparator);
 		});
 	}
 	
-	draw_image_for_tile_type_at_zorder = (tile_name, ctx, zorder, should_use_tile_offset) => {
+	draw_image_for_tile_type_at_zorder = (tile_name: string, ctx, zorder: number, should_use_tile_offset: boolean, comparator: TileComparatorSample) => {
 		let asset_name = this.get_asset_name_for_tile_at_zorder(tile_name, zorder);
 		let asset_data = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
 
@@ -477,11 +487,11 @@ class Asset_Manager {
 		if(asset_data){
 			if(  this.isGraphicAutotiled(asset_data) ){
 				//this is where 
-				// allow_drawing = this.should_we_draw_this_tile_based_on_its_autotiling_restrictions();
+				allow_drawing = this.should_we_draw_this_tile_based_on_its_autotiling_restrictions(comparator, asset_data.restrictions);
 			} 
 		}
 
-		if( asset_name ){
+		if( asset_name && allow_drawing ){
 			this.draw_image_for_asset_name(
 				asset_name,
 				ctx,
@@ -538,7 +548,14 @@ class Asset_Manager {
 			Th
 		*/
 		
-		return autotile_restrictions[0][0].test( tile_data[0][0] );
+		return	autotile_restrictions[0][0].test( tile_data[0][0] ) &&
+				autotile_restrictions[0][1].test( tile_data[0][1] ) &&
+				autotile_restrictions[1][0].test( tile_data[1][0] ) &&	
+				autotile_restrictions[1][1].test( tile_data[1][1] ) &&	
+				autotile_restrictions[1][2].test( tile_data[1][2] ) &&	
+				autotile_restrictions[2][0].test( tile_data[2][0] ) &&	
+				autotile_restrictions[1][1].test( tile_data[1][1] )	
+		;
 	}
 
 	

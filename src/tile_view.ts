@@ -113,9 +113,10 @@ class Tile_View {
 			row_value.map( (col_value, col_index) => {
 
 				let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
+				let pos = {x: col_index, y: row_index};
 					
 				this.draw_tile_at_coords(
-											{x: col_index, y: row_index},
+											pos,
 											tile_name,
 											zorder
 										);
@@ -124,7 +125,7 @@ class Tile_View {
 	}
 
 	
-	draw_tile_at_coords = ( pos: Point2D, tile_name, zorder) => {
+	draw_tile_at_coords = ( pos: Point2D, tile_name: string, zorder: number) => {
 		let { consts } = this._AM;
 		this.ctx.save();
 
@@ -135,7 +136,13 @@ class Tile_View {
 									(pos.y + 0) * consts.tile_height
 								);
 								
-			this._AM.draw_image_for_tile_type_at_zorder( tile_name, this.ctx, zorder, true );
+			this._AM.draw_image_for_tile_type_at_zorder	(
+															tile_name,
+															this.ctx,
+															zorder,
+															true,
+															this.get_tile_comparator_sample_for_pos(pos)
+														);
 
 		this.ctx.restore();	
 	}
