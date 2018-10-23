@@ -114,21 +114,25 @@ class Tile_View {
 
 				let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
 					
-				this.draw_tile_at_coords(col_index, row_index, tile_name, zorder);
+				this.draw_tile_at_coords(
+											{x: col_index, y: row_index},
+											tile_name,
+											zorder
+										);
 			});
 		});
 	}
 
 	
-	draw_tile_at_coords = ( x_pos, y_pos, tile_name, zorder) => {
+	draw_tile_at_coords = ( pos: Point2D, tile_name, zorder) => {
 		let { consts } = this._AM;
 		this.ctx.save();
 
-			let universal_hex_offset = y_pos % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
+			let universal_hex_offset = pos.y % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 
 			this.ctx.translate	(
-									(x_pos + 0) * consts.tile_width + universal_hex_offset,
-									(y_pos + 0) * consts.tile_height
+									(pos.x + 0) * consts.tile_width + universal_hex_offset,
+									(pos.y + 0) * consts.tile_height
 								);
 								
 			this._AM.draw_image_for_tile_type_at_zorder( tile_name, this.ctx, zorder, true );
@@ -137,7 +141,7 @@ class Tile_View {
 	}
 	
 	draw_cursor = () => {
-		this.draw_tile_at_coords( this.state.cursor_pos.x, this.state.cursor_pos.y, 'cursor', 0);
+		this.draw_tile_at_coords( this.state.cursor_pos, 'cursor', 0);
 	}
 	
 
