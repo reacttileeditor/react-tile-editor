@@ -71,6 +71,9 @@ interface GraphicItemAutotiled {
 	restrictions: AutoTileRestrictionSample,
 };
 
+type GraphicItemGeneric = GraphicItemAutotiled|GraphicItem;
+
+
 
 interface TileComparatorRow extends Array<string> { 0: string; 1: string; }
 interface TileComparatorRowCenter extends Array<string> { 0: string; 1: string; 2: string; }
@@ -298,7 +301,7 @@ class Asset_Manager {
 							restrictions:	[
 												[/.*/, /(dirt|grass|menhir)/],
 													[/.*/, /water/, /.*/],
-														[/.*/, /.*/, /.*/]
+														[/.*/, /.*/]
 											]
 						},{
 							id: 'water-edge-ne1',
@@ -306,7 +309,39 @@ class Asset_Manager {
 							restrictions:	[
 												[/(dirt|grass|menhir)/, /.*/],
 													[/.*/, /water/, /.*/],
-														[/.*/, /.*/, /.*/]
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'water-edge-e1',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/(dirt|grass|menhir)/, /water/, /.*/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'water-edge-w1',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/.*/, /water/, /(dirt|grass|menhir)/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'water-edge-sw1',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/.*/, /water/, /.*/],
+														[/.*/, /(dirt|grass|menhir)/]
+											]
+						},{
+							id: 'water-edge-se1',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/.*/, /water/, /.*/],
+														[ /(dirt|grass|menhir)/, /.*/]
 											]
 						}],
 					}],
@@ -415,33 +450,34 @@ class Asset_Manager {
 
 
 /*----------------------- draw ops -----------------------*/
-	get_asset_name_for_tile_at_zorder = (tile_name, zorder) => {
+	get_asset_name_for_tile_at_zorder = (tile_name, zorder):string|undefined => {
 		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
 		
 		let tile_data = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
 
-		if(tile_data) {
-			return tile_data.id;
+		if(tile_data && tile_data[0]) {
+			return tile_data[0].id;
 		} else {
 			return undefined;
 		}
 	}
 
-	get_asset_data_for_tile_at_zorder = (tile_name, zorder) => {
+	get_asset_data_for_tile_at_zorder = (tile_name, zorder):Array<GraphicItemGeneric> => {
 		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
 		
 		
 		if(tile_name == 'cursor'){
-			return {
-				id: 'cursor'
-			};
+			return [{
+				id: 'cursor',
+				zorder: 0
+			}];
 		}
 
 		let tile_variants = _.find( tile_types, (value, index) => {
 								return value.name == tile_name;
 							}).variants;
 
-		let tile_data = _.find(
+		let tile_data = _.filter(
 			tile_variants[this._tile_dice( tile_variants.length ) -1].graphics,
 			(value, index) => {return value.zorder == zorder}
 		);
@@ -479,25 +515,26 @@ class Asset_Manager {
 	}
 	
 	draw_image_for_tile_type_at_zorder = (tile_name: string, ctx, zorder: number, should_use_tile_offset: boolean, comparator: TileComparatorSample) => {
-		let asset_name = this.get_asset_name_for_tile_at_zorder(tile_name, zorder);
-		let asset_data = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
+//		let asset_name = this.get_asset_name_for_tile_at_zorder(tile_name, zorder);
+		let asset_data_array = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
 
 		var allow_drawing = true;
 		
-		if(asset_data){
-			if(  this.isGraphicAutotiled(asset_data) ){
+		asset_data_array.map( (value, index) => {
+		
+			if(  this.isGraphicAutotiled(value) ){
 				//this is where 
-				allow_drawing = this.should_we_draw_this_tile_based_on_its_autotiling_restrictions(comparator, asset_data.restrictions);
+				allow_drawing = this.should_we_draw_this_tile_based_on_its_autotiling_restrictions(comparator, value.restrictions);
 			} 
-		}
 
-		if( asset_name && allow_drawing ){
-			this.draw_image_for_asset_name(
-				asset_name,
-				ctx,
-				should_use_tile_offset
-			);
-		}
+			if( value.id && allow_drawing ){
+				this.draw_image_for_asset_name(
+					value.id,
+					ctx,
+					should_use_tile_offset
+				);
+			}
+		});
 	}
 	
 	draw_image_for_asset_name = (asset_name, ctx, should_use_tile_offset) => {
@@ -554,7 +591,7 @@ class Asset_Manager {
 				autotile_restrictions[1][1].test( tile_data[1][1] ) &&	
 				autotile_restrictions[1][2].test( tile_data[1][2] ) &&	
 				autotile_restrictions[2][0].test( tile_data[2][0] ) &&	
-				autotile_restrictions[1][1].test( tile_data[1][1] )	
+				autotile_restrictions[2][1].test( tile_data[2][1] )	
 		;
 	}
 
