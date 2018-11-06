@@ -53,7 +53,7 @@ class Canvas_View extends React.Component <Props, State> {
 /*----------------------- core drawing routines -----------------------*/
 	start_render_loop = () => {
 		if( !this.render_loop_interval ){
-			this.render_loop_interval = window.setInterval( this.render_canvas, 25 );
+			this.render_loop_interval = window.setInterval( this.render_canvas, 16.666 );
 		}
 	}
 

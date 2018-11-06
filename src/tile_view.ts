@@ -14,10 +14,17 @@ interface tileViewState {
 	cursor_pos: Point2D,
 }
 
+interface fpsTrackerData {
+	current_second: number,
+	current_frame_count: number,
+	prior_frame_count: number,
+}
+
 class Tile_View {
 	ctx: CanvasRenderingContext2D;
 	state: tileViewState;
 	_AM: Asset_Manager;
+	fps_tracker: fpsTrackerData;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( ctx: CanvasRenderingContext2D, _Asset_Manager: Asset_Manager ) {
@@ -30,7 +37,11 @@ class Tile_View {
 		};
 		
 		this._AM = _Asset_Manager;
-
+		this.fps_tracker = {
+			current_second: 0,
+			current_frame_count: 0,
+			prior_frame_count: 0,
+		};
 	}
 
 	initialize_tiles = () => {
@@ -83,6 +94,37 @@ class Tile_View {
 		this.ctx.fillRect(0,0, this.ctx.canvas.width, this.ctx.canvas.height);
 		this.ctx.restore();
 	}
+
+	draw_fps = () => {
+		var date = new Date();
+		
+		this.fps_tracker.current_frame_count += 1;
+		
+		if( this.fps_tracker.current_second < date.getSeconds() || (this.fps_tracker.current_second == 59 && date.getSeconds() == 0) ){
+			this.fps_tracker.prior_frame_count = this.fps_tracker.current_frame_count;
+			this.fps_tracker.current_frame_count = 0;
+			this.fps_tracker.current_second = date.getSeconds();
+		} else {
+			
+		}
+		
+		this.draw_fps_text(this.fps_tracker.prior_frame_count);
+
+	}
+
+	draw_fps_text = (value) => {
+		this.ctx.save();
+		this.ctx.font = '12px Helvetica, sans-serif';
+		this.ctx.textAlign = 'center';
+		this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+	    this.ctx.shadowOffsetY = 2;
+	    this.ctx.shadowBlur = 3;
+	    this.ctx.fillStyle = "#ffffff";
+		this.ctx.textBaseline = 'middle';
+		this.ctx.fillText(value.toString(), (this.ctx.canvas.width - 10), 10);
+		this.ctx.restore();
+	}
+
 
 	draw_headline_text = () => {
 		this.ctx.save();
@@ -211,6 +253,7 @@ class Tile_View {
 			this.draw_headline_text();
 			this.draw_tiles();
 			this.draw_cursor();
+			this.draw_fps();
 		} else {
 			this.initialize_tiles();
 		}

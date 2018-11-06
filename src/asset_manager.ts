@@ -118,8 +118,8 @@ class Asset_Manager {
 		this.consts = {
 			tile_width: 38, //38
 			tile_height: 15, //21
-			row_length: 8,
-			col_height: 6,
+			row_length: 14,
+			col_height: 20,
 		}
 
 		this.static_vals = {
