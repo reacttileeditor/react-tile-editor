@@ -42,6 +42,7 @@ interface AssetsMetaSpritesheetItem {
 		h: number,
 	},
 	bounds: Rectangle,
+	frames: number,
 }
 
 interface AssetsMetaSingleImageItem {
@@ -247,6 +248,16 @@ class Asset_Manager {
 					w: 54,
 					h: 34,
 				},
+			},{
+				url: "animation_test.png",
+				name: "animation_test",
+				bounds: {
+					x: 0,
+					y: 0,
+					w: 28,
+					h: 21,
+				},
+				frames: 4,
 			}],
 			assets: {},
 			assets_meta: {},
