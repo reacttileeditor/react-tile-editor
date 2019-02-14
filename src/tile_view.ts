@@ -16,6 +16,7 @@ interface tileViewState {
 
 interface fpsTrackerData {
 	current_second: number,
+	current_millisecond: number,
 	current_frame_count: number,
 	prior_frame_count: number,
 }
@@ -39,6 +40,7 @@ class Tile_View {
 		this._AM = _Asset_Manager;
 		this.fps_tracker = {
 			current_second: 0,
+			current_millisecond: 0,
 			current_frame_count: 0,
 			prior_frame_count: 0,
 		};
@@ -107,6 +109,8 @@ class Tile_View {
 		} else {
 			
 		}
+		
+		this.fps_tracker.current_millisecond = date.getTime();
 		
 		this.draw_fps_text(this.fps_tracker.prior_frame_count);
 
@@ -183,7 +187,8 @@ class Tile_View {
 															this.ctx,
 															zorder,
 															true,
-															this.get_tile_comparator_sample_for_pos(pos)
+															this.get_tile_comparator_sample_for_pos(pos),
+															this.fps_tracker.current_millisecond
 														);
 
 		this.ctx.restore();	

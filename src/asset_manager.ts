@@ -14,26 +14,27 @@ interface Rectangle {
 };
 
 
-interface AssetItem {
+interface ImageData {
 	url: string,
 	not_a_tile?: boolean, 
 	name: string,
 	bounds?: Rectangle,
+	frames?: number,
 };
 
 interface StaticValues {
-	asset_list: Array<AssetItem>,
-	assets: AssetsDict,
+	image_data_list: Array<ImageData>,
+	raw_image_list: ImageDict,
 	assets_meta: AssetsMetaDict,
 	tile_types: Array<TileItem>,
 };
 
-interface AssetsDict {
+interface ImageDict {
 	[index: string]: HTMLImageElement
 }
 
 interface AssetsMetaDict {
-	[index: string]: AssetsMetaSpritesheetItem|AssetsMetaSingleImageItem,
+	[index: string]: AssetsMetaSpritesheetItem|AssetsMetaSingleImageData,
 }
 
 interface AssetsMetaSpritesheetItem {
@@ -42,10 +43,9 @@ interface AssetsMetaSpritesheetItem {
 		h: number,
 	},
 	bounds: Rectangle,
-	frames: number,
 }
 
-interface AssetsMetaSingleImageItem {
+interface AssetsMetaSingleImageData {
 	dim: {
 		w: number,
 		h: number,
@@ -124,7 +124,7 @@ class Asset_Manager {
 		}
 
 		this.static_vals = {
-			asset_list: [{
+			image_data_list: [{
 				url: "map-cursor.png",
 				name: "cursor",
 				not_a_tile: true,
@@ -254,12 +254,12 @@ class Asset_Manager {
 				bounds: {
 					x: 0,
 					y: 0,
-					w: 28,
+					w: 38,
 					h: 21,
 				},
 				frames: 4,
 			}],
-			assets: {},
+			raw_image_list: {},
 			assets_meta: {},
 			
 			tile_types: [
@@ -367,6 +367,14 @@ class Asset_Manager {
 							zorder: 2,
 						}],
 					}],
+				},{
+					name: "anim_test",
+					variants: [{
+						graphics: [{
+							id: 'animation_test',
+							zorder: 0,
+						}]
+					}],
 				}
 			]
 		};
@@ -375,7 +383,7 @@ class Asset_Manager {
 	}
 
 	//https://www.typescriptlang.org/docs/handbook/advanced-types.html#user-defined-type-guards
-	isAssetSpritesheet( asset: AssetsMetaSpritesheetItem | AssetsMetaSingleImageItem ): asset is AssetsMetaSpritesheetItem {
+	isAssetSpritesheet( asset: AssetsMetaSpritesheetItem | AssetsMetaSingleImageData ): asset is AssetsMetaSpritesheetItem {
 		return (<AssetsMetaSpritesheetItem>asset).bounds !== undefined;
 	}
 
@@ -386,7 +394,7 @@ class Asset_Manager {
 
 	yield_asset_name_list = () => {
 		return _.filter(
-			this.static_vals.asset_list,
+			this.static_vals.image_data_list,
 			(value, index) => {
 				return value.not_a_tile !== true;
 			}
@@ -422,7 +430,7 @@ class Asset_Manager {
 
 
 	launch_app = ( do_once_app_ready ) => {
-		this.static_vals.asset_list.map( ( value, index ) => {
+		this.static_vals.image_data_list.map( ( value, index ) => {
 
 			var temp_image = new Image();
 			var temp_url = PATH_PREFIX + value.url;
@@ -430,7 +438,7 @@ class Asset_Manager {
 			temp_image.src = temp_url;
 
 			temp_image.onload = () => {
-				this.static_vals.assets[ value.name ] = temp_image;
+				this.static_vals.raw_image_list[ value.name ] = temp_image;
 				
 				this.static_vals.assets_meta[ value.name ] = {
 					dim: {
@@ -451,7 +459,7 @@ class Asset_Manager {
 			Because we carefully wait to populate the values of `loadedAssets` until we're actually **in** the callback, we can just do a size comparison to determine if all of the loaded images are there.
 		*/
 
-		if( _.size( this.static_vals.asset_list ) == _.size( this.static_vals.assets ) ) {
+		if( _.size( this.static_vals.image_data_list ) == _.size( this.static_vals.raw_image_list ) ) {
 			console.log( this.static_vals.assets_meta );
 
 			do_once_app_ready();
@@ -462,7 +470,7 @@ class Asset_Manager {
 
 /*----------------------- draw ops -----------------------*/
 	get_asset_name_for_tile_at_zorder = (tile_name, zorder):string|undefined => {
-		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
+		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		let tile_data = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
 
@@ -474,7 +482,7 @@ class Asset_Manager {
 	}
 
 	get_asset_data_for_tile_at_zorder = (tile_name, zorder):Array<GraphicItemGeneric> => {
-		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
+		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		
 		if(tile_name == 'cursor'){
@@ -498,7 +506,7 @@ class Asset_Manager {
 
 
 	yield_zorder_list_for_tile = (tile_name) => {
-		let { assets, asset_list, assets_meta, tile_types } = this.static_vals;
+		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		let _array = tile_name == 'cursor'
 			?
@@ -521,12 +529,18 @@ class Asset_Manager {
 		let zorders = this.yield_zorder_list_for_tile(tile_name); 
 	
 		zorders.map( (value,index) => {
-			this.draw_image_for_tile_type_at_zorder(tile_name, ctx, value, should_use_tile_offset, null_tile_comparator);
+			this.draw_image_for_tile_type_at_zorder(tile_name, ctx, value, should_use_tile_offset, null_tile_comparator, 0);
 		});
 	}
 	
-	draw_image_for_tile_type_at_zorder = (tile_name: string, ctx, zorder: number, should_use_tile_offset: boolean, comparator: TileComparatorSample) => {
-//		let asset_name = this.get_asset_name_for_tile_at_zorder(tile_name, zorder);
+	draw_image_for_tile_type_at_zorder = (
+			tile_name: string,
+			ctx,
+			zorder: number,
+			should_use_tile_offset: boolean,
+			comparator: TileComparatorSample,
+			current_milliseconds: number
+		) => {
 		let asset_data_array = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
 
 		var allow_drawing = true;
@@ -542,16 +556,26 @@ class Asset_Manager {
 				this.draw_image_for_asset_name(
 					value.id,
 					ctx,
-					should_use_tile_offset
+					should_use_tile_offset,
+					current_milliseconds,
 				);
 			}
 		});
 	}
 	
-	draw_image_for_asset_name = (asset_name, ctx, should_use_tile_offset) => {
-		let { assets, asset_list, assets_meta } = this.static_vals;
-		let asset = assets[ asset_name ]!;
+	draw_image_for_asset_name = (
+		asset_name: string,
+		ctx,
+		should_use_tile_offset: boolean,
+		current_milliseconds: number
+	) => {
+		let { raw_image_list, image_data_list, assets_meta } = this.static_vals;
+
+		let image = raw_image_list[ asset_name ]!;
 		let metadata = assets_meta[ asset_name ]!;
+		let image_data = _.find(image_data_list, {name: asset_name});
+		let frame_count = image_data.frames ? image_data.frames : 1;
+			
 		
 		/*
 			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
@@ -560,20 +584,20 @@ class Asset_Manager {
 		*/
 	
 		let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
-		
+		let current_frame_num = Math.floor(current_milliseconds / 100) % frame_count;
 		
 		if( !this.isAssetSpritesheet(metadata) ){
 			ctx.drawImage	(
-									asset,
+									image,
 									-(dim.w/2) + (should_use_tile_offset ? this.consts.tile_width/2 : 0),
 									-(dim.h/2) + (should_use_tile_offset ? this.consts.tile_height/2 : 0),
 								);
 		} else {
 			ctx.drawImage	(
-				/* file */			asset,
+				/* file */			image,
 
 									
-				/* src xy */		metadata.bounds.x,
+				/* src xy */		metadata.bounds.x + (current_frame_num * metadata.bounds.w),
 									metadata.bounds.y,
 				/* src wh */		metadata.bounds.w,
 									metadata.bounds.h,
