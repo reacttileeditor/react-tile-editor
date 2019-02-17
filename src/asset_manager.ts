@@ -20,6 +20,7 @@ interface ImageData {
 	name: string,
 	bounds?: Rectangle,
 	frames?: number,
+	frame_duration?: number,
 };
 
 interface StaticValues {
@@ -258,6 +259,7 @@ class Asset_Manager {
 					h: 21,
 				},
 				frames: 4,
+				frame_duration: 200,
 			}],
 			raw_image_list: {},
 			assets_meta: {},
@@ -575,6 +577,7 @@ class Asset_Manager {
 		let metadata = assets_meta[ asset_name ]!;
 		let image_data = _.find(image_data_list, {name: asset_name});
 		let frame_count = image_data.frames ? image_data.frames : 1;
+		let frame_duration = image_data.frame_duration ? image_data.frame_duration : 20;
 			
 		
 		/*
@@ -584,7 +587,7 @@ class Asset_Manager {
 		*/
 	
 		let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
-		let current_frame_num = Math.floor(current_milliseconds / 100) % frame_count;
+		let current_frame_num = Math.floor(current_milliseconds / frame_duration) % frame_count;
 		
 		if( !this.isAssetSpritesheet(metadata) ){
 			ctx.drawImage	(
