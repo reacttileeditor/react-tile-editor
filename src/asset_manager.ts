@@ -21,6 +21,7 @@ interface ImageData {
 	bounds?: Rectangle,
 	frames?: number,
 	frame_duration?: number,
+	ping_pong?: boolean
 };
 
 interface StaticValues {
@@ -260,6 +261,7 @@ class Asset_Manager {
 				},
 				frames: 4,
 				frame_duration: 200,
+				ping_pong: true
 			}],
 			raw_image_list: {},
 			assets_meta: {},
@@ -564,6 +566,36 @@ class Asset_Manager {
 			}
 		});
 	}
+
+	calculate_pingpong_frame_num = (absolute_frame_num, count) => {
+		/*
+			This is a bit ugly, so here's the lowdown:
+			
+			We're basically looking to take say, 6 frames, and actually turn them into a 12-frame-long animation.
+			
+			We want input values like:
+			0	1	2	3	4	5	6	7	8	9	10	11	12
+			to become
+			0	1	2	3	4	5	6	5	4	3	2	1	0
+			
+			The first thing we do is remainder our current frames into a number from 0 -> 11.
+		*/
+
+		var rem_current_frame = absolute_frame_num % (count * 2);
+		/*
+			The next thing we do is a funky bit of math that successfully turns:
+			0	1	2	3	4	5	6	7	8	9	10	11	12
+			into
+			0	1	2	3	4	5	0	5	4	3	2	1	0
+		*/
+	
+		return (count - Math.abs(count-rem_current_frame)) % count
+		+
+		/*
+			which is great, except we want a 6 in the middle, which is where the following awkward chunk of math comes in:
+		*/
+		((rem_current_frame % count) == 0 ? count * ((rem_current_frame/count)%2) : 0) ;
+	}
 	
 	draw_image_for_asset_name = (
 		asset_name: string,
@@ -576,18 +608,33 @@ class Asset_Manager {
 		let image = raw_image_list[ asset_name ]!;
 		let metadata = assets_meta[ asset_name ]!;
 		let image_data = _.find(image_data_list, {name: asset_name});
+		let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
+
 		let frame_count = image_data.frames ? image_data.frames : 1;
 		let frame_duration = image_data.frame_duration ? image_data.frame_duration : 20;
+
+		/*
+			And this is where we get into the business of calculating the current frame.
+			We start by doing a pretty simple absolute division operation; check our current millisec timer, and see what that would be in frames.
+			This is the number we feed into our various formulas.
+		*/
+		let absolute_frame_num = Math.floor(current_milliseconds / frame_duration);
+		let current_frame_num;
 			
-		
+		/*
+			For relatively simple setups, like a straightforward 1,2,3 frame ordering, it's a piece of cake:
+		*/
+		if( !image_data.ping_pong ){
+			current_frame_num = absolute_frame_num % frame_count;
+		} else {
+			current_frame_num = this.calculate_pingpong_frame_num( absolute_frame_num, frame_count );	
+		}
+
 		/*
 			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
 			
 			This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
 		*/
-	
-		let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
-		let current_frame_num = Math.floor(current_milliseconds / frame_duration) % frame_count;
 		
 		if( !this.isAssetSpritesheet(metadata) ){
 			ctx.drawImage	(
