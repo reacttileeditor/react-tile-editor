@@ -574,27 +574,31 @@ class Asset_Manager {
 			We're basically looking to take say, 6 frames, and actually turn them into a 12-frame-long animation.
 			
 			We want input values like:
-			0	1	2	3	4	5	6	7	8	9	10	11	12
+			0	1	2	3	4	5	6	7	8	9	10
 			to become
-			0	1	2	3	4	5	6	5	4	3	2	1	0
-			
-			The first thing we do is remainder our current frames into a number from 0 -> 11.
+			0	1	2	3	4	5	4	3	2	1	0
+
+			The very first thing we do is use "frame count minus 1", since we want 0->5, not 0->6
+		*/
+			let _count = count - 1;
+		/*
+			The first thing we do is remainder our current frames into a number from 0 -> 10.
 		*/
 
-		var rem_current_frame = absolute_frame_num % (count * 2);
+		var rem_current_frame = absolute_frame_num % (_count * 2);
 		/*
 			The next thing we do is a funky bit of math that successfully turns:
-			0	1	2	3	4	5	6	7	8	9	10	11	12
+			0	1	2	3	4	5	6	7	8	9	10
 			into
-			0	1	2	3	4	5	0	5	4	3	2	1	0
+			0	1	2	3	4	0	4	3	2	1	0
 		*/
 	
-		return (count - Math.abs(count-rem_current_frame)) % count
+		return (_count - Math.abs(_count-rem_current_frame)) % _count
 		+
 		/*
 			which is great, except we want a 6 in the middle, which is where the following awkward chunk of math comes in:
 		*/
-		((rem_current_frame % count) == 0 ? count * ((rem_current_frame/count)%2) : 0) ;
+		((rem_current_frame % _count) == 0 ? _count * ((rem_current_frame/_count)%2) : 0) ;
 	}
 	
 	draw_image_for_asset_name = (
