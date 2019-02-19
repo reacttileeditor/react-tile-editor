@@ -21,7 +21,8 @@ interface ImageData {
 	bounds?: Rectangle,
 	frames?: number,
 	frame_duration?: number,
-	ping_pong?: boolean
+	ping_pong?: boolean,
+	pad?: number,
 };
 
 interface StaticValues {
@@ -205,6 +206,10 @@ class Asset_Manager {
 					w: 54,
 					h: 34,
 				},
+				frames: 4,
+				frame_duration: 200,
+				ping_pong: true,
+				pad: 2,
 			},{
 				url: "water-tiles.png",
 				name: "water-edge-w1",
@@ -214,6 +219,10 @@ class Asset_Manager {
 					w: 54,
 					h: 34,
 				},
+				frames: 4,
+				frame_duration: 200,
+				ping_pong: true,
+				pad: 2,
 			},{
 				url: "water-tiles.png",
 				name: "water-edge-sw1",
@@ -241,6 +250,10 @@ class Asset_Manager {
 					w: 54,
 					h: 34,
 				},
+				frames: 4,
+				frame_duration: 200,
+				ping_pong: true,
+				pad: 2,
 			},{
 				url: "water-tiles.png",
 				name: "water-edge-ne1",
@@ -250,6 +263,10 @@ class Asset_Manager {
 					w: 54,
 					h: 34,
 				},
+				frames: 4,
+				frame_duration: 200,
+				ping_pong: true,
+				pad: 2,
 			},{
 				url: "animation_test.png",
 				name: "animation_test",
@@ -272,22 +289,22 @@ class Asset_Manager {
 					variants: [{
 							graphics: [{
 								id: 'grass1',
-								zorder: 0,
+								zorder: 3,
 							}],
 						},{
 							graphics: [{
 								id: 'grass2',
-								zorder: 0,
+								zorder: 3,
 							}],
 						},{
 							graphics: [{
 								id: 'grass3',
-								zorder: 0,
+								zorder: 3,
 							}],
 						},{
 							graphics: [{
 								id: 'grass4',
-								zorder: 0,
+								zorder: 3,
 							}],
 						}
 					],
@@ -296,12 +313,12 @@ class Asset_Manager {
 					variants: [{
 						graphics: [{
 							id: 'dirt1',
-							zorder: 0,
+							zorder: 3,
 						}],
 					},{
 						graphics: [{
 							id: 'dirt2',
-							zorder: 0,
+							zorder: 3,
 						}],
 					}],
 				},{
@@ -365,13 +382,15 @@ class Asset_Manager {
 					variants: [{
 						graphics: [{
 							id: 'dirt1',
-							zorder: 0,
+							zorder: 3,
 						},{
 							id: 'menhir1',
-							zorder: 2,
+							zorder: 4,
 						}],
 					}],
-				},{
+				}
+				
+				/*,{
 					name: "anim_test",
 					variants: [{
 						graphics: [{
@@ -379,7 +398,7 @@ class Asset_Manager {
 							zorder: 0,
 						}]
 					}],
-				}
+				}*/
 			]
 		};
 		
@@ -616,6 +635,7 @@ class Asset_Manager {
 
 		let frame_count = image_data.frames ? image_data.frames : 1;
 		let frame_duration = image_data.frame_duration ? image_data.frame_duration : 20;
+		let frame_padding = image_data.pad ? image_data.pad : 0;
 
 		/*
 			And this is where we get into the business of calculating the current frame.
@@ -651,7 +671,7 @@ class Asset_Manager {
 				/* file */			image,
 
 									
-				/* src xy */		metadata.bounds.x + (current_frame_num * metadata.bounds.w),
+				/* src xy */		metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
 									metadata.bounds.y,
 				/* src wh */		metadata.bounds.w,
 									metadata.bounds.h,
