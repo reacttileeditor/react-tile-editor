@@ -438,7 +438,8 @@ class Asset_Manager {
 			/*
 				Step through each of the levels of the tile_types list, and spit out just the zorder values.   This leaves us with a nested structure (the same as the original tile data object's structure), and what we really want to do is just boil it down to a straight list, and figure out which ones are unique. 
 			*/
-		return _.uniq(
+		return  _.sortBy(
+				_.uniq(
 				_.flatten(
 				_.flatten(
 					_.map( this.static_vals.tile_types, (value,index)=>{
@@ -448,7 +449,7 @@ class Asset_Manager {
 							});
 						}) 
 					} )
-			)));
+			))));
 	}
 
 
