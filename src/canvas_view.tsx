@@ -154,6 +154,27 @@ class Canvas_View extends React.Component <Props, State> {
 		e.preventDefault ();
 		e.stopPropagation ();
 	}
+	
+	keyPressHandler = (event) => {
+		switch (event.key) {
+			case "Down": // IE/Edge specific value
+			case "ArrowDown":
+				this._Tile_View.adjust_viewport_pos(0,40);
+				break;
+			case "Up": // IE/Edge specific value
+			case "ArrowUp":
+				this._Tile_View.adjust_viewport_pos(0,-40);
+				break;
+			case "Left": // IE/Edge specific value
+			case "ArrowLeft":
+				this._Tile_View.adjust_viewport_pos(-40,0);
+				break;
+			case "Right": // IE/Edge specific value
+			case "ArrowRight":
+				this._Tile_View.adjust_viewport_pos(40,0);
+				break;
+		}
+	}
 /*----------------------- state manipulation -----------------------*/
 
 /*----------------------- react render -----------------------*/
@@ -167,6 +188,9 @@ class Canvas_View extends React.Component <Props, State> {
 			
 				onMouseDown={ this.mousedownListener }
 				onMouseMove={ this.mousemoveListener }
+				
+				tabIndex={0}
+				onKeyDown={ this.keyPressHandler }
 			/>
 		</div>;
 	}

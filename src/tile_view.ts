@@ -12,6 +12,7 @@ interface tileViewState {
 	tileStatus: [[string]],
 	initialized: boolean,
 	cursor_pos: Point2D,
+	viewport_offset: Point2D,
 }
 
 interface fpsTrackerData {
@@ -35,6 +36,7 @@ class Tile_View {
 			tileStatus: [['']],
 			initialized: false,
 			cursor_pos: {x:0, y:0},
+			viewport_offset: {x: 200, y: 0},
 		};
 		
 		this._AM = _Asset_Manager;
@@ -88,6 +90,13 @@ class Tile_View {
 		this.state.cursor_pos = coords;
 	}
 
+
+	adjust_viewport_pos = (x, y) => {
+		this.state.viewport_offset = {
+			x: this.state.viewport_offset.x + x,
+			y: this.state.viewport_offset.y + y
+		};
+	}
 
 /*----------------------- draw ops -----------------------*/
 	fill_canvas_with_solid_color = () => {
@@ -178,8 +187,8 @@ class Tile_View {
 			let universal_hex_offset = pos.y % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 
 			this.ctx.translate	(
-									(pos.x + 0) * consts.tile_width + universal_hex_offset,
-									(pos.y + 0) * consts.tile_height
+									(pos.x + 0) * consts.tile_width + universal_hex_offset + this.state.viewport_offset.x,
+									(pos.y + 0) * consts.tile_height + this.state.viewport_offset.y
 								);
 								
 			this._AM.draw_image_for_tile_type_at_zorder	(
