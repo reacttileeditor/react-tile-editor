@@ -40,6 +40,7 @@ class Canvas_View extends React.Component <Props, State> {
 	componentDidMount() {
 		this.ctx = this.canvas!.getContext("2d")!;
 		this._Tile_View = new Tile_View(this.ctx, this.props.asset_manager);
+		document.addEventListener('keydown', this.keyPressHandler);
 	}
 
 
@@ -189,8 +190,6 @@ class Canvas_View extends React.Component <Props, State> {
 				onMouseDown={ this.mousedownListener }
 				onMouseMove={ this.mousemoveListener }
 				
-				tabIndex={0}
-				onKeyDown={ this.keyPressHandler }
 			/>
 		</div>;
 	}
