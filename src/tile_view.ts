@@ -279,8 +279,8 @@ class Tile_View {
 		let universal_hex_offset = y_pos % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 	
 		let tile_coords = {
-			x: Math.floor( x_pos / consts.tile_width ),
-			y: Math.floor( y_pos / consts.tile_height ),
+			x: Math.floor( (x_pos - this.state.viewport_offset.x) / consts.tile_width ),
+			y: Math.floor( (y_pos - this.state.viewport_offset.y) / consts.tile_height ),
 		};
 		
 		//now we do the odd-row offset for the hex tiles
