@@ -6,7 +6,7 @@ import Canvas_View from "./Canvas_View";
 import Asset_Manager from "./Asset_Manager";
 import Tile_Palette_Element from "./Tile_Palette_Element";
 
-import "./Editor_View.scss";
+import "./Primary_View.scss";
 
 interface Props {
 }
@@ -17,7 +17,7 @@ interface State {
 }
 
 
-class Editor_View extends React.Component <Props, State> {
+export class Primary_View extends React.Component <Props, State> {
 /*----------------------- initialization and asset loading -----------------------*/
 	_Asset_Manager: Asset_Manager;
 
@@ -66,5 +66,3 @@ class Editor_View extends React.Component <Props, State> {
 	}
 
 }
-
-export default Editor_View;

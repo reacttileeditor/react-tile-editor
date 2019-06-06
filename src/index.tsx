@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import Editor_View from "./Editor_View"
+import { Primary_View } from "./Primary_View"
 
 const Index = () => {
-  return <Editor_View />;
+  return <Primary_View />;
 };
 
 ReactDOM.render(<Index />, document.getElementById("index"));
