@@ -48,6 +48,10 @@ export class Tilemap_Manager {
 		};
 	}
 
+	reset_context = ( ctx: CanvasRenderingContext2D ) => {
+		this.ctx = ctx;
+	}
+
 	initialize_tiles = () => {
 		let { consts, dice, yield_tile_name_list, static_vals } = this._AM;
 

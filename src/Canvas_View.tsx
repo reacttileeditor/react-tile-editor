@@ -24,7 +24,7 @@ interface State {
 
 export class Canvas_View extends React.Component <Props, State> {
 	ctx: CanvasRenderingContext2D;
-	render_loop_interval: number;
+	render_loop_interval: number|undefined;
 	canvas: HTMLCanvasElement;
 
 /*----------------------- initialization and asset loading -----------------------*/
@@ -34,7 +34,6 @@ export class Canvas_View extends React.Component <Props, State> {
 		this.state = {
 			mousedown_pos: undefined,
 		}
-		
 	}
 
 
@@ -42,6 +41,10 @@ export class Canvas_View extends React.Component <Props, State> {
 		this.ctx = this.canvas!.getContext("2d")!;
 		this.props.initialize_tilemap_manager(this.ctx);
 		document.addEventListener('keydown', (evt)=>{this.props.handle_canvas_keydown(evt)}  );
+
+		if(this.props.assets_loaded){
+			this.start_render_loop();
+		}
 	}
 
 
@@ -50,7 +53,11 @@ export class Canvas_View extends React.Component <Props, State> {
 			this.start_render_loop();
 		}
 	}
-
+	
+	componentWillUnmount(){
+		window.clearInterval(this.render_loop_interval);
+		this.render_loop_interval = undefined;
+	}
 
 /*----------------------- core drawing routines -----------------------*/
 	start_render_loop = () => {

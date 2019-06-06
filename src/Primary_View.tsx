@@ -41,6 +41,8 @@ export class Primary_View extends React.Component <Props, State> {
 		console.warn('initialize_tilemap_manager')
 		if( !this._Tilemap ){
 			this._Tilemap = new Tilemap_Manager(ctx, this._Asset_Manager);
+		} else {
+			this._Tilemap.reset_context(ctx);
 		}
 	}
 
