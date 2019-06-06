@@ -2,11 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
-import Asset_Manager from "./asset_manager";
+import Asset_Manager from "./Asset_Manager";
 
 var PATH_PREFIX = "/dist/assets/"
 
-import { TileComparatorSample, Point2D } from "./asset_manager";
+import { TileComparatorSample, Point2D } from "./Asset_Manager";
 
 interface tileViewState {
 	tileStatus: [[string]],

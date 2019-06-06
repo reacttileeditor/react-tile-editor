@@ -2,11 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
-import Canvas_View from "./canvas_view";
-import Asset_Manager from "./asset_manager";
-import Tile_Palette_Element from "./tile_palette_element";
+import Canvas_View from "./Canvas_View";
+import Asset_Manager from "./Asset_Manager";
+import Tile_Palette_Element from "./Tile_Palette_Element";
 
-import "./editor_view.scss";
+import "./Editor_View.scss";
 
 interface Props {
 }

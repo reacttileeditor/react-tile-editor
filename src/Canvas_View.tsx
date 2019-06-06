@@ -4,7 +4,7 @@ import _ from "lodash";
 
 var PATH_PREFIX = "/dist/assets/";
 import { Tilemap_Manager } from "./Tilemap_Manager";
-import Asset_Manager from "./asset_manager";
+import Asset_Manager from "./Asset_Manager";
 
 
 interface Props {
