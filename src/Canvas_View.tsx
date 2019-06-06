@@ -10,9 +10,11 @@ import { Tilemap_Manager } from "./Tilemap_Manager";
 interface Props {
 	asset_manager: Asset_Manager,
 	assets_loaded: boolean,
-	selected_tile_type: string,
 	initialize_tilemap_manager: Function,
 	Tilemap: Tilemap_Manager,
+	
+	handle_canvas_click: Function,
+	handle_canvas_keydown: Function,
 }
 
 interface State {
@@ -33,15 +35,13 @@ export class Canvas_View extends React.Component <Props, State> {
 			mousedown_pos: undefined,
 		}
 		
-//		this._Tilemap = null;
-//		this.render_loop_interval = null;
 	}
 
 
 	componentDidMount() {
 		this.ctx = this.canvas!.getContext("2d")!;
 		this.props.initialize_tilemap_manager(this.ctx);
-		document.addEventListener('keydown', this.keyPressHandler);
+		document.addEventListener('keydown', (evt)=>{this.props.handle_canvas_keydown(evt)}  );
 	}
 
 
@@ -87,7 +87,7 @@ export class Canvas_View extends React.Component <Props, State> {
 		var mousePos = this.get_mouse_pos_for_action(e, true);
 	
 		//start_any_operation( opname, mousePos.x, mousePos.y );
-		this.props.Tilemap.handle_mouse_click( mousePos.x, mousePos.y, this.props.selected_tile_type );
+		this.props.handle_canvas_click( mousePos.x, mousePos.y);
 	}
 
 	get_mouse_pos_for_action = ( e, should_constrain ) => {
@@ -156,27 +156,8 @@ export class Canvas_View extends React.Component <Props, State> {
 		e.preventDefault ();
 		e.stopPropagation ();
 	}
-	
-	keyPressHandler = (event) => {
-		switch (event.key) {
-			case "Down": // IE/Edge specific value
-			case "ArrowDown":
-				this.props.Tilemap.adjust_viewport_pos(0,40);
-				break;
-			case "Up": // IE/Edge specific value
-			case "ArrowUp":
-				this.props.Tilemap.adjust_viewport_pos(0,-40);
-				break;
-			case "Left": // IE/Edge specific value
-			case "ArrowLeft":
-				this.props.Tilemap.adjust_viewport_pos(-40,0);
-				break;
-			case "Right": // IE/Edge specific value
-			case "ArrowRight":
-				this.props.Tilemap.adjust_viewport_pos(40,0);
-				break;
-		}
-	}
+
+
 /*----------------------- state manipulation -----------------------*/
 
 /*----------------------- react render -----------------------*/

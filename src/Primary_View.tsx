@@ -39,17 +39,52 @@ export class Primary_View extends React.Component <Props, State> {
 
 	initialize_tilemap_manager = (ctx) => {
 		console.warn('initialize_tilemap_manager')
-		this._Tilemap = new Tilemap_Manager(ctx, this._Asset_Manager);
+		if( !this._Tilemap ){
+			this._Tilemap = new Tilemap_Manager(ctx, this._Asset_Manager);
+		}
+	}
+
+	render() {
+		return (
+		<div>
+			<button onClick={ () => { this.setState({is_edit_mode: !this.state.is_edit_mode}); } }>Toggle</button>
+			<div className="master_node">
+				{
+					this.state.is_edit_mode
+					?
+					<Editor_View
+						assets_loaded={this.state.assets_loaded}
+						asset_manager={this._Asset_Manager}
+						initialize_tilemap_manager={this.initialize_tilemap_manager}
+						Tilemap={this._Tilemap}
+					/>
+					:
+					<Game_View
+						assets_loaded={this.state.assets_loaded}
+						asset_manager={this._Asset_Manager}
+						initialize_tilemap_manager={this.initialize_tilemap_manager}
+						Tilemap={this._Tilemap}
+					/>
+				}
+			</div>
+		</div>
+		);
+	}
+
+}
+
+class Game_View extends React.Component <Editor_View_Props> {
+	constructor( props ) {
+		super( props );
+
 	}
 
 	render() {
 		return <div className="master_node">
-			
-			<Editor_View
-				assets_loaded={this.state.assets_loaded}
-				asset_manager={this._Asset_Manager}
-				initialize_tilemap_manager={this.initialize_tilemap_manager}
-				Tilemap={this._Tilemap}
+			<Canvas_View
+				{...this.props}
+				handle_canvas_click={  ()=>{ console.log('click')} }
+				handle_canvas_keydown={ ()=>{ console.log('keydown')} }
 			/>
 		</div>;
 	}
@@ -76,12 +111,39 @@ class Editor_View extends React.Component <Editor_View_Props, Editor_View_State>
 		};
 	}
 
+	handle_canvas_click = (x: number, y: number) => {
+		this.props.Tilemap.handle_mouse_click( x, y, this.state.selected_tile_type );
+	
+	}
+
+	handle_canvas_keydown = (event) => {
+		switch (event.key) {
+			case "Down": // IE/Edge specific value
+			case "ArrowDown":
+				this.props.Tilemap.adjust_viewport_pos(0,40);
+				break;
+			case "Up": // IE/Edge specific value
+			case "ArrowUp":
+				this.props.Tilemap.adjust_viewport_pos(0,-40);
+				break;
+			case "Left": // IE/Edge specific value
+			case "ArrowLeft":
+				this.props.Tilemap.adjust_viewport_pos(-40,0);
+				break;
+			case "Right": // IE/Edge specific value
+			case "ArrowRight":
+				this.props.Tilemap.adjust_viewport_pos(40,0);
+				break;
+		}
+	}
+
 	render() {
 		return <div className="master_node">
 			
 			<Canvas_View
 				{...this.props}
-				selected_tile_type={this.state.selected_tile_type}
+				handle_canvas_click={this.handle_canvas_click}
+				handle_canvas_keydown={this.handle_canvas_keydown}
 			/>
 			<div className="tile_palette">
 			{
