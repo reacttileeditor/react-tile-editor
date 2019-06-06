@@ -3,14 +3,16 @@ import ReactDOM from "react-dom";
 import _ from "lodash";
 
 var PATH_PREFIX = "/dist/assets/";
+import { Asset_Manager } from "./Asset_Manager";
 import { Tilemap_Manager } from "./Tilemap_Manager";
-import Asset_Manager from "./Asset_Manager";
 
 
 interface Props {
 	asset_manager: Asset_Manager,
 	assets_loaded: boolean,
 	selected_tile_type: string,
+	initialize_tilemap_manager: Function,
+	Tilemap: Tilemap_Manager,
 }
 
 interface State {
@@ -18,10 +20,9 @@ interface State {
 }
 
 
-class Canvas_View extends React.Component <Props, State> {
+export class Canvas_View extends React.Component <Props, State> {
 	ctx: CanvasRenderingContext2D;
 	render_loop_interval: number;
-	_Tilemap: Tilemap_Manager;
 	canvas: HTMLCanvasElement;
 
 /*----------------------- initialization and asset loading -----------------------*/
@@ -39,7 +40,7 @@ class Canvas_View extends React.Component <Props, State> {
 
 	componentDidMount() {
 		this.ctx = this.canvas!.getContext("2d")!;
-		this._Tilemap = new Tilemap_Manager(this.ctx, this.props.asset_manager);
+		this.props.initialize_tilemap_manager(this.ctx);
 		document.addEventListener('keydown', this.keyPressHandler);
 	}
 
@@ -59,7 +60,7 @@ class Canvas_View extends React.Component <Props, State> {
 	}
 
 	render_canvas = () => {
-		this._Tilemap.do_core_render_loop();
+		this.props.Tilemap.do_core_render_loop();
 	}
 	
 
@@ -75,7 +76,7 @@ class Canvas_View extends React.Component <Props, State> {
 
 		//this is where we had the giant switch statement of actions to perform.
 		//console.log("MousePos:", mousePos);
-		this._Tilemap.handle_mouse_move( mousePos.x, mousePos.y );
+		this.props.Tilemap.handle_mouse_move( mousePos.x, mousePos.y );
 	}
 
 	constrain = ( min_limit, value, max_limit ) => {
@@ -86,7 +87,7 @@ class Canvas_View extends React.Component <Props, State> {
 		var mousePos = this.get_mouse_pos_for_action(e, true);
 	
 		//start_any_operation( opname, mousePos.x, mousePos.y );
-		this._Tilemap.handle_mouse_click( mousePos.x, mousePos.y, this.props.selected_tile_type );
+		this.props.Tilemap.handle_mouse_click( mousePos.x, mousePos.y, this.props.selected_tile_type );
 	}
 
 	get_mouse_pos_for_action = ( e, should_constrain ) => {
@@ -139,7 +140,7 @@ class Canvas_View extends React.Component <Props, State> {
 		e.stopPropagation ();
 
 		//annul any in-progress operations here
-		this._Tilemap.annul_current_drag_operation();
+		this.props.Tilemap.annul_current_drag_operation();
 
 		this.setState({mousedown_pos: undefined});
 	}
@@ -160,19 +161,19 @@ class Canvas_View extends React.Component <Props, State> {
 		switch (event.key) {
 			case "Down": // IE/Edge specific value
 			case "ArrowDown":
-				this._Tilemap.adjust_viewport_pos(0,40);
+				this.props.Tilemap.adjust_viewport_pos(0,40);
 				break;
 			case "Up": // IE/Edge specific value
 			case "ArrowUp":
-				this._Tilemap.adjust_viewport_pos(0,-40);
+				this.props.Tilemap.adjust_viewport_pos(0,-40);
 				break;
 			case "Left": // IE/Edge specific value
 			case "ArrowLeft":
-				this._Tilemap.adjust_viewport_pos(-40,0);
+				this.props.Tilemap.adjust_viewport_pos(-40,0);
 				break;
 			case "Right": // IE/Edge specific value
 			case "ArrowRight":
-				this._Tilemap.adjust_viewport_pos(40,0);
+				this.props.Tilemap.adjust_viewport_pos(40,0);
 				break;
 		}
 	}
@@ -194,5 +195,3 @@ class Canvas_View extends React.Component <Props, State> {
 		</div>;
 	}
 }
-
-export default Canvas_View;

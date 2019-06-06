@@ -2,9 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
-import Canvas_View from "./Canvas_View";
-import Asset_Manager from "./Asset_Manager";
-import Tile_Palette_Element from "./Tile_Palette_Element";
+import { Canvas_View } from "./Canvas_View";
+import { Asset_Manager } from "./Asset_Manager";
+import { Tile_Palette_Element } from "./Tile_Palette_Element";
+import { Tilemap_Manager } from "./Tilemap_Manager";
 
 import "./Primary_View.scss";
 
@@ -20,6 +21,7 @@ interface State {
 export class Primary_View extends React.Component <Props, State> {
 /*----------------------- initialization and asset loading -----------------------*/
 	_Asset_Manager: Asset_Manager;
+	_Tilemap: Tilemap_Manager;
 
 	constructor( props ) {
 		super( props );
@@ -30,15 +32,15 @@ export class Primary_View extends React.Component <Props, State> {
 		};
 		
 		this._Asset_Manager = new Asset_Manager();
-	}
-
-
-	componentDidMount() {
 		this._Asset_Manager.launch_app( 
 			() => { this.setState({assets_loaded: true}); }
 		);
 	}
 
+	initialize_tilemap_manager = (ctx) => {
+		console.warn('initialize_tilemap_manager')
+		this._Tilemap = new Tilemap_Manager(ctx, this._Asset_Manager);
+	}
 
 	render() {
 		return <div className="master_node">
@@ -46,6 +48,8 @@ export class Primary_View extends React.Component <Props, State> {
 				assets_loaded={this.state.assets_loaded}
 				asset_manager={this._Asset_Manager}
 				selected_tile_type={this.state.selected_tile_type}
+				initialize_tilemap_manager={this.initialize_tilemap_manager}
+				Tilemap={this._Tilemap}
 			/>
 			<div className="tile_palette">
 			{

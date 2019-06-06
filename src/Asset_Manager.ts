@@ -99,7 +99,7 @@ let null_tile_comparator: TileComparatorSample =	[
 														['','']
 													];
 
-class Asset_Manager {
+export class Asset_Manager {
 	consts: {
 		tile_width: number,
 		tile_height: number,
@@ -719,5 +719,3 @@ class Asset_Manager {
 		return value % 2 == 0;
 	}
 }
-
-export default Asset_Manager;

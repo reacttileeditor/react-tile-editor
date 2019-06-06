@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
-import Asset_Manager from "./Asset_Manager";
+import { Asset_Manager } from "./Asset_Manager";
 
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 }
 
 
-class Tile_Palette_Element extends React.Component <Props> {
+export class Tile_Palette_Element extends React.Component <Props> {
 	ctx: CanvasRenderingContext2D;
 	canvas: HTMLCanvasElement;
 
@@ -89,5 +89,3 @@ class Tile_Palette_Element extends React.Component <Props> {
 		</div>;
 	}
 }
-
-export default Tile_Palette_Element;
