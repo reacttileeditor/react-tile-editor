@@ -6,6 +6,7 @@ import { Canvas_View } from "./Canvas_View";
 import { Asset_Manager } from "./Asset_Manager";
 import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
+import { Game_View } from "./Game_View";
 
 import "./Primary_View.scss";
 
@@ -71,24 +72,6 @@ export class Primary_View extends React.Component <Props, State> {
 			</div>
 		</div>
 		);
-	}
-
-}
-
-class Game_View extends React.Component <Editor_View_Props> {
-	constructor( props ) {
-		super( props );
-
-	}
-
-	render() {
-		return <div className="master_node">
-			<Canvas_View
-				{...this.props}
-				handle_canvas_click={  ()=>{ console.log('click')} }
-				handle_canvas_keydown={ ()=>{ console.log('keydown')} }
-			/>
-		</div>;
 	}
 
 }
