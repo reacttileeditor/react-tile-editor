@@ -13,7 +13,7 @@ import { Point2D, Rectangle } from './interfaces';
 interface DrawEntity {
 	pos: Point2D,
 	z_index: number,
-	drawing_data: DrawData,
+	drawing_data: DrawData|DrawDataNoBounds,
 }
 
 interface DrawData {
@@ -21,6 +21,15 @@ interface DrawData {
 	src_rect: Rectangle,
 	dst_rect: Rectangle
 }
+
+interface DrawDataNoBounds {
+	//images that are just direct references don't need rectangular dimensions to draw
+	//honestly we probably want to remove this, but for now we'll support it to keep the code train rolling.
+	image_name: string,
+	dest_point: Point2D
+}
+
+
 
 interface fpsTrackerData {
 	current_second: number,
@@ -80,21 +89,29 @@ export class Blit_Manager {
 		
 		//then blit it
 		_.map(this._Draw_List, (value,index) => {
-			this.ctx.drawImage	(
-				/* file */			value.drawing_data.image_name,
+			if( this.isDrawDataWithBounds(value.drawing_data) ){
+				this.ctx.drawImage	(
+					/* file */			value.drawing_data.image_name,
 
 									
-				/* src xy */		value.drawing_data.src_rect.x,
-									value.drawing_data.src_rect.y,
-				/* src wh */		value.drawing_data.src_rect.w,
-									value.drawing_data.src_rect.h,
+					/* src xy */		value.drawing_data.src_rect.x,
+										value.drawing_data.src_rect.y,
+					/* src wh */		value.drawing_data.src_rect.w,
+										value.drawing_data.src_rect.h,
 
 									
-				/* dst xy */		value.drawing_data.dst_rect.x,
-									value.drawing_data.dst_rect.y,
-				/* dst wh */		value.drawing_data.dst_rect.w,
-									value.drawing_data.dst_rect.h,
-								);
+					/* dst xy */		value.drawing_data.dst_rect.x,
+										value.drawing_data.dst_rect.y,
+					/* dst wh */		value.drawing_data.dst_rect.w,
+										value.drawing_data.dst_rect.h,
+									);
+			} else {
+				this.ctx.drawImage	(
+					/* file */			value.drawing_data.image_name,
+										value.dest_point.x,
+										value.dest_point.y,
+									);
+			}
 		})
 
 
@@ -102,6 +119,11 @@ export class Blit_Manager {
 		//then clear it, because the next frame needs to start from scratch
 		this._Draw_List = [];
 	}
+
+	isDrawDataWithBounds( data: DrawData | DrawDataNoBounds ): data is DrawData {
+		return (<DrawData>data).src_rect !== undefined;
+	}
+
 /*----------------------- utility draw ops -----------------------*/
 	fill_canvas_with_solid_color = () => {
 		this.ctx.save();

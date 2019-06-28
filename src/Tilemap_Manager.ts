@@ -199,6 +199,7 @@ export class Tilemap_Manager {
 			this._BM.fill_canvas_with_solid_color();
 			this.draw_tiles();
 			this.draw_cursor();
+			//this._BM.draw_entire_frame();
 			this._BM.draw_fps();
 		} else {
 			this.initialize_tiles();
