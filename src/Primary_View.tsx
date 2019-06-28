@@ -4,6 +4,7 @@ import _ from "lodash";
 
 import { Canvas_View } from "./Canvas_View";
 import { Asset_Manager } from "./Asset_Manager";
+import { Blit_Manager } from "./Blit_Manager";
 import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
 import { Game_View } from "./Game_View";
@@ -22,6 +23,7 @@ interface State {
 export class Primary_View extends React.Component <Props, State> {
 /*----------------------- initialization and asset loading -----------------------*/
 	_Asset_Manager: Asset_Manager;
+	_Blit_Manager: Blit_Manager;
 	_Tilemap: Tilemap_Manager;
 
 	constructor( props ) {
@@ -41,9 +43,10 @@ export class Primary_View extends React.Component <Props, State> {
 	initialize_tilemap_manager = (ctx) => {
 		console.warn('initialize_tilemap_manager')
 		if( !this._Tilemap ){
-			this._Tilemap = new Tilemap_Manager(ctx, this._Asset_Manager);
+			this._Blit_Manager = new Blit_Manager(ctx);
+			this._Tilemap = new Tilemap_Manager(this._Asset_Manager, this._Blit_Manager);
 		} else {
-			this._Tilemap.reset_context(ctx);
+			this._Blit_Manager.reset_context(ctx);
 		}
 	}
 

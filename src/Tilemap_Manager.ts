@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import _ from "lodash";
 
 import { Asset_Manager } from "./Asset_Manager";
+import { Blit_Manager } from "./Blit_Manager";
 
 var PATH_PREFIX = "/dist/assets/"
 
@@ -15,22 +16,14 @@ interface tileViewState {
 	viewport_offset: Point2D,
 }
 
-interface fpsTrackerData {
-	current_second: number,
-	current_millisecond: number,
-	current_frame_count: number,
-	prior_frame_count: number,
-}
 
 export class Tilemap_Manager {
-	ctx: CanvasRenderingContext2D;
 	state: tileViewState;
 	_AM: Asset_Manager;
-	fps_tracker: fpsTrackerData;
+	_BM: Blit_Manager;
 
 /*----------------------- initialization and asset loading -----------------------*/
-	constructor( ctx: CanvasRenderingContext2D, _Asset_Manager: Asset_Manager ) {
-		this.ctx = ctx;
+	constructor(_Asset_Manager: Asset_Manager, _Blit_Manager : Blit_Manager ) {
 		
 		this.state = {
 			tileStatus: [['']],
@@ -40,17 +33,9 @@ export class Tilemap_Manager {
 		};
 		
 		this._AM = _Asset_Manager;
-		this.fps_tracker = {
-			current_second: 0,
-			current_millisecond: 0,
-			current_frame_count: 0,
-			prior_frame_count: 0,
-		};
+		this._BM = _Blit_Manager;
 	}
 
-	reset_context = ( ctx: CanvasRenderingContext2D ) => {
-		this.ctx = ctx;
-	}
 
 	initialize_tiles = () => {
 		let { consts, dice, yield_tile_name_list, static_vals } = this._AM;
@@ -103,58 +88,7 @@ export class Tilemap_Manager {
 	}
 
 /*----------------------- draw ops -----------------------*/
-	fill_canvas_with_solid_color = () => {
-		this.ctx.save();
-	    this.ctx.fillStyle = "#000000";
-		this.ctx.fillRect(0,0, this.ctx.canvas.width, this.ctx.canvas.height);
-		this.ctx.restore();
-	}
 
-	draw_fps = () => {
-		var date = new Date();
-		
-		this.fps_tracker.current_frame_count += 1;
-		
-		if( this.fps_tracker.current_second < date.getSeconds() || (this.fps_tracker.current_second == 59 && date.getSeconds() == 0) ){
-			this.fps_tracker.prior_frame_count = this.fps_tracker.current_frame_count;
-			this.fps_tracker.current_frame_count = 0;
-			this.fps_tracker.current_second = date.getSeconds();
-		} else {
-			
-		}
-		
-		this.fps_tracker.current_millisecond = date.getTime();
-		
-		this.draw_fps_text(this.fps_tracker.prior_frame_count);
-
-	}
-
-	draw_fps_text = (value) => {
-		this.ctx.save();
-		this.ctx.font = '12px Helvetica, sans-serif';
-		this.ctx.textAlign = 'center';
-		this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-	    this.ctx.shadowOffsetY = 2;
-	    this.ctx.shadowBlur = 3;
-	    this.ctx.fillStyle = "#ffffff";
-		this.ctx.textBaseline = 'middle';
-		this.ctx.fillText(value.toString(), (this.ctx.canvas.width - 10), 10);
-		this.ctx.restore();
-	}
-
-
-	draw_headline_text = () => {
-		this.ctx.save();
-		this.ctx.font = '32px Helvetica, sans-serif';
-		this.ctx.textAlign = 'center';
-		this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-	    this.ctx.shadowOffsetY = 2;
-	    this.ctx.shadowBlur = 3;
-	    this.ctx.fillStyle = "#ffffff";
-		this.ctx.textBaseline = 'middle';
-		this.ctx.fillText("test", this.ctx.canvas.width / 2.0, this.ctx.canvas.height /2.0);
-		this.ctx.restore();
-	}
 	
 	draw_tiles = () => {
 		let zorder_list = this._AM.yield_full_zorder_list();
@@ -186,25 +120,20 @@ export class Tilemap_Manager {
 	
 	draw_tile_at_coords = ( pos: Point2D, tile_name: string, zorder: number) => {
 		let { consts } = this._AM;
-		this.ctx.save();
 
 			let universal_hex_offset = pos.y % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 
-			this.ctx.translate	(
-									(pos.x + 0) * consts.tile_width + universal_hex_offset + this.state.viewport_offset.x,
-									(pos.y + 0) * consts.tile_height + this.state.viewport_offset.y
-								);
 								
-			this._AM.draw_image_for_tile_type_at_zorder	(
+			this._AM.draw_image_for_tile_type_at_zorder_and_pos	(
 															tile_name,
-															this.ctx,
+															this._BM.ctx,
 															zorder,
-															true,
-															this.get_tile_comparator_sample_for_pos(pos),
-															this.fps_tracker.current_millisecond
+						/* x */								(pos.x + 0) * consts.tile_width + universal_hex_offset + this.state.viewport_offset.x,
+						/* y */								(pos.y + 0) * consts.tile_height + this.state.viewport_offset.y,
+						/* should_use_tile_offset */		true,
+						/* comparator */					this.get_tile_comparator_sample_for_pos(pos),
+															this._BM.fps_tracker.current_millisecond
 														);
-
-		this.ctx.restore();	
 	}
 	
 	draw_cursor = () => {
@@ -267,11 +196,10 @@ export class Tilemap_Manager {
 	
 	do_core_render_loop = () => {
 		if(this.state.initialized){
-			this.fill_canvas_with_solid_color();
-			this.draw_headline_text();
+			this._BM.fill_canvas_with_solid_color();
 			this.draw_tiles();
 			this.draw_cursor();
-			this.draw_fps();
+			this._BM.draw_fps();
 		} else {
 			this.initialize_tiles();
 		}

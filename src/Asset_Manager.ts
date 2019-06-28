@@ -5,6 +5,7 @@ import _ from "lodash";
 import Prando from 'prando';
 
 var PATH_PREFIX = "/dist/assets/"
+import { Blit_Manager } from "./Blit_Manager";
 
 interface Rectangle {
 	x: number,
@@ -553,18 +554,24 @@ export class Asset_Manager {
 		let zorders = this.yield_zorder_list_for_tile(tile_name); 
 	
 		zorders.map( (value,index) => {
-			this.draw_image_for_tile_type_at_zorder(tile_name, ctx, value, should_use_tile_offset, null_tile_comparator, 0);
+			this.draw_image_for_tile_type_at_zorder_and_pos(tile_name, ctx, value, 0, 0, should_use_tile_offset, null_tile_comparator, 0);
 		});
 	}
 	
-	draw_image_for_tile_type_at_zorder = (
+	draw_image_for_tile_type_at_zorder_and_pos = (
 			tile_name: string,
 			ctx,
 			zorder: number,
+			pos_x: number,
+			pos_y: number,
 			should_use_tile_offset: boolean,
 			comparator: TileComparatorSample,
 			current_milliseconds: number
-		) => {
+		) =>
+	{
+		ctx.save();
+
+		ctx.translate( pos_x, pos_y );
 		let asset_data_array = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
 
 		var allow_drawing = true;
@@ -585,6 +592,7 @@ export class Asset_Manager {
 				);
 			}
 		});
+		ctx.restore();	
 	}
 
 	calculate_pingpong_frame_num = (absolute_frame_num, count) => {
