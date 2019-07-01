@@ -7,13 +7,6 @@ import Prando from 'prando';
 var PATH_PREFIX = "/dist/assets/"
 import { Blit_Manager } from "./Blit_Manager";
 
-interface Rectangle {
-	x: number,
-	y: number,
-	w: number,
-	h: number,
-};
-
 
 interface ImageData {
 	url: string,
@@ -89,10 +82,7 @@ interface AutoTileRestrictionRowCenter extends Array<RegExp> { 0: RegExp; 1: Reg
 interface AutoTileRestrictionSample extends Array<AutoTileRestrictionRow|AutoTileRestrictionRowCenter> { 0: AutoTileRestrictionRow, 1: AutoTileRestrictionRowCenter, 2: AutoTileRestrictionRow };
 
 
-export interface Point2D {
-	x: number,
-	y: number
-}
+import { Point2D, Rectangle } from './interfaces';
 
 let null_tile_comparator: TileComparatorSample =	[
 														['',''],
@@ -560,7 +550,7 @@ export class Asset_Manager {
 	
 	draw_image_for_tile_type_at_zorder_and_pos = (
 			tile_name: string,
-			ctx,
+			_BM,
 			zorder: number,
 			pos_x: number,
 			pos_y: number,
@@ -569,9 +559,9 @@ export class Asset_Manager {
 			current_milliseconds: number
 		) =>
 	{
-		ctx.save();
+		//_BM.ctx.save();
 
-		ctx.translate( pos_x, pos_y );
+		//_BM.ctx.translate( pos_x, pos_y );
 		let asset_data_array = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
 
 		var allow_drawing = true;
@@ -586,13 +576,15 @@ export class Asset_Manager {
 			if( value.id && allow_drawing ){
 				this.draw_image_for_asset_name(
 					value.id,
-					ctx,
+					_BM,
+					{ x: pos_x, y: pos_y },
+					zorder,
 					should_use_tile_offset,
 					current_milliseconds,
 				);
 			}
 		});
-		ctx.restore();	
+		//_BM.ctx.restore();	
 	}
 
 	calculate_pingpong_frame_num = (absolute_frame_num, count) => {
@@ -631,7 +623,9 @@ export class Asset_Manager {
 	
 	draw_image_for_asset_name = (
 		asset_name: string,
-		ctx,
+		_BM,
+		pos: Point2D,
+		zorder: number,
 		should_use_tile_offset: boolean,
 		current_milliseconds: number
 	) => {
@@ -670,27 +664,57 @@ export class Asset_Manager {
 		*/
 		
 		if( !this.isAssetSpritesheet(metadata) ){
-			ctx.drawImage	(
-									image,
-									-(dim.w/2) + (should_use_tile_offset ? this.consts.tile_width/2 : 0),
-									-(dim.h/2) + (should_use_tile_offset ? this.consts.tile_height/2 : 0),
-								);
+			_BM.queue_draw_op(
+				{ x: pos.x, y: pos.y },
+				zorder,
+				{
+					image_name:	image,
+					dest_point:	{
+						x:			-(dim.w/2) + (should_use_tile_offset ? this.consts.tile_width/2 : 0),
+						y:			-(dim.h/2) + (should_use_tile_offset ? this.consts.tile_height/2 : 0),
+					}
+				}
+			);
+// 			ctx.drawImage	(
+// 									image,
+// 									-(dim.w/2) + (should_use_tile_offset ? this.consts.tile_width/2 : 0),
+// 									-(dim.h/2) + (should_use_tile_offset ? this.consts.tile_height/2 : 0),
+// 								);
 		} else {
-			ctx.drawImage	(
-				/* file */			image,
-
-									
-				/* src xy */		metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
-									metadata.bounds.y,
-				/* src wh */		metadata.bounds.w,
-									metadata.bounds.h,
-
-									
-				/* dst xy */		-Math.floor(metadata.bounds.w/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-									-Math.floor(metadata.bounds.h/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
-				/* dst wh */		metadata.bounds.w,
-									metadata.bounds.h,
-								);
+			_BM.queue_draw_op(
+				{ x: pos.x, y: pos.y },
+				zorder,
+				{
+					image_name:	image,
+					src_rect:	{
+						x:	metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
+						y:	metadata.bounds.y,
+						w:	metadata.bounds.w,
+						h:	metadata.bounds.h,
+					},
+					dst_rect:	{
+						x:	-Math.floor(metadata.bounds.w/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+						y:	-Math.floor(metadata.bounds.h/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+						w:	metadata.bounds.w,
+						h:	metadata.bounds.h,
+					}
+				}
+			);
+// 			ctx.drawImage	(
+// 				/* file */			image,
+// 
+// 									
+// 				/* src xy */		metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
+// 									metadata.bounds.y,
+// 				/* src wh */		metadata.bounds.w,
+// 									metadata.bounds.h,
+// 
+// 									
+// 				/* dst xy */		-Math.floor(metadata.bounds.w/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+// 									-Math.floor(metadata.bounds.h/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+// 				/* dst wh */		metadata.bounds.w,
+// 									metadata.bounds.h,
+// 								);
 		}
 	}
 /*----------------------- auto-tiling logic -----------------------*/

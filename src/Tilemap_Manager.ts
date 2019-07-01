@@ -7,7 +7,8 @@ import { Blit_Manager } from "./Blit_Manager";
 
 var PATH_PREFIX = "/dist/assets/"
 
-import { TileComparatorSample, Point2D } from "./Asset_Manager";
+import { TileComparatorSample } from "./Asset_Manager";
+import { Point2D, Rectangle } from './interfaces';
 
 interface tileViewState {
 	tileStatus: [[string]],
@@ -126,7 +127,7 @@ export class Tilemap_Manager {
 								
 			this._AM.draw_image_for_tile_type_at_zorder_and_pos	(
 															tile_name,
-															this._BM.ctx,
+															this._BM,
 															zorder,
 						/* x */								(pos.x + 0) * consts.tile_width + universal_hex_offset + this.state.viewport_offset.x,
 						/* y */								(pos.y + 0) * consts.tile_height + this.state.viewport_offset.y,
@@ -199,7 +200,7 @@ export class Tilemap_Manager {
 			this._BM.fill_canvas_with_solid_color();
 			this.draw_tiles();
 			this.draw_cursor();
-			//this._BM.draw_entire_frame();
+			this._BM.draw_entire_frame();
 			this._BM.draw_fps();
 		} else {
 			this.initialize_tiles();

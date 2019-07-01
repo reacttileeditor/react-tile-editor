@@ -86,10 +86,14 @@ export class Blit_Manager {
 	
 	draw_entire_frame = () => {
 		//sort it all by painter's algorithm
-		
+		console.log(_.size(this._Draw_List));
 		//then blit it
 		_.map(this._Draw_List, (value,index) => {
 			if( this.isDrawDataWithBounds(value.drawing_data) ){
+
+				this.ctx.save();
+
+				this.ctx.translate( value.pos.x, value.pos.y );
 				this.ctx.drawImage	(
 					/* file */			value.drawing_data.image_name,
 
@@ -105,12 +109,13 @@ export class Blit_Manager {
 					/* dst wh */		value.drawing_data.dst_rect.w,
 										value.drawing_data.dst_rect.h,
 									);
+				this.ctx.restore();
 			} else {
-				this.ctx.drawImage	(
-					/* file */			value.drawing_data.image_name,
-										value.dest_point.x,
-										value.dest_point.y,
-									);
+// 				this.ctx.drawImage	(
+// 					/* file */			value.drawing_data.image_name,
+// 										value.dest_point.x,
+// 										value.dest_point.y,
+// 									);
 			}
 		})
 
