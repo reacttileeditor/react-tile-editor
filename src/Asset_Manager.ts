@@ -675,11 +675,6 @@ export class Asset_Manager {
 					}
 				}
 			);
-// 			ctx.drawImage	(
-// 									image,
-// 									-(dim.w/2) + (should_use_tile_offset ? this.consts.tile_width/2 : 0),
-// 									-(dim.h/2) + (should_use_tile_offset ? this.consts.tile_height/2 : 0),
-// 								);
 		} else {
 			_BM.queue_draw_op(
 				{ x: pos.x, y: pos.y },
@@ -700,21 +695,6 @@ export class Asset_Manager {
 					}
 				}
 			);
-// 			ctx.drawImage	(
-// 				/* file */			image,
-// 
-// 									
-// 				/* src xy */		metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
-// 									metadata.bounds.y,
-// 				/* src wh */		metadata.bounds.w,
-// 									metadata.bounds.h,
-// 
-// 									
-// 				/* dst xy */		-Math.floor(metadata.bounds.w/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-// 									-Math.floor(metadata.bounds.h/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
-// 				/* dst wh */		metadata.bounds.w,
-// 									metadata.bounds.h,
-// 								);
 		}
 	}
 /*----------------------- auto-tiling logic -----------------------*/

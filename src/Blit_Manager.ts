@@ -115,10 +115,15 @@ export class Blit_Manager {
 				this.ctx.save();
 
 				this.ctx.translate( value.pos.x, value.pos.y );
+
+				/*
+					The savvy amongst us might wonder - what the hell are we doing providing non-zero xy coords inside this drawImage call if we're already translating the canvas?  These exist to draw the tile with its origin not as 0,0, but as the center of the sprite image.
+				*/
+
 				this.ctx.drawImage	(
-					/* file */			value.drawing_data.image_ref,
-										value.drawing_data.dest_point.x,
-										value.drawing_data.dest_point.y,
+					/* file */				value.drawing_data.image_ref,
+					/* dst upper-left x */	value.drawing_data.dest_point.x,
+					/* dst upper-left y */	value.drawing_data.dest_point.y,
 									);
 				this.ctx.restore();
 			}
