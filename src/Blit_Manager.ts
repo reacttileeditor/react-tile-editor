@@ -17,7 +17,7 @@ interface DrawEntity {
 }
 
 interface DrawData {
-	image_name: string,
+	image_ref: HTMLImageElement,
 	src_rect: Rectangle,
 	dst_rect: Rectangle
 }
@@ -25,7 +25,7 @@ interface DrawData {
 interface DrawDataNoBounds {
 	//images that are just direct references don't need rectangular dimensions to draw
 	//honestly we probably want to remove this, but for now we'll support it to keep the code train rolling.
-	image_name: string,
+	image_ref: HTMLImageElement,
 	dest_point: Point2D
 }
 
@@ -95,7 +95,7 @@ export class Blit_Manager {
 
 				this.ctx.translate( value.pos.x, value.pos.y );
 				this.ctx.drawImage	(
-					/* file */			value.drawing_data.image_name,
+					/* file */			value.drawing_data.image_ref,
 
 									
 					/* src xy */		value.drawing_data.src_rect.x,
@@ -111,11 +111,16 @@ export class Blit_Manager {
 									);
 				this.ctx.restore();
 			} else {
-// 				this.ctx.drawImage	(
-// 					/* file */			value.drawing_data.image_name,
-// 										value.dest_point.x,
-// 										value.dest_point.y,
-// 									);
+
+				this.ctx.save();
+
+				this.ctx.translate( value.pos.x, value.pos.y );
+				this.ctx.drawImage	(
+					/* file */			value.drawing_data.image_ref,
+										value.drawing_data.dest_point.x,
+										value.drawing_data.dest_point.y,
+									);
+				this.ctx.restore();
 			}
 		})
 

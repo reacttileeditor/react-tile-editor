@@ -668,7 +668,7 @@ export class Asset_Manager {
 				{ x: pos.x, y: pos.y },
 				zorder,
 				{
-					image_name:	image,
+					image_ref:	image,
 					dest_point:	{
 						x:			-(dim.w/2) + (should_use_tile_offset ? this.consts.tile_width/2 : 0),
 						y:			-(dim.h/2) + (should_use_tile_offset ? this.consts.tile_height/2 : 0),
@@ -685,7 +685,7 @@ export class Asset_Manager {
 				{ x: pos.x, y: pos.y },
 				zorder,
 				{
-					image_name:	image,
+					image_ref:	image,
 					src_rect:	{
 						x:	metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
 						y:	metadata.bounds.y,
