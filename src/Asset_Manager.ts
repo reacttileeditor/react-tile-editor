@@ -126,6 +126,12 @@ export class Asset_Manager {
 				url: "test2.png",
 				name: "dirt1",
 			},{
+				url: "char1.png",
+				name: "hermit",
+			},{
+				url: "char2.png",
+				name: "peasant",
+			},{
 				url: "hex-tile-experiment-tiles.png",
 				name: "menhir1",
 				bounds: {
@@ -483,7 +489,15 @@ export class Asset_Manager {
 
 
 
-/*----------------------- draw ops -----------------------*/
+/*----------------------- object draw ops -----------------------*/
+	get_image_data_for_object = (image_name):ImageData|undefined => {
+		let { image_data_list } = this.static_vals;
+
+		return _.find( image_data_list, (value, index) => (value.name = image_name) );
+	}
+
+
+/*----------------------- tile draw ops -----------------------*/
 	get_asset_name_for_tile_at_zorder = (tile_name, zorder):string|undefined => {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
@@ -587,6 +601,7 @@ export class Asset_Manager {
 		//_BM.ctx.restore();	
 	}
 
+/*----------------------- generic draw ops -----------------------*/
 	calculate_pingpong_frame_num = (absolute_frame_num, count) => {
 		/*
 			This is a bit ugly, so here's the lowdown:

@@ -61,6 +61,7 @@ export class Primary_View extends React.Component <Props, State> {
 					<Editor_View
 						assets_loaded={this.state.assets_loaded}
 						asset_manager={this._Asset_Manager}
+						blit_manager={this._Blit_Manager}
 						initialize_tilemap_manager={this.initialize_tilemap_manager}
 						Tilemap={this._Tilemap}
 					/>
@@ -68,6 +69,7 @@ export class Primary_View extends React.Component <Props, State> {
 					<Game_View
 						assets_loaded={this.state.assets_loaded}
 						asset_manager={this._Asset_Manager}
+						blit_manager={this._Blit_Manager}
 						initialize_tilemap_manager={this.initialize_tilemap_manager}
 						Tilemap={this._Tilemap}
 					/>

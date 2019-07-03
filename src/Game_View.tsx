@@ -4,6 +4,7 @@ import _ from "lodash";
 
 import { Canvas_View } from "./Canvas_View";
 import { Asset_Manager } from "./Asset_Manager";
+import { Blit_Manager } from "./Blit_Manager";
 import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
 
@@ -11,6 +12,7 @@ import "./Primary_View.scss";
 
 interface Editor_View_Props {
 	asset_manager: Asset_Manager,
+	blit_manager: Blit_Manager,
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
 	Tilemap: Tilemap_Manager,
@@ -28,6 +30,19 @@ class Game_Manager {
 			- set up the canvas event handling to treat individual clicks as issuing a move command for a unit (in this current iteration, there will be no "planning", and no "commit to ending a turn" - you will have a single unit, it will immediately issue its move for the turn when you click, and complete the turn.   Those other concepts are a good "next step".
 			- stack up this successive turn propagation in the history
 	*/
+	
+// 	draw_frame = () => {
+// 		//const img = this.props.asset_manager.get_image_data_for_object('hermit');
+// 		
+// 		draw_image_for_asset_name = (
+// 			/* asset_name */				'hermit',
+// 			/* _BM */						this.props.blit_manager,
+// 			/* pos */						{ x: 20, y: 20 },
+// 			/* zorder */					12,
+// 			/* should_use_tile_offset */	false,
+// 			/* current_milliseconds */		0
+// 		)
+// 	}
 }
 
 class Game_Turn_State {

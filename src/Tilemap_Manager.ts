@@ -122,6 +122,9 @@ export class Tilemap_Manager {
 	draw_tile_at_coords = ( pos: Point2D, tile_name: string, zorder: number) => {
 		let { consts } = this._AM;
 
+			/*
+				This is the special bit of logic which makes the different rows (since we're hex tiles) be offset from each other by "half" a tile.
+			*/
 			let universal_hex_offset = pos.y % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 
 								
