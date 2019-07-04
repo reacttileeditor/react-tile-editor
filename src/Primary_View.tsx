@@ -83,6 +83,7 @@ export class Primary_View extends React.Component <Props, State> {
 
 interface Editor_View_Props {
 	asset_manager: Asset_Manager,
+	blit_manager: Blit_Manager,
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
 	Tilemap: Tilemap_Manager,
