@@ -42,33 +42,8 @@ export class Canvas_View extends React.Component <Props, State> {
 		this.props.initialize_tilemap_manager(this.ctx);
 		document.addEventListener('keydown', (evt)=>{this.props.handle_canvas_keydown(evt)}  );
 
-		if(this.props.assets_loaded){
-			this.start_render_loop();
-		}
 	}
 
-
-	componentDidUpdate() {
-		if(this.props.assets_loaded){
-			this.start_render_loop();
-		}
-	}
-	
-	componentWillUnmount(){
-		window.clearInterval(this.render_loop_interval);
-		this.render_loop_interval = undefined;
-	}
-
-/*----------------------- core drawing routines -----------------------*/
-	start_render_loop = () => {
-		if( !this.render_loop_interval ){
-			this.render_loop_interval = window.setInterval( this.render_canvas, 16.666 );
-		}
-	}
-
-	render_canvas = () => {
-		this.props.Tilemap.do_core_render_loop();
-	}
 	
 
 /*----------------------- event handling -----------------------*/

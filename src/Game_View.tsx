@@ -43,6 +43,8 @@ class Game_Manager {
 // 			/* current_milliseconds */		0
 // 		)
 // 	}
+
+
 }
 
 class Game_Turn_State {
@@ -52,9 +54,39 @@ class Game_Turn_State {
 
 
 export class Game_View extends React.Component <Editor_View_Props> {
+	render_loop_interval: number|undefined;
+
 	constructor( props ) {
 		super( props );
 
+	}
+
+/*----------------------- core drawing routines -----------------------*/
+	start_render_loop = () => {
+		if( !this.render_loop_interval ){
+			this.render_loop_interval = window.setInterval( this.render_canvas, 16.666 );
+		}
+	}
+
+	render_canvas = () => {
+		this.props.Tilemap.do_one_frame_of_rendering();
+	}
+
+	componentDidMount() {
+		if(this.props.assets_loaded){
+			this.start_render_loop();
+		}
+	}
+
+	componentDidUpdate() {
+		if(this.props.assets_loaded){
+			this.start_render_loop();
+		}
+	}
+	
+	componentWillUnmount(){
+		window.clearInterval(this.render_loop_interval);
+		this.render_loop_interval = undefined;
 	}
 
 	render() {

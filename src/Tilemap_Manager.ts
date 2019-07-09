@@ -198,7 +198,7 @@ export class Tilemap_Manager {
 	}
 	
 	
-	do_core_render_loop = () => {
+	do_one_frame_of_rendering = () => {
 		if(this.state.initialized){
 			this._BM.fill_canvas_with_solid_color();
 			this.draw_tiles();
