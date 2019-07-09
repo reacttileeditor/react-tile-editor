@@ -86,7 +86,7 @@ export class Blit_Manager {
 	
 	draw_entire_frame = () => {
 		//sort it all by painter's algorithm
-		console.log(_.size(this._Draw_List));
+
 		//then blit it
 		_.map(this._Draw_List, (value,index) => {
 			if( this.isDrawDataWithBounds(value.drawing_data) ){

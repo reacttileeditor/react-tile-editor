@@ -6,7 +6,7 @@ import { Canvas_View } from "./Canvas_View";
 import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
 import { Tile_Palette_Element } from "./Tile_Palette_Element";
-import { _Tilemap_Manager_Manager } from "./_Tilemap_Manager_Manager";
+import { Tilemap_Manager } from "./Tilemap_Manager";
 
 import "./Primary_View.scss";
 
@@ -15,8 +15,7 @@ interface Game_View_Props {
 	_Blit_Manager: Blit_Manager,
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
-	_Tilemap_Manager: _Tilemap_Manager,
-	_Game_Manager: Game_Manager,
+	_Tilemap_Manager: Tilemap_Manager,
 }
 
 class Game_Manager {
@@ -56,6 +55,8 @@ class Game_Turn_State {
 
 export class Game_View extends React.Component <Game_View_Props> {
 	render_loop_interval: number|undefined;
+	_Game_Manager: Game_Manager;
+	awaiting_render: boolean;
 
 	constructor( props ) {
 		super( props );
@@ -65,25 +66,30 @@ export class Game_View extends React.Component <Game_View_Props> {
 	}
 
 /*----------------------- core drawing routines -----------------------*/
-	start_render_loop = () => {
-		if( !this.render_loop_interval ){
-			this.render_loop_interval = window.setInterval( this.render_canvas, 16.666 );
-		}
+	iterate_render_loop = () => {
+		this.awaiting_render = true;
+		this.render_loop_interval = window.setTimeout( this.render_canvas, 16.666 );
 	}
 
 	render_canvas = () => {
-		this.props._Tilemap_Manager.do_one_frame_of_rendering();
+		if(this.awaiting_render){
+			this.props._Tilemap_Manager.do_one_frame_of_rendering();
+			this.awaiting_render = false;
+			this.iterate_render_loop();
+		} else {
+			this.iterate_render_loop();
+		}
 	}
 
 	componentDidMount() {
 		if(this.props.assets_loaded){
-			this.start_render_loop();
+			this.iterate_render_loop();
 		}
 	}
 
 	componentDidUpdate() {
 		if(this.props.assets_loaded){
-			this.start_render_loop();
+			this.iterate_render_loop();
 		}
 	}
 	
