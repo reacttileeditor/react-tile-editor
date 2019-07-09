@@ -24,7 +24,7 @@ export class Primary_View extends React.Component <Props, State> {
 /*----------------------- initialization and asset loading -----------------------*/
 	_Asset_Manager: Asset_Manager;
 	_Blit_Manager: Blit_Manager;
-	_Tilemap: Tilemap_Manager;
+	_Tilemap_Manager: Tilemap_Manager;
 
 	constructor( props ) {
 		super( props );
@@ -42,9 +42,9 @@ export class Primary_View extends React.Component <Props, State> {
 
 	initialize_tilemap_manager = (ctx) => {
 		console.warn('initialize_tilemap_manager')
-		if( !this._Tilemap ){
+		if( !this._Tilemap_Manager ){
 			this._Blit_Manager = new Blit_Manager(ctx);
-			this._Tilemap = new Tilemap_Manager(this._Asset_Manager, this._Blit_Manager);
+			this._Tilemap_Manager = new Tilemap_Manager(this._Asset_Manager, this._Blit_Manager);
 		} else {
 			this._Blit_Manager.reset_context(ctx);
 		}
@@ -60,18 +60,18 @@ export class Primary_View extends React.Component <Props, State> {
 					?
 					<Editor_View
 						assets_loaded={this.state.assets_loaded}
-						asset_manager={this._Asset_Manager}
-						blit_manager={this._Blit_Manager}
+						_Asset_Manager={this._Asset_Manager}
+						_Blit_Manager={this._Blit_Manager}
+						_Tilemap_Manager={this._Tilemap_Manager}
 						initialize_tilemap_manager={this.initialize_tilemap_manager}
-						Tilemap={this._Tilemap}
 					/>
 					:
 					<Game_View
 						assets_loaded={this.state.assets_loaded}
-						asset_manager={this._Asset_Manager}
-						blit_manager={this._Blit_Manager}
+						_Asset_Manager={this._Asset_Manager}
+						_Blit_Manager={this._Blit_Manager}
+						_Tilemap_Manager={this._Tilemap_Manager}
 						initialize_tilemap_manager={this.initialize_tilemap_manager}
-						Tilemap={this._Tilemap}
 					/>
 				}
 			</div>
@@ -82,11 +82,11 @@ export class Primary_View extends React.Component <Props, State> {
 }
 
 interface Editor_View_Props {
-	asset_manager: Asset_Manager,
-	blit_manager: Blit_Manager,
+	_Asset_Manager: Asset_Manager,
+	_Blit_Manager: Blit_Manager,
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
-	Tilemap: Tilemap_Manager,
+	_Tilemap_Manager: Tilemap_Manager,
 }
 
 interface Editor_View_State {
@@ -112,7 +112,7 @@ class Editor_View extends React.Component <Editor_View_Props, Editor_View_State>
 	}
 
 	render_canvas = () => {
-		this.props.Tilemap.do_one_frame_of_rendering();
+		this.props._Tilemap_Manager.do_one_frame_of_rendering();
 	}
 
 
@@ -135,7 +135,7 @@ class Editor_View extends React.Component <Editor_View_Props, Editor_View_State>
 
 /*----------------------- I/O routines -----------------------*/
 	handle_canvas_click = (x: number, y: number) => {
-		this.props.Tilemap.handle_mouse_click( x, y, this.state.selected_tile_type );
+		this.props._Tilemap_Manager.handle_mouse_click( x, y, this.state.selected_tile_type );
 	
 	}
 
@@ -143,19 +143,19 @@ class Editor_View extends React.Component <Editor_View_Props, Editor_View_State>
 		switch (event.key) {
 			case "Down": // IE/Edge specific value
 			case "ArrowDown":
-				this.props.Tilemap.adjust_viewport_pos(0,40);
+				this.props._Tilemap_Manager.adjust_viewport_pos(0,40);
 				break;
 			case "Up": // IE/Edge specific value
 			case "ArrowUp":
-				this.props.Tilemap.adjust_viewport_pos(0,-40);
+				this.props._Tilemap_Manager.adjust_viewport_pos(0,-40);
 				break;
 			case "Left": // IE/Edge specific value
 			case "ArrowLeft":
-				this.props.Tilemap.adjust_viewport_pos(-40,0);
+				this.props._Tilemap_Manager.adjust_viewport_pos(-40,0);
 				break;
 			case "Right": // IE/Edge specific value
 			case "ArrowRight":
-				this.props.Tilemap.adjust_viewport_pos(40,0);
+				this.props._Tilemap_Manager.adjust_viewport_pos(40,0);
 				break;
 		}
 	}
@@ -174,9 +174,9 @@ class Editor_View extends React.Component <Editor_View_Props, Editor_View_State>
 				&&
 				this.props.assets_loaded
 				&&
-				this.props.asset_manager.yield_tile_name_list().map( (value, index) => {
+				this.props._Asset_Manager.yield_tile_name_list().map( (value, index) => {
 					return	<Tile_Palette_Element
-								asset_manager={this.props.asset_manager}
+								asset_manager={this.props._Asset_Manager}
 								tile_name={value}
 								key={value}
 								selected_tile_type={this.state.selected_tile_type}

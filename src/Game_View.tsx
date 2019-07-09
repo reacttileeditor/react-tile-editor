@@ -6,16 +6,17 @@ import { Canvas_View } from "./Canvas_View";
 import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
 import { Tile_Palette_Element } from "./Tile_Palette_Element";
-import { Tilemap_Manager } from "./Tilemap_Manager";
+import { _Tilemap_Manager_Manager } from "./_Tilemap_Manager_Manager";
 
 import "./Primary_View.scss";
 
-interface Editor_View_Props {
-	asset_manager: Asset_Manager,
-	blit_manager: Blit_Manager,
+interface Game_View_Props {
+	_Asset_Manager: Asset_Manager,
+	_Blit_Manager: Blit_Manager,
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
-	Tilemap: Tilemap_Manager,
+	_Tilemap_Manager: _Tilemap_Manager,
+	_Game_Manager: Game_Manager,
 }
 
 class Game_Manager {
@@ -32,11 +33,11 @@ class Game_Manager {
 	*/
 	
 // 	draw_frame = () => {
-// 		//const img = this.props.asset_manager.get_image_data_for_object('hermit');
+// 		//const img = this.props._Asset_Manager.get_image_data_for_object('hermit');
 // 		
 // 		draw_image_for_asset_name = (
 // 			/* asset_name */				'hermit',
-// 			/* _BM */						this.props.blit_manager,
+// 			/* _BM */						this.props._Blit_Manager,
 // 			/* pos */						{ x: 20, y: 20 },
 // 			/* zorder */					12,
 // 			/* should_use_tile_offset */	false,
@@ -53,11 +54,13 @@ class Game_Turn_State {
 }
 
 
-export class Game_View extends React.Component <Editor_View_Props> {
+export class Game_View extends React.Component <Game_View_Props> {
 	render_loop_interval: number|undefined;
 
 	constructor( props ) {
 		super( props );
+
+		this._Game_Manager = new Game_Manager();
 
 	}
 
@@ -69,7 +72,7 @@ export class Game_View extends React.Component <Editor_View_Props> {
 	}
 
 	render_canvas = () => {
-		this.props.Tilemap.do_one_frame_of_rendering();
+		this.props._Tilemap_Manager.do_one_frame_of_rendering();
 	}
 
 	componentDidMount() {
