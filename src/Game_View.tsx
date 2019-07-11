@@ -19,6 +19,8 @@ interface Game_View_Props {
 }
 
 class Game_Manager {
+	_Blit_Manager: Blit_Manager;
+	_Asset_Manager: Asset_Manager;
 	/*
 		We need to handle individual turns progressing, so we'll need something to track modality.  We'll need a set of flags indicating what our mode is - are we watching a turn be animated, are we watching the enemy do a move?  Are we watching the player do their move?
 		
@@ -30,19 +32,26 @@ class Game_Manager {
 			- set up the canvas event handling to treat individual clicks as issuing a move command for a unit (in this current iteration, there will be no "planning", and no "commit to ending a turn" - you will have a single unit, it will immediately issue its move for the turn when you click, and complete the turn.   Those other concepts are a good "next step".
 			- stack up this successive turn propagation in the history
 	*/
+
+	constructor( _Blit_Manager: Blit_Manager, _Asset_Manager: Asset_Manager ) {
+		this._Blit_Manager = _Blit_Manager;
+		this._Asset_Manager = _Asset_Manager;
+
+	}
+
 	
-// 	draw_frame = () => {
-// 		//const img = this.props._Asset_Manager.get_image_data_for_object('hermit');
-// 		
-// 		draw_image_for_asset_name = (
-// 			/* asset_name */				'hermit',
-// 			/* _BM */						this.props._Blit_Manager,
-// 			/* pos */						{ x: 20, y: 20 },
-// 			/* zorder */					12,
-// 			/* should_use_tile_offset */	false,
-// 			/* current_milliseconds */		0
-// 		)
-// 	}
+	do_one_frame_of_rendering = () => {
+		//const img = this.props._Asset_Manager.get_image_data_for_object('hermit');
+		
+		this._Asset_Manager.draw_image_for_asset_name (
+			/* asset_name */				'hermit',
+			/* _BM */						this._Blit_Manager,
+			/* pos */						{ x: 150, y: 150 },
+			/* zorder */					12,
+			/* should_use_tile_offset */	false,
+			/* current_milliseconds */		0
+		)
+	}
 
 
 }
@@ -61,7 +70,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 	constructor( props ) {
 		super( props );
 
-		this._Game_Manager = new Game_Manager();
+		this._Game_Manager = new Game_Manager(this.props._Blit_Manager, this.props._Asset_Manager);
 
 	}
 
@@ -74,6 +83,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 	render_canvas = () => {
 		if(this.awaiting_render){
 			this.props._Tilemap_Manager.do_one_frame_of_rendering();
+			this._Game_Manager.do_one_frame_of_rendering();
 			this.awaiting_render = false;
 			this.iterate_render_loop();
 		} else {
