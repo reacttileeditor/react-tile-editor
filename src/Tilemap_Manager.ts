@@ -204,12 +204,13 @@ export class Tilemap_Manager {
 
 	convert_pixel_coords_to_tile_coords = (x_pos, y_pos) => {
 		let { consts } = this._AM;
+		let position = this._BM.yield_world_coords_for_absolute_coords({x: x_pos, y: y_pos});
 
 		let universal_hex_offset = y_pos % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 	
 		let tile_coords = {
-			x: Math.floor( (x_pos) / consts.tile_width ),
-			y: Math.floor( (y_pos) / consts.tile_height ),
+			x: Math.floor( (position.x) / consts.tile_width ),
+			y: Math.floor( (position.y) / consts.tile_height ),
 		};
 		
 		//now we do the odd-row offset for the hex tiles

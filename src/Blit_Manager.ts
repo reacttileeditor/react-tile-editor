@@ -89,6 +89,12 @@ export class Blit_Manager {
 		};
 	}
 
+	yield_world_coords_for_absolute_coords = (pos: Point2D) => {
+		return {
+			x: pos.x - this.state.viewport_offset.x,
+			y: pos.y - this.state.viewport_offset.y
+		}
+	} 
 
 /*----------------------- draw ops -----------------------*/
 	queue_draw_op = (pos: Point2D, z_index: number, drawing_data: DrawData ) => {
