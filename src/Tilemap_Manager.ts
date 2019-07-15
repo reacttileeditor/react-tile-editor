@@ -14,7 +14,6 @@ interface tileViewState {
 	tileStatus: [[string]],
 	initialized: boolean,
 	cursor_pos: Point2D,
-	viewport_offset: Point2D,
 }
 
 
@@ -30,7 +29,6 @@ export class Tilemap_Manager {
 			tileStatus: [['']],
 			initialized: false,
 			cursor_pos: {x:0, y:0},
-			viewport_offset: {x: 200, y: 0},
 		};
 		
 		this._AM = _Asset_Manager;
@@ -81,12 +79,6 @@ export class Tilemap_Manager {
 	}
 
 
-	adjust_viewport_pos = (x, y) => {
-		this.state.viewport_offset = {
-			x: this.state.viewport_offset.x + x,
-			y: this.state.viewport_offset.y + y
-		};
-	}
 
 /*----------------------- draw ops -----------------------*/
 
@@ -132,8 +124,8 @@ export class Tilemap_Manager {
 															tile_name,
 															this._BM,
 															zorder,
-						/* x */								(pos.x + 0) * consts.tile_width + universal_hex_offset + this.state.viewport_offset.x,
-						/* y */								(pos.y + 0) * consts.tile_height + this.state.viewport_offset.y,
+						/* x */								(pos.x + 0) * consts.tile_width + universal_hex_offset,
+						/* y */								(pos.y + 0) * consts.tile_height,
 						/* should_use_tile_offset */		true,
 						/* comparator */					this.get_tile_comparator_sample_for_pos(pos),
 															this._BM.fps_tracker.current_millisecond
@@ -216,8 +208,8 @@ export class Tilemap_Manager {
 		let universal_hex_offset = y_pos % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
 	
 		let tile_coords = {
-			x: Math.floor( (x_pos - this.state.viewport_offset.x) / consts.tile_width ),
-			y: Math.floor( (y_pos - this.state.viewport_offset.y) / consts.tile_height ),
+			x: Math.floor( (x_pos) / consts.tile_width ),
+			y: Math.floor( (y_pos) / consts.tile_height ),
 		};
 		
 		//now we do the odd-row offset for the hex tiles

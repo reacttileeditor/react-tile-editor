@@ -29,6 +29,9 @@ interface DrawDataNoBounds {
 	dest_point: Point2D
 }
 
+interface BlitManagerState {
+	viewport_offset: Point2D,
+}
 
 
 interface fpsTrackerData {
@@ -53,7 +56,7 @@ interface fpsTrackerData {
 export class Blit_Manager {
 	ctx: CanvasRenderingContext2D;
 	fps_tracker: fpsTrackerData;
-
+	state: BlitManagerState;
 	_Draw_List: Array<DrawEntity>;
 
 /*----------------------- initialization and asset loading -----------------------*/
@@ -68,13 +71,26 @@ export class Blit_Manager {
 			current_frame_count: 0,
 			prior_frame_count: 0,
 		};
+
+		this.state = {
+			viewport_offset: {x: 200, y: 0},
+		};
 	}
 
 	reset_context = ( ctx: CanvasRenderingContext2D ) => {
 		this.ctx = ctx;
 	}
 
+/*----------------------- state manipulation -----------------------*/
+	adjust_viewport_pos = (x, y) => {
+		this.state.viewport_offset = {
+			x: this.state.viewport_offset.x + x,
+			y: this.state.viewport_offset.y + y
+		};
+	}
 
+
+/*----------------------- draw ops -----------------------*/
 	queue_draw_op = (pos: Point2D, z_index: number, drawing_data: DrawData ) => {
 		this._Draw_List.push({
 			pos: pos,
@@ -93,7 +109,7 @@ export class Blit_Manager {
 
 				this.ctx.save();
 
-				this.ctx.translate( value.pos.x, value.pos.y );
+				this.ctx.translate( value.pos.x + this.state.viewport_offset.x, value.pos.y + this.state.viewport_offset.y );
 				this.ctx.drawImage	(
 					/* file */			value.drawing_data.image_ref,
 
@@ -114,7 +130,7 @@ export class Blit_Manager {
 
 				this.ctx.save();
 
-				this.ctx.translate( value.pos.x, value.pos.y );
+				this.ctx.translate( value.pos.x + this.state.viewport_offset.x, value.pos.y + this.state.viewport_offset.y );
 
 				/*
 					The savvy amongst us might wonder - what the hell are we doing providing non-zero xy coords inside this drawImage call if we're already translating the canvas?  These exist to draw the tile with its origin not as 0,0, but as the center of the sprite image.

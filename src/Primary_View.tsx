@@ -142,19 +142,19 @@ class Editor_View extends React.Component <Editor_View_Props, Editor_View_State>
 		switch (event.key) {
 			case "Down": // IE/Edge specific value
 			case "ArrowDown":
-				this.props._Tilemap_Manager.adjust_viewport_pos(0,40);
+				this.props._Blit_Manager.adjust_viewport_pos(0,40);
 				break;
 			case "Up": // IE/Edge specific value
 			case "ArrowUp":
-				this.props._Tilemap_Manager.adjust_viewport_pos(0,-40);
+				this.props._Blit_Manager.adjust_viewport_pos(0,-40);
 				break;
 			case "Left": // IE/Edge specific value
 			case "ArrowLeft":
-				this.props._Tilemap_Manager.adjust_viewport_pos(-40,0);
+				this.props._Blit_Manager.adjust_viewport_pos(-40,0);
 				break;
 			case "Right": // IE/Edge specific value
 			case "ArrowRight":
-				this.props._Tilemap_Manager.adjust_viewport_pos(40,0);
+				this.props._Blit_Manager.adjust_viewport_pos(40,0);
 				break;
 		}
 	}
