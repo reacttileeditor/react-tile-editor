@@ -58,15 +58,18 @@ export class Blit_Manager {
 	fps_tracker: fpsTrackerData;
 	state: BlitManagerState;
 	_Draw_List: Array<DrawEntity>;
-	_OffScreenBuffer: any;
+	_OffScreenBuffer: HTMLCanvasElement;
 	osb_ctx: CanvasRenderingContext2D;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( ctx: CanvasRenderingContext2D ) {
 		this.ctx = ctx;
 		
-		this._OffScreenBuffer = new OffscreenCanvas(567, 325);
-		this.osb_ctx = this._OffScreenBuffer.getContext("2d");
+		this._OffScreenBuffer = document.createElement('canvas');
+		this._OffScreenBuffer.width = 567;
+		this._OffScreenBuffer.height = 325;
+		this.osb_ctx = (this._OffScreenBuffer.getContext("2d") as CanvasRenderingContext2D);
+
 		
 		this._Draw_List = [];
 		this.fps_tracker = {
@@ -155,8 +158,8 @@ export class Blit_Manager {
 			}
 		})
 
-		var bitmap = this._OffScreenBuffer.transferToImageBitmap();
-		this.ctx.transferFromImageBitmap(bitmap);
+		//var bitmap = this._OffScreenBuffer.transferToImageBitmap();
+		this.ctx.drawImage(this._OffScreenBuffer, 0, 0);
 		
 		//then clear it, because the next frame needs to start from scratch
 		this._Draw_List = [];

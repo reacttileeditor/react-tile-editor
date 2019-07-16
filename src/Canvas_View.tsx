@@ -37,7 +37,7 @@ export class Canvas_View extends React.Component <Props, State> {
 
 
 	componentDidMount() {
-		this.ctx = this.canvas!.getContext("bitmaprenderer")!;
+		this.ctx = this.canvas!.getContext("2d")!;
 		this.props.initialize_tilemap_manager(this.ctx);
 		document.addEventListener('keydown', (evt)=>{this.props.handle_canvas_keydown(evt)}  );
 
