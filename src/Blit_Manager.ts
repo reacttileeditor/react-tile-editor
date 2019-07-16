@@ -41,7 +41,7 @@ interface fpsTrackerData {
 	prior_frame_count: number,
 }
 
-
+declare var OffscreenCanvas : any;
 
 /*
 	The main thrust of this component is to house a list of commingled objects that are going to be drawn in a given frame.  These objects are layered, and are given draw coords in the world's coordinate space.  They have no knowledge of "what" they are, nor of subsequent frames/animations/etc.   All they know is what image, what location, and what z-index.
@@ -58,11 +58,15 @@ export class Blit_Manager {
 	fps_tracker: fpsTrackerData;
 	state: BlitManagerState;
 	_Draw_List: Array<DrawEntity>;
+	_OffScreenBuffer: any;
+	osb_ctx: CanvasRenderingContext2D;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( ctx: CanvasRenderingContext2D ) {
 		this.ctx = ctx;
 		
+		this._OffScreenBuffer = new OffscreenCanvas(567, 325);
+		this.osb_ctx = this._OffScreenBuffer.getContext("2d");
 		
 		this._Draw_List = [];
 		this.fps_tracker = {
@@ -113,10 +117,10 @@ export class Blit_Manager {
 		_.map(this._Draw_List, (value,index) => {
 			if( this.isDrawDataWithBounds(value.drawing_data) ){
 
-				this.ctx.save();
+				this.osb_ctx.save();
 
-				this.ctx.translate( value.pos.x + this.state.viewport_offset.x, value.pos.y + this.state.viewport_offset.y );
-				this.ctx.drawImage	(
+				this.osb_ctx.translate( value.pos.x + this.state.viewport_offset.x, value.pos.y + this.state.viewport_offset.y );
+				this.osb_ctx.drawImage	(
 					/* file */			value.drawing_data.image_ref,
 
 									
@@ -131,27 +135,28 @@ export class Blit_Manager {
 					/* dst wh */		value.drawing_data.dst_rect.w,
 										value.drawing_data.dst_rect.h,
 									);
-				this.ctx.restore();
+				this.osb_ctx.restore();
 			} else {
 
-				this.ctx.save();
+				this.osb_ctx.save();
 
-				this.ctx.translate( value.pos.x + this.state.viewport_offset.x, value.pos.y + this.state.viewport_offset.y );
+				this.osb_ctx.translate( value.pos.x + this.state.viewport_offset.x, value.pos.y + this.state.viewport_offset.y );
 
 				/*
 					The savvy amongst us might wonder - what the hell are we doing providing non-zero xy coords inside this drawImage call if we're already translating the canvas?  These exist to draw the tile with its origin not as 0,0, but as the center of the sprite image.
 				*/
 
-				this.ctx.drawImage	(
+				this.osb_ctx.drawImage	(
 					/* file */				value.drawing_data.image_ref,
 					/* dst upper-left x */	value.drawing_data.dest_point.x,
 					/* dst upper-left y */	value.drawing_data.dest_point.y,
 									);
-				this.ctx.restore();
+				this.osb_ctx.restore();
 			}
 		})
 
-
+		var bitmap = this._OffScreenBuffer.transferToImageBitmap();
+		this.ctx.transferFromImageBitmap(bitmap);
 		
 		//then clear it, because the next frame needs to start from scratch
 		this._Draw_List = [];
@@ -163,10 +168,10 @@ export class Blit_Manager {
 
 /*----------------------- utility draw ops -----------------------*/
 	fill_canvas_with_solid_color = () => {
-		this.ctx.save();
-	    this.ctx.fillStyle = "#000000";
-		this.ctx.fillRect(0,0, this.ctx.canvas.width, this.ctx.canvas.height);
-		this.ctx.restore();
+		this.osb_ctx.save();
+	    this.osb_ctx.fillStyle = "#000000";
+		this.osb_ctx.fillRect(0,0, this.ctx.canvas.width, this.ctx.canvas.height);
+		this.osb_ctx.restore();
 	}
 
 	draw_fps = () => {
@@ -189,16 +194,16 @@ export class Blit_Manager {
 	}
 
 	draw_fps_text = (value) => {
-		this.ctx.save();
-		this.ctx.font = '12px Helvetica, sans-serif';
-		this.ctx.textAlign = 'center';
-		this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-	    this.ctx.shadowOffsetY = 2;
-	    this.ctx.shadowBlur = 3;
-	    this.ctx.fillStyle = "#ffffff";
-		this.ctx.textBaseline = 'middle';
-		this.ctx.fillText(value.toString(), (this.ctx.canvas.width - 10), 10);
-		this.ctx.restore();
+		this.osb_ctx.save();
+		this.osb_ctx.font = '12px Helvetica, sans-serif';
+		this.osb_ctx.textAlign = 'center';
+		this.osb_ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+	    this.osb_ctx.shadowOffsetY = 2;
+	    this.osb_ctx.shadowBlur = 3;
+	    this.osb_ctx.fillStyle = "#ffffff";
+		this.osb_ctx.textBaseline = 'middle';
+		this.osb_ctx.fillText(value.toString(), (this.ctx.canvas.width - 10), 10);
+		this.osb_ctx.restore();
 	}
 
 
