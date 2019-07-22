@@ -621,7 +621,7 @@ export class Asset_Manager {
 			The first thing we do is remainder our current frames into a number from 0 -> 10.
 		*/
 
-		var rem_current_frame = absolute_frame_num % (_count * 2);
+		var rem_current_frame = Utils.modulo(absolute_frame_num, (_count * 2));
 		/*
 			The next thing we do is a funky bit of math that successfully turns:
 			0	1	2	3	4	5	6	7	8	9	10
@@ -629,12 +629,18 @@ export class Asset_Manager {
 			0	1	2	3	4	0	4	3	2	1	0
 		*/
 	
-		return (_count - Math.abs(_count-rem_current_frame)) % _count
+		return Utils.modulo(_count - Math.abs(_count-rem_current_frame), _count)
 		+
 		/*
 			which is great, except we want a 6 in the middle, which is where the following awkward chunk of math comes in:
 		*/
-		((rem_current_frame % _count) == 0 ? _count * ((rem_current_frame/_count)%2) : 0) ;
+		(
+			Utils.modulo(rem_current_frame, _count) == 0
+			?
+				_count * Utils.modulo(rem_current_frame/_count, 2)
+				:
+				0
+		) ;
 	}
 	
 	draw_image_for_asset_name = (
@@ -668,7 +674,7 @@ export class Asset_Manager {
 			For relatively simple setups, like a straightforward 1,2,3 frame ordering, it's a piece of cake:
 		*/
 		if( !image_data.ping_pong ){
-			current_frame_num = absolute_frame_num % frame_count;
+			current_frame_num = Utils.modulo(absolute_frame_num, frame_count);
 		} else {
 			current_frame_num = this.calculate_pingpong_frame_num( absolute_frame_num, frame_count );	
 		}

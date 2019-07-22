@@ -66,12 +66,6 @@ export class Tilemap_Manager {
 			if(selected_tile_type && selected_tile_type != ''){
 				this.state.tileStatus[pos.y][pos.x] = selected_tile_type;
 			}
-			/*this.state.tileStatus[pos.y][pos.x] =
-				'tile' + (
-					(( ( this.state.tileStatus[pos.y][pos.x] ).match(/\d+/g).map(Number)[0] )  //really javascript?
-					%
-					_.size( static_vals.asset_list )) + 1
-				).toString();*/
 		}
 	}
 
@@ -118,7 +112,7 @@ export class Tilemap_Manager {
 			/*
 				This is the special bit of logic which makes the different rows (since we're hex tiles) be offset from each other by "half" a tile.
 			*/
-			let universal_hex_offset = pos.y % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
+			let universal_hex_offset = Utils.modulo(pos.y, 2) == 1 ? Math.floor(consts.tile_width / 2) : 0;
 
 								
 			this._AM.draw_image_for_tile_type_at_zorder_and_pos	(
@@ -207,7 +201,7 @@ export class Tilemap_Manager {
 		let { consts } = this._AM;
 		let position = this._BM.yield_world_coords_for_absolute_coords({x: x_pos, y: y_pos});
 
-		let universal_hex_offset = y_pos % 2 == 1 ? Math.floor(consts.tile_width / 2) : 0;
+		let universal_hex_offset = Utils.modulo(y_pos, 2) == 1 ? Math.floor(consts.tile_width / 2) : 0;
 	
 		let tile_coords = {
 			x: Math.floor( (position.x) / consts.tile_width ),
@@ -216,7 +210,7 @@ export class Tilemap_Manager {
 		
 		//now we do the odd-row offset for the hex tiles
 		let final_coords = {
-			x: tile_coords.x + ((tile_coords.y % 2 == 1) && (x_pos % consts.tile_width < consts.tile_width / 2) ? -1 : 0),
+			x: tile_coords.x + (( Utils.modulo(tile_coords.y, 2) == 1) && ( Utils.modulo(x_pos, consts.tile_width) < consts.tile_width / 2) ? -1 : 0),
 			y: tile_coords.y
 		};
 		
@@ -225,7 +219,7 @@ export class Tilemap_Manager {
 	
 	convert_tile_coords_to_pixel_coords = (x_pos, y_pos) => ({
 		x:	x_pos * this._AM.consts.tile_width +
-			((y_pos % 2 == 1) ? (-this._AM.consts.tile_width / 2) : 0),
+			(( Utils.modulo(y_pos, 2) == 1) ? (-this._AM.consts.tile_width / 2) : 0),
 		y:	y_pos * this._AM.consts.tile_height
 	})
 	

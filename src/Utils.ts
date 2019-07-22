@@ -12,5 +12,13 @@ export const dice_anchored_on_specific_random_seed = (sides: number, seed: Prand
 )
 
 export const is_even = (value : number) => (
-	value % 2 == 0
+	modulo(value, 2) == 0
+)
+
+export const modulo = (numerator: number, denominator: number): number => (
+	/*
+		This is a real modulo function; not a "remainder operation", which is what the % generally does.  They're equivalent for positive numbers, but anything involving negative operations (such as winding a proverbial clock, set to 1 o'clock, backwards by 3 hours) won't give the correct results if you're simply using the % operator.
+	*/
+
+	(numerator % denominator + denominator) % denominator
 )
