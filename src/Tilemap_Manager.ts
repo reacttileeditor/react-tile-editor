@@ -4,6 +4,7 @@ import _ from "lodash";
 
 import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
+import * as Utils from "./Utils";
 
 var PATH_PREFIX = "/dist/assets/"
 
@@ -37,13 +38,13 @@ export class Tilemap_Manager {
 
 
 	initialize_tiles = () => {
-		let { consts, dice, yield_tile_name_list, static_vals } = this._AM;
+		let { consts, yield_tile_name_list, static_vals } = this._AM;
 
 
 		this.state.tileStatus = _.range(consts.col_height).map( (row_value, row_index) => {
 			return _.range(consts.row_length).map( (col_value, col_index) => {
 				return yield_tile_name_list()[
-					dice( _.size( yield_tile_name_list() ) ) -1 
+					Utils.dice( _.size( yield_tile_name_list() ) ) -1 
 				];
 			});
 		});
@@ -148,7 +149,7 @@ export class Tilemap_Manager {
 											_.range(pos.x - 1, pos.x + 2)
 											:
 											(	
-												this._AM.is_even( pos.y )
+												Utils.is_even( pos.y )
 												?
 												_.range(pos.x - 1, pos.x + 1)
 												:
@@ -222,6 +223,12 @@ export class Tilemap_Manager {
 		return final_coords;
 	}
 	
+	convert_tile_coords_to_pixel_coords = (x_pos, y_pos) => ({
+		x:	x_pos * this._AM.consts.tile_width +
+			((y_pos % 2 == 1) ? (-this._AM.consts.tile_width / 2) : 0),
+		y:	y_pos * this._AM.consts.tile_height
+	})
+	
 	handle_mouse_click = (x_pos, y_pos, selected_tile_type) => {
 		this.modify_tile_status( this.convert_pixel_coords_to_tile_coords(x_pos, y_pos), selected_tile_type );
 	}
@@ -233,9 +240,5 @@ export class Tilemap_Manager {
 	
 	annul_current_drag_operation = () => {
 	
-	}
-	
-	dice = (sides) => {
-		return Math.floor( Math.random() * sides ) + 1;
 	}
 }

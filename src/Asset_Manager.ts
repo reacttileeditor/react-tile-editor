@@ -6,6 +6,7 @@ import Prando from 'prando';
 
 var PATH_PREFIX = "/dist/assets/"
 import { Blit_Manager } from "./Blit_Manager";
+import * as Utils from "./Utils";
 
 
 interface ImageData {
@@ -734,15 +735,7 @@ export class Asset_Manager {
 
 	
 /*----------------------- utility functions -----------------------*/
-	_tile_dice = (sides) => {
-		return Math.floor( this.TileRNG.next() * sides ) + 1;
-	}
-
-	dice = (sides) => {
-		return Math.floor( Math.random() * sides ) + 1;
-	}
-	
-	is_even = (value : number) => {
-		return value % 2 == 0;
-	}
+	_tile_dice = (sides) => (
+		Utils.dice_anchored_on_specific_random_seed( sides, this.TileRNG )
+	)
 }
