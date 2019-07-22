@@ -115,9 +115,19 @@ export class Blit_Manager {
 	
 	draw_entire_frame = () => {
 		//sort it all by painter's algorithm
+		const sortedBlits =	_.sortBy(
+							_.sortBy(
+								_.sortBy(
+									this._Draw_List,
+									(val_x)=>( val_x.pos.x )
+								),
+								(val_y)=>( val_y.pos.y )
+							),
+							(val_z)=>( val_z.z_index )
+						);
 
 		//then blit it
-		_.map(this._Draw_List, (value,index) => {
+		_.map( sortedBlits, (value,index) => {
 			if( this.isDrawDataWithBounds(value.drawing_data) ){
 
 				this.osb_ctx.save();
