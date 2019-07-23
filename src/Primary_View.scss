@@ -12,6 +12,7 @@
 	.canvas_holder {
 		canvas {
 			box-shadow: cadetblue 0px 2px 8px;
+			image-rendering: pixelated;
 			image-rendering: crisp-edges;
 			width: calc(567px * 2);
 			height: calc(325px * 2);
