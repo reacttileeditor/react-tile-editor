@@ -21,6 +21,7 @@ interface Game_View_Props {
 class Game_Manager {
 	_Blit_Manager: Blit_Manager;
 	_Asset_Manager: Asset_Manager;
+	_Tilemap_Manager: Tilemap_Manager;
 	/*
 		We need to handle individual turns progressing, so we'll need something to track modality.  We'll need a set of flags indicating what our mode is - are we watching a turn be animated, are we watching the enemy do a move?  Are we watching the player do their move?
 		
@@ -33,22 +34,25 @@ class Game_Manager {
 			- stack up this successive turn propagation in the history
 	*/
 
-	constructor( _Blit_Manager: Blit_Manager, _Asset_Manager: Asset_Manager ) {
+	constructor( _Blit_Manager: Blit_Manager, _Asset_Manager: Asset_Manager, _Tilemap_Manager: Tilemap_Manager ) {
 		this._Blit_Manager = _Blit_Manager;
 		this._Asset_Manager = _Asset_Manager;
+		this._Tilemap_Manager = _Tilemap_Manager;
 
 	}
 
 	
 	do_one_frame_of_rendering = () => {
 		//const img = this.props._Asset_Manager.get_image_data_for_object('hermit');
+		const pos = this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(0,4); 
+		console.log(pos)
 		
 		this._Asset_Manager.draw_image_for_asset_name (
 			/* asset_name */				'hermit',
 			/* _BM */						this._Blit_Manager,
-			/* pos */						{ x: 150, y: 150 },
+			/* pos */						{ x: pos.x, y: pos.y },
 			/* zorder */					12,
-			/* should_use_tile_offset */	false,
+			/* should_use_tile_offset */	true,
 			/* current_milliseconds */		0
 		)
 	}
@@ -70,7 +74,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 	constructor( props ) {
 		super( props );
 
-		this._Game_Manager = new Game_Manager(this.props._Blit_Manager, this.props._Asset_Manager);
+		this._Game_Manager = new Game_Manager(this.props._Blit_Manager, this.props._Asset_Manager, this.props._Tilemap_Manager);
 
 	}
 

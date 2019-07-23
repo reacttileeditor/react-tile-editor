@@ -692,8 +692,8 @@ export class Asset_Manager {
 				{
 					image_ref:	image,
 					dest_point:	{
-						x:			-(dim.w/2) + (should_use_tile_offset ? this.consts.tile_width/2 : 0),
-						y:			-(dim.h/2) + (should_use_tile_offset ? this.consts.tile_height/2 : 0),
+						x:			-Math.floor(dim.w/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+						y:			-Math.floor(dim.h/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
 					}
 				}
 			);

@@ -219,7 +219,7 @@ export class Tilemap_Manager {
 	
 	convert_tile_coords_to_pixel_coords = (x_pos, y_pos) => ({
 		x:	x_pos * this._AM.consts.tile_width +
-			(( Utils.modulo(y_pos, 2) == 1) ? (-this._AM.consts.tile_width / 2) : 0),
+			(( Utils.modulo(y_pos, 2) == 1) ? Math.floor(-this._AM.consts.tile_width / 2) : 0),
 		y:	y_pos * this._AM.consts.tile_height
 	})
 	
