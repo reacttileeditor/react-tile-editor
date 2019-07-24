@@ -17,14 +17,17 @@ interface Props {
 }
 
 interface State {
-	mousedown_pos?: {x: number, y: number},
+	mousedown_pos?: Point2D,
 }
+
+import { Point2D, Rectangle } from './interfaces';
 
 
 export class Canvas_View extends React.Component <Props, State> {
 	ctx: CanvasRenderingContext2D;
 	render_loop_interval: number|undefined;
 	canvas: HTMLCanvasElement;
+	defaultCanvasBounds: Point2D;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( props ) {
@@ -32,6 +35,11 @@ export class Canvas_View extends React.Component <Props, State> {
 		
 		this.state = {
 			mousedown_pos: undefined,
+		}
+		
+		this.defaultCanvasBounds = {
+			x: 567,
+			y: 325,		
 		}
 	}
 
@@ -72,17 +80,35 @@ export class Canvas_View extends React.Component <Props, State> {
 	}
 
 	get_mouse_pos_for_action = ( e, should_constrain ) => {
-		//const mousePos = { x: e.nativeEvent.clientX, y: e.nativeEvent.clientY };
-		/*
-			Possible TODO: e.offsetX is an experimental feature that may not be available in IE; if it's not, we'll need to calculate a similar value by getting our canvas's position on the page, and calculating an equivalent of the same value by subtracting the canvas position from e.pageX
-		*/
 		const bgRectSrc = this.canvas.getBoundingClientRect();
 		const bgRect = { x: bgRectSrc.left, y: bgRectSrc.top, w: bgRectSrc.right - bgRectSrc.left, h: bgRectSrc.bottom - bgRectSrc.top };
-		const mousePos = (() => { if(e.nativeEvent !== undefined) {
-			return { x: e.nativeEvent.clientX - bgRect.x, y: e.nativeEvent.clientY - bgRect.y };
+
+
+			/*
+				This exists to enable having a canvas that's got different bounds than its native pixel size (generally something like 2x, but this should be general enough to handle wacky alternatives, including situations where it's being vertically stretched or w/e.
+			*/
+		const scaleCoeff = {
+			x: bgRect.w / this.defaultCanvasBounds.x,
+			y: bgRect.h / this.defaultCanvasBounds.y
+		}
+
+		const mousePosRaw = (() => { if(e.nativeEvent !== undefined) {
+			return	{
+						x: e.nativeEvent.clientX - bgRect.x,
+						y: e.nativeEvent.clientY - bgRect.y
+					};
 		} else {
-			return { x: e.clientX - bgRect.x, y: e.clientY - bgRect.y };
+			return	{
+						x: e.clientX - bgRect.x,
+						y: e.clientY - bgRect.y
+					};
 		}})();
+
+		const mousePos =	{
+								x: Math.round(mousePosRaw.x / scaleCoeff.x),
+								y: Math.round(mousePosRaw.y / scaleCoeff.y)
+							};
+
 
 		if( should_constrain ){
 			return {
@@ -147,8 +173,8 @@ export class Canvas_View extends React.Component <Props, State> {
 		return <div className="canvas_holder">
 			<canvas
 				ref={(node) => {this.canvas = node!;}}
-				width="567"
-				height="325"
+				width={this.defaultCanvasBounds.x}
+				height={this.defaultCanvasBounds.y}
 			
 				onMouseDown={ this.mousedownListener }
 				onMouseMove={ this.mousemoveListener }
