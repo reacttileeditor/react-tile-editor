@@ -217,10 +217,10 @@ export class Tilemap_Manager {
 		return final_coords;
 	}
 	
-	convert_tile_coords_to_pixel_coords = (x_pos, y_pos) => ({
-		x:	x_pos * this._AM.consts.tile_width +
-			(( Utils.modulo(y_pos, 2) == 1) ? Math.floor(-this._AM.consts.tile_width / 2) : 0),
-		y:	y_pos * this._AM.consts.tile_height
+	convert_tile_coords_to_pixel_coords = (pos : Point2D) => ({
+		x:	pos.x * this._AM.consts.tile_width +
+			(( Utils.modulo(pos.y, 2) == 1) ? Math.floor(-this._AM.consts.tile_width / 2) : 0),
+		y:	pos.y * this._AM.consts.tile_height
 	})
 	
 	handle_mouse_click = (x_pos, y_pos, selected_tile_type) => {

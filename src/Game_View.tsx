@@ -9,6 +9,7 @@ import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
 
 import "./Primary_View.scss";
+import { Point2D, Rectangle } from './interfaces';
 
 interface Game_View_Props {
 	_Asset_Manager: Asset_Manager,
@@ -18,10 +19,23 @@ interface Game_View_Props {
 	_Tilemap_Manager: Tilemap_Manager,
 }
 
+interface Game_State {
+	creature_list: Array<Creature>
+	//turn_num
+}
+
+class Creature {
+	tile_pos: Point2D
+	//type
+	//team
+}
+
 class Game_Manager {
 	_Blit_Manager: Blit_Manager;
 	_Asset_Manager: Asset_Manager;
 	_Tilemap_Manager: Tilemap_Manager;
+	game_state: Game_State;
+	
 	/*
 		We need to handle individual turns progressing, so we'll need something to track modality.  We'll need a set of flags indicating what our mode is - are we watching a turn be animated, are we watching the enemy do a move?  Are we watching the player do their move?
 		
@@ -39,22 +53,28 @@ class Game_Manager {
 		this._Asset_Manager = _Asset_Manager;
 		this._Tilemap_Manager = _Tilemap_Manager;
 
+
+		this.game_state = {
+			creature_list: [{
+				tile_pos: {x: 0, y: 6}
+			}]
+		};
 	}
 
 	
 	do_one_frame_of_rendering = () => {
-		//const img = this.props._Asset_Manager.get_image_data_for_object('hermit');
-		const pos = this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(0,4); 
-		console.log(pos)
-		
-		this._Asset_Manager.draw_image_for_asset_name (
-			/* asset_name */				'hermit',
-			/* _BM */						this._Blit_Manager,
-			/* pos */						{ x: pos.x, y: pos.y },
-			/* zorder */					12,
-			/* should_use_tile_offset */	true,
-			/* current_milliseconds */		0
-		)
+		//const pos = this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(0,4); 
+
+		_.map(this.game_state.creature_list, (val,idx) => {
+			this._Asset_Manager.draw_image_for_asset_name (
+				/* asset_name */				'hermit',
+				/* _BM */						this._Blit_Manager,
+				/* pos */						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+				/* zorder */					12,
+				/* should_use_tile_offset */	true,
+				/* current_milliseconds */		0
+			)
+		})
 	}
 
 
