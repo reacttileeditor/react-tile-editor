@@ -51,7 +51,11 @@ export class Canvas_View extends React.Component <Props, State> {
 
 	}
 
+	componentWillUnmount() {
+		document.removeEventListener ('mouseup',   this.mouseupListener,   {capture: true});
+		document.removeEventListener ('mousemove', this.mousemoveListener, {capture: true});
 	
+	}	
 
 /*----------------------- event handling -----------------------*/
 	/*

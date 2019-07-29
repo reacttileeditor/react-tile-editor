@@ -77,7 +77,6 @@ class Game_Manager {
 		})
 	}
 
-
 }
 
 class Game_Turn_State {
@@ -136,8 +135,8 @@ export class Game_View extends React.Component <Game_View_Props> {
 		return <div className="master_node">
 			<Canvas_View
 				{...this.props}
-				handle_canvas_click={  ()=>{ console.log('click')} }
-				handle_canvas_keydown={ ()=>{ console.log('keydown')} }
+				handle_canvas_click={  ()=>{ console.log('game_click')} }
+				handle_canvas_keydown={ ()=>{ console.log('game_keydown')} }
 			/>
 		</div>;
 	}
