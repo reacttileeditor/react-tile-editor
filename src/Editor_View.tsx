@@ -65,8 +65,11 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 	}
 
 /*----------------------- I/O routines -----------------------*/
-	handle_canvas_click = (x: number, y: number) => {
-		this.props._Tilemap_Manager.handle_mouse_click( x, y, this.state.selected_tile_type );
+	handle_canvas_click = (x_pos: number, y_pos: number) => {
+		this.props._Tilemap_Manager.modify_tile_status(
+			this.props._Tilemap_Manager.convert_pixel_coords_to_tile_coords(x_pos, y_pos),
+			this.state.selected_tile_type
+		);
 	
 	}
 

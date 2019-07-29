@@ -70,6 +70,7 @@ export class Canvas_View extends React.Component <Props, State> {
 		//this is where we had the giant switch statement of actions to perform.
 		//console.log("MousePos:", mousePos);
 		this.props._Tilemap_Manager.handle_mouse_move( mousePos.x, mousePos.y );
+		//this.props.handle_mouse_move( mousePos );
 	}
 
 	constrain = ( min_limit, value, max_limit ) => {
@@ -137,7 +138,6 @@ export class Canvas_View extends React.Component <Props, State> {
 	mousemoveListener = (e) => {
 		this.track_canvas_move(e);
 		e.stopPropagation();
-		// do whatever is needed while the user is moving the cursor around
 	}
 
 	mouseupListener = (e) => {

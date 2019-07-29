@@ -222,10 +222,6 @@ export class Tilemap_Manager {
 			(( Utils.modulo(pos.y, 2) == 1) ? Math.floor(-this._AM.consts.tile_width / 2) : 0),
 		y:	pos.y * this._AM.consts.tile_height
 	})
-	
-	handle_mouse_click = (x_pos, y_pos, selected_tile_type) => {
-		this.modify_tile_status( this.convert_pixel_coords_to_tile_coords(x_pos, y_pos), selected_tile_type );
-	}
 
 	handle_mouse_move = (x_pos, y_pos) => {
 		this.set_cursor_pos( this.convert_pixel_coords_to_tile_coords(x_pos, y_pos) );
