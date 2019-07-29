@@ -137,6 +137,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 				{...this.props}
 				handle_canvas_click={  ()=>{ console.log('game_click')} }
 				handle_canvas_keydown={ ()=>{ console.log('game_keydown')} }
+				handle_canvas_mouse_move={ ()=>{ console.log('game_mouse_move')} }
 			/>
 		</div>;
 	}

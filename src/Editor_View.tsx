@@ -70,7 +70,11 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 			this.props._Tilemap_Manager.convert_pixel_coords_to_tile_coords(x_pos, y_pos),
 			this.state.selected_tile_type
 		);
-	
+	}
+
+	handle_canvas_mouse_move = (mouse_pos) => {
+		this.props._Tilemap_Manager.set_cursor_pos( this.props._Tilemap_Manager.convert_pixel_coords_to_tile_coords(mouse_pos.x, mouse_pos.y) );
+		
 	}
 
 	handle_canvas_keydown = (event) => {
@@ -101,6 +105,7 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 				{...this.props}
 				handle_canvas_click={this.handle_canvas_click}
 				handle_canvas_keydown={this.handle_canvas_keydown}
+				handle_canvas_mouse_move={this.handle_canvas_mouse_move}
 			/>
 			<div className="tile_palette">
 			{

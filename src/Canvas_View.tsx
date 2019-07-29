@@ -14,6 +14,7 @@ interface Props {
 	
 	handle_canvas_click: Function,
 	handle_canvas_keydown: Function,
+	handle_canvas_mouse_move: Function,
 }
 
 interface State {
@@ -69,8 +70,8 @@ export class Canvas_View extends React.Component <Props, State> {
 
 		//this is where we had the giant switch statement of actions to perform.
 		//console.log("MousePos:", mousePos);
-		this.props._Tilemap_Manager.handle_mouse_move( mousePos.x, mousePos.y );
-		//this.props.handle_mouse_move( mousePos );
+		//this.props._Tilemap_Manager.handle_mouse_move( mousePos.x, mousePos.y );
+		this.props.handle_canvas_mouse_move( mousePos );
 	}
 
 	constrain = ( min_limit, value, max_limit ) => {
@@ -151,7 +152,7 @@ export class Canvas_View extends React.Component <Props, State> {
 		e.stopPropagation ();
 
 		//annul any in-progress operations here
-		this.props._Tilemap_Manager.annul_current_drag_operation();
+		//this.props._Tilemap_Manager.annul_current_drag_operation();
 
 		this.setState({mousedown_pos: undefined});
 	}

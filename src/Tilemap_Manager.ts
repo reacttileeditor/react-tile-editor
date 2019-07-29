@@ -223,12 +223,4 @@ export class Tilemap_Manager {
 		y:	pos.y * this._AM.consts.tile_height
 	})
 
-	handle_mouse_move = (x_pos, y_pos) => {
-		this.set_cursor_pos( this.convert_pixel_coords_to_tile_coords(x_pos, y_pos) );
-	}
-
-	
-	annul_current_drag_operation = () => {
-	
-	}
 }
