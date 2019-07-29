@@ -14,7 +14,6 @@ import { Point2D, Rectangle } from './interfaces';
 interface tileViewState {
 	tileStatus: [[string]],
 	initialized: boolean,
-	cursor_pos: Point2D,
 }
 
 
@@ -29,7 +28,6 @@ export class Tilemap_Manager {
 		this.state = {
 			tileStatus: [['']],
 			initialized: false,
-			cursor_pos: {x:0, y:0},
 		};
 		
 		this._AM = _Asset_Manager;
@@ -67,10 +65,6 @@ export class Tilemap_Manager {
 				this.state.tileStatus[pos.y][pos.x] = selected_tile_type;
 			}
 		}
-	}
-
-	set_cursor_pos = (coords) => {
-		this.state.cursor_pos = coords;
 	}
 
 
@@ -127,9 +121,6 @@ export class Tilemap_Manager {
 														);
 	}
 	
-	draw_cursor = () => {
-		this.draw_tile_at_coords( this.state.cursor_pos, 'cursor', 0);
-	}
 	
 
 	get_tile_comparator_sample_for_pos = ( pos: Point2D ): TileComparatorSample => {
@@ -189,7 +180,6 @@ export class Tilemap_Manager {
 		if(this.state.initialized){
 			this._BM.fill_canvas_with_solid_color();
 			this.draw_tiles();
-			this.draw_cursor();
 			this._BM.draw_entire_frame();
 			this._BM.draw_fps();
 		} else {

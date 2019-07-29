@@ -26,14 +26,38 @@ interface Editor_View_State {
 
 export class Editor_View extends React.Component <Editor_View_Props, Editor_View_State> {
 	render_loop_interval: number|undefined;
+	state: {
+		selected_tile_type: string,
+		cursor_pos: Point2D,
+	}
 
 	constructor( props ) {
 		super( props );
 
 		this.state = {
 			selected_tile_type: '',
+			cursor_pos: { x: 0, y: 0 },
 		};
 	}
+
+/*----------------------- cursor stuff -----------------------*/
+	set_cursor_pos = (coords) => {
+		this.state.cursor_pos = coords;
+	}
+
+	draw_cursor = () => {
+		//const pos = this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(0,4); 
+
+		this.props._Asset_Manager.draw_image_for_asset_name (
+			/* asset_name */				'cursor',
+			/* _BM */						this.props._Blit_Manager,
+			/* pos */						this.props._Tilemap_Manager.convert_tile_coords_to_pixel_coords( this.state.cursor_pos ),
+			/* zorder */					12,
+			/* should_use_tile_offset */	true,
+			/* current_milliseconds */		0
+		)
+	}
+
 
 /*----------------------- core drawing routines -----------------------*/
 	start_render_loop = () => {
@@ -44,7 +68,9 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 
 	render_canvas = () => {
 		this.props._Tilemap_Manager.do_one_frame_of_rendering();
+		this.draw_cursor();
 	}
+
 
 
 	componentDidMount() {
@@ -73,7 +99,9 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 	}
 
 	handle_canvas_mouse_move = (mouse_pos) => {
-		this.props._Tilemap_Manager.set_cursor_pos( this.props._Tilemap_Manager.convert_pixel_coords_to_tile_coords(mouse_pos.x, mouse_pos.y) );
+		this.set_cursor_pos(
+			this.props._Tilemap_Manager.convert_pixel_coords_to_tile_coords(mouse_pos.x, mouse_pos.y)
+		);
 		
 	}
 
