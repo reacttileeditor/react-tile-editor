@@ -81,8 +81,7 @@ export class Canvas_View extends React.Component <Props, State> {
 	handle_canvas_click = ( e ) => {
 		var mousePos = this.get_mouse_pos_for_action(e, true);
 	
-		//start_any_operation( opname, mousePos.x, mousePos.y );
-		this.props.handle_canvas_click( mousePos.x, mousePos.y);
+		this.props.handle_canvas_click( mousePos );
 	}
 
 	get_mouse_pos_for_action = ( e, should_constrain ) => {

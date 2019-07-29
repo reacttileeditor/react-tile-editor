@@ -187,11 +187,11 @@ export class Tilemap_Manager {
 		}
 	}
 
-	convert_pixel_coords_to_tile_coords = (x_pos, y_pos) => {
+	convert_pixel_coords_to_tile_coords = (pos: Point2D) => {
 		let { consts } = this._AM;
-		let position = this._BM.yield_world_coords_for_absolute_coords({x: x_pos, y: y_pos});
+		let position = this._BM.yield_world_coords_for_absolute_coords({x: pos.x, y: pos.y});
 
-		let universal_hex_offset = Utils.modulo(y_pos, 2) == 1 ? Math.floor(consts.tile_width / 2) : 0;
+		let universal_hex_offset = Utils.modulo(pos.y, 2) == 1 ? Math.floor(consts.tile_width / 2) : 0;
 	
 		let tile_coords = {
 			x: Math.floor( (position.x) / consts.tile_width ),
@@ -200,7 +200,7 @@ export class Tilemap_Manager {
 		
 		//now we do the odd-row offset for the hex tiles
 		let final_coords = {
-			x: tile_coords.x + (( Utils.modulo(tile_coords.y, 2) == 1) && ( Utils.modulo(x_pos, consts.tile_width) < consts.tile_width / 2) ? -1 : 0),
+			x: tile_coords.x + (( Utils.modulo(tile_coords.y, 2) == 1) && ( Utils.modulo(pos.x, consts.tile_width) < consts.tile_width / 2) ? -1 : 0),
 			y: tile_coords.y
 		};
 		

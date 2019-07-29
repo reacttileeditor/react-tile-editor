@@ -77,6 +77,11 @@ class Game_Manager {
 		})
 	}
 
+	handle_click = (pos) => {
+		this.game_state.creature_list = [{
+			tile_pos: this._Tilemap_Manager.convert_pixel_coords_to_tile_coords( pos )
+		}]
+	}
 }
 
 class Game_Turn_State {
@@ -135,7 +140,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 		return <div className="master_node">
 			<Canvas_View
 				{...this.props}
-				handle_canvas_click={  ()=>{ console.log('game_click')} }
+				handle_canvas_click={ this._Game_Manager.handle_click }
 				handle_canvas_keydown={ ()=>{ console.log('game_keydown')} }
 				handle_canvas_mouse_move={ ()=>{ console.log('game_mouse_move')} }
 			/>
