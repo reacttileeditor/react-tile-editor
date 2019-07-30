@@ -20,12 +20,14 @@ interface Game_View_Props {
 }
 
 interface Game_State {
+	selected_object_index: number|null,
 	creature_list: Array<Creature>
 	//turn_num
 }
 
-class Creature {
-	tile_pos: Point2D
+interface Creature {
+	tile_pos: Point2D,
+	creature_image: string
 	//type
 	//team
 }
@@ -55,8 +57,13 @@ class Game_Manager {
 
 
 		this.game_state = {
+			selected_object_index: null,
 			creature_list: [{
-				tile_pos: {x: 0, y: 6}
+				tile_pos: {x: 0, y: 6},
+				creature_image: 'hermit',
+			},{
+				tile_pos: {x: 2, y: 4},
+				creature_image: 'peasant',
 			}]
 		};
 	}
@@ -67,20 +74,56 @@ class Game_Manager {
 
 		_.map(this.game_state.creature_list, (val,idx) => {
 			this._Asset_Manager.draw_image_for_asset_name (
-				/* asset_name */				'hermit',
+				/* asset_name */				val.creature_image,
 				/* _BM */						this._Blit_Manager,
 				/* pos */						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
 				/* zorder */					12,
 				/* should_use_tile_offset */	true,
 				/* current_milliseconds */		0
 			)
+			
+			if(this.game_state.selected_object_index == idx){
+				this._Asset_Manager.draw_image_for_asset_name (
+					/* asset_name */				'cursor',
+					/* _BM */						this._Blit_Manager,
+					/* pos */						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+					/* zorder */					10,
+					/* should_use_tile_offset */	true,
+					/* current_milliseconds */		0
+				)
+				
+			}
 		})
 	}
 
 	handle_click = (pos) => {
-		this.game_state.creature_list = [{
-			tile_pos: this._Tilemap_Manager.convert_pixel_coords_to_tile_coords( pos )
-		}]
+// 		this.game_state.creature_list = [{
+// 			tile_pos: this._Tilemap_Manager.convert_pixel_coords_to_tile_coords( pos )
+// 		}]
+		this.select_object_based_on_tile_click(pos);
+	}
+	
+	select_object_based_on_tile_click = (pos) => {
+		/*
+			This handles two "modes" simultaneously.  If we click on an object, then we change the current selected object to be the one we clicked on (its position is occupied, and ostensibly can't be moved into - this might need to change with our game rules being what they are, but we'll cross that bridge later).  If we click on the ground, then we're intending to move the current object to that location.
+		*/
+		const new_pos = this._Tilemap_Manager.convert_pixel_coords_to_tile_coords( pos );
+		
+		const newly_selected_creature = _.findIndex( this.game_state.creature_list, {
+			tile_pos: new_pos
+		} );
+		
+		if(newly_selected_creature === -1){
+			//do move command
+			if( this.game_state.selected_object_index != null ){
+				this.game_state.creature_list[ this.game_state.selected_object_index ].tile_pos = new_pos;
+			}
+		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
+			this.game_state.selected_object_index = null;
+		} else {
+		
+			this.game_state.selected_object_index = newly_selected_creature;
+		}
 	}
 }
 
