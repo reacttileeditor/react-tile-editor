@@ -51,6 +51,7 @@ class Game_Manager {
 	_Asset_Manager: Asset_Manager;
 	_Tilemap_Manager: Tilemap_Manager;
 	game_state: Game_State;
+	update_game_state_for_ui: Function;
 	
 	/*
 		We need to handle individual turns progressing, so we'll need something to track modality.  We'll need a set of flags indicating what our mode is - are we watching a turn be animated, are we watching the enemy do a move?  Are we watching the player do their move?
@@ -64,10 +65,16 @@ class Game_Manager {
 			- stack up this successive turn propagation in the history
 	*/
 
-	constructor( _Blit_Manager: Blit_Manager, _Asset_Manager: Asset_Manager, _Tilemap_Manager: Tilemap_Manager ) {
+	constructor(
+		_Blit_Manager: Blit_Manager,
+		_Asset_Manager: Asset_Manager,
+		_Tilemap_Manager: Tilemap_Manager,
+		_update_game_state_for_ui: Function
+	) {
 		this._Blit_Manager = _Blit_Manager;
 		this._Asset_Manager = _Asset_Manager;
 		this._Tilemap_Manager = _Tilemap_Manager;
+		this.update_game_state_for_ui = _update_game_state_for_ui;
 
 
 		this.game_state = {
@@ -86,6 +93,8 @@ class Game_Manager {
 	do_one_frame_of_rendering = () => {
 		//const pos = this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(0,4); 
 
+		this.update_game_state_for_ui(this.game_state);
+		
 		_.map(this.game_state.creature_list, (val,idx) => {
 			this._Asset_Manager.draw_image_for_asset_name (
 				/* asset_name */				val.creature_image,
@@ -126,7 +135,6 @@ class Game_Manager {
 			undefined
 		)
 		
-		debugger;
 		return returnVal;
 	}
 	
@@ -166,16 +174,15 @@ interface Game_Status_Display_Props {
 
 class Game_Status_Display extends React.Component <Game_Status_Display_Props> {
 	render = () => {
-		const _GM = this.props._Game_Manager;
-	
+		const _GS = this.props.game_state;
 	
 		return (
 			<div>
 				<div>
-					{`creatures: ${_.size(_GM.game_state.creature_list)}`}
+					{`creatures: ${_.size(_GS.creature_list)}`}
 				</div>
 				<div>
-					{ ıf(_GM.get_selected_creature() !== undefined, _GM.get_selected_creature()) }
+					{ `${ıf(_GS.selected_object_index !== undefined, _GS.selected_object_index)}` }
 				</div>
 			</div>
 		)
@@ -183,7 +190,7 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props> {
 }
 
 
-export class Game_View extends React.Component <Game_View_Props> {
+export class Game_View extends React.Component <Game_View_Props, {game_state: Game_State}> {
 	render_loop_interval: number|undefined;
 	_Game_Manager: Game_Manager;
 	awaiting_render: boolean;
@@ -191,8 +198,16 @@ export class Game_View extends React.Component <Game_View_Props> {
 	constructor( props ) {
 		super( props );
 
-		this._Game_Manager = new Game_Manager(this.props._Blit_Manager, this.props._Asset_Manager, this.props._Tilemap_Manager);
+		this._Game_Manager = new Game_Manager(this.props._Blit_Manager, this.props._Asset_Manager, this.props._Tilemap_Manager, this.update_game_state_for_ui);
 
+		this.state = {
+			game_state: {}
+		};
+	}
+
+
+	update_game_state_for_ui = (game_state: Game_State) => {
+		this.setState({game_state: _.cloneDeep(game_state)});
 	}
 
 /*----------------------- core drawing routines -----------------------*/
@@ -239,6 +254,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 			/>
 			<Game_Status_Display
 				_Game_Manager={this._Game_Manager}
+				game_state={this.state.game_state}
 			/>
 		</div>;
 	}
