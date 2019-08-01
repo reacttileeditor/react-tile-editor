@@ -20,7 +20,7 @@ interface Game_View_Props {
 }
 
 interface Game_State {
-	selected_object_index: number|null,
+	selected_object_index?: number,
 	creature_list: Array<Creature>
 	//turn_num
 }
@@ -30,6 +30,20 @@ interface Creature {
 	creature_image: string
 	//type
 	//team
+}
+
+
+var ıf = function(test, true_case, false_case?){
+	//because ternaries have awful legibility, but we need a "expression" rather than the "statement" provided by a builtin if() clause.  We need something terse that resolves to a value.
+	if( test ){
+		return true_case;
+	} else {
+		if( !_.isUndefined(false_case) ){
+			return false_case;
+		} else {
+			return undefined;
+		}
+	}
 }
 
 class Game_Manager {
@@ -57,7 +71,7 @@ class Game_Manager {
 
 
 		this.game_state = {
-			selected_object_index: null,
+			selected_object_index: undefined,
 			creature_list: [{
 				tile_pos: {x: 0, y: 6},
 				creature_image: 'hermit',
@@ -102,6 +116,19 @@ class Game_Manager {
 // 		}]
 		this.select_object_based_on_tile_click(pos);
 	}
+
+	get_selected_creature = ():Creature|undefined => {
+		const idx = this.game_state.selected_object_index;
+		
+		
+		const returnVal = ıf(!_.isNil(idx),
+			this.game_state.creature_list[idx as number],
+			undefined
+		)
+		
+		debugger;
+		return returnVal;
+	}
 	
 	select_object_based_on_tile_click = (pos) => {
 		/*
@@ -115,11 +142,11 @@ class Game_Manager {
 		
 		if(newly_selected_creature === -1){
 			//do move command
-			if( this.game_state.selected_object_index != null ){
+			if( this.game_state.selected_object_index != undefined ){
 				this.game_state.creature_list[ this.game_state.selected_object_index ].tile_pos = new_pos;
 			}
 		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
-			this.game_state.selected_object_index = null;
+			this.game_state.selected_object_index = undefined;
 		} else {
 		
 			this.game_state.selected_object_index = newly_selected_creature;
@@ -130,6 +157,29 @@ class Game_Manager {
 class Game_Turn_State {
 	/* state of an individual turn */
 
+}
+
+interface Game_Status_Display_Props {
+	_Game_Manager: Game_Manager,
+}
+
+
+class Game_Status_Display extends React.Component <Game_Status_Display_Props> {
+	render = () => {
+		const _GM = this.props._Game_Manager;
+	
+	
+		return (
+			<div>
+				<div>
+					{`creatures: ${_.size(_GM.game_state.creature_list)}`}
+				</div>
+				<div>
+					{ ıf(_GM.get_selected_creature() !== undefined, _GM.get_selected_creature()) }
+				</div>
+			</div>
+		)
+	}
 }
 
 
@@ -186,6 +236,9 @@ export class Game_View extends React.Component <Game_View_Props> {
 				handle_canvas_click={ this._Game_Manager.handle_click }
 				handle_canvas_keydown={ ()=>{ console.log('game_keydown')} }
 				handle_canvas_mouse_move={ ()=>{ console.log('game_mouse_move')} }
+			/>
+			<Game_Status_Display
+				_Game_Manager={this._Game_Manager}
 			/>
 		</div>;
 	}
