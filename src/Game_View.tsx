@@ -69,13 +69,11 @@ class Game_Manager {
 		_Blit_Manager: Blit_Manager,
 		_Asset_Manager: Asset_Manager,
 		_Tilemap_Manager: Tilemap_Manager,
-		_update_game_state_for_ui: Function
 	) {
 		this._Blit_Manager = _Blit_Manager;
 		this._Asset_Manager = _Asset_Manager;
 		this._Tilemap_Manager = _Tilemap_Manager;
-		this.update_game_state_for_ui = _update_game_state_for_ui;
-
+		this.update_game_state_for_ui = ()=>{};
 
 		this.game_state = {
 			selected_object_index: undefined,
@@ -89,6 +87,9 @@ class Game_Manager {
 		};
 	}
 
+	set_update_function = (func)=>{
+ 		this.update_game_state_for_ui = func;
+	}
 	
 	do_one_frame_of_rendering = () => {
 		//const pos = this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(0,4); 
@@ -172,9 +173,22 @@ interface Game_Status_Display_Props {
 }
 
 
-class Game_Status_Display extends React.Component <Game_Status_Display_Props> {
+class Game_Status_Display extends React.Component <Game_Status_Display_Props, {game_state: Game_State}> {
+	constructor( props ) {
+		super( props );
+
+		this.state = {
+			game_state: {}
+		};
+	}
+
+
+	update_game_state_for_ui = (game_state: Game_State) => {
+		this.setState({game_state: _.cloneDeep(game_state)});
+	}
+
 	render = () => {
-		const _GS = this.props.game_state;
+		const _GS = this.state.game_state;
 	
 		return (
 			<div>
@@ -190,25 +204,19 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props> {
 }
 
 
-export class Game_View extends React.Component <Game_View_Props, {game_state: Game_State}> {
+
+export class Game_View extends React.Component <Game_View_Props> {
 	render_loop_interval: number|undefined;
 	_Game_Manager: Game_Manager;
 	awaiting_render: boolean;
+	gsd: Game_Status_Display;
 
 	constructor( props ) {
 		super( props );
 
-		this._Game_Manager = new Game_Manager(this.props._Blit_Manager, this.props._Asset_Manager, this.props._Tilemap_Manager, this.update_game_state_for_ui);
-
-		this.state = {
-			game_state: {}
-		};
+		this._Game_Manager = new Game_Manager(this.props._Blit_Manager, this.props._Asset_Manager, this.props._Tilemap_Manager);
 	}
 
-
-	update_game_state_for_ui = (game_state: Game_State) => {
-		this.setState({game_state: _.cloneDeep(game_state)});
-	}
 
 /*----------------------- core drawing routines -----------------------*/
 	iterate_render_loop = () => {
@@ -228,6 +236,7 @@ export class Game_View extends React.Component <Game_View_Props, {game_state: Ga
 	}
 
 	componentDidMount() {
+		this._Game_Manager.set_update_function( this.gsd.update_game_state_for_ui );
 		if(this.props.assets_loaded){
 			this.iterate_render_loop();
 		}
@@ -253,8 +262,8 @@ export class Game_View extends React.Component <Game_View_Props, {game_state: Ga
 				handle_canvas_mouse_move={ ()=>{ console.log('game_mouse_move')} }
 			/>
 			<Game_Status_Display
+				ref={(node) => {this.gsd = node!;}}
 				_Game_Manager={this._Game_Manager}
-				game_state={this.state.game_state}
 			/>
 		</div>;
 	}
