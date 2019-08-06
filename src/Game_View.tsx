@@ -22,6 +22,7 @@ interface Game_View_Props {
 }
 
 interface Game_State {
+	current_turn: number,
 	selected_object_index?: number,
 	creature_list: Array<Creature>
 	//turn_num
@@ -65,6 +66,7 @@ class Game_Manager {
 		this.update_game_state_for_ui = ()=>{};
 
 		this.game_state = {
+			current_turn: 0,
 			selected_object_index: undefined,
 			creature_list: [{
 				tile_pos: {x: 0, y: 6},
@@ -76,8 +78,12 @@ class Game_Manager {
 		};
 	}
 
-	set_update_function = (func)=>{
+	set_update_function = (func) => {
  		this.update_game_state_for_ui = func;
+	}
+	
+	advance_turn = () => {
+		this.game_state.current_turn += 1;
 	}
 	
 	do_one_frame_of_rendering = () => {
@@ -159,6 +165,7 @@ class Game_Turn_State {
 
 interface Game_Status_Display_Props {
 	_Game_Manager: Game_Manager,
+	advance_turn: Function,
 }
 
 
@@ -182,11 +189,19 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 		return (
 			<div>
 				<div>
+					{`turn: ${_GS.current_turn}`}
+				</div>
+				<div>
 					{`creatures: ${_.size(_GS.creature_list)}`}
 				</div>
 				<div>
 					{ `${ƒ.if(_GS.selected_object_index !== undefined, _GS.selected_object_index)}` }
 				</div>
+				<button
+					onClick={this.props.advance_turn}
+				>
+					Next Turn
+				</button>
 			</div>
 		)
 	}
@@ -253,6 +268,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 			<Game_Status_Display
 				ref={(node) => {this.gsd = node!;}}
 				_Game_Manager={this._Game_Manager}
+				advance_turn={this._Game_Manager.advance_turn}
 			/>
 		</div>;
 	}
