@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
+import { ƒ } from "./Utils";
+
 import { Canvas_View } from "./Canvas_View";
 import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
@@ -32,19 +34,6 @@ interface Creature {
 	//team
 }
 
-
-var ıf = function(test, true_case, false_case?){
-	//because ternaries have awful legibility, but we need a "expression" rather than the "statement" provided by a builtin if() clause.  We need something terse that resolves to a value.
-	if( test ){
-		return true_case;
-	} else {
-		if( !_.isUndefined(false_case) ){
-			return false_case;
-		} else {
-			return undefined;
-		}
-	}
-}
 
 class Game_Manager {
 	_Blit_Manager: Blit_Manager;
@@ -131,7 +120,7 @@ class Game_Manager {
 		const idx = this.game_state.selected_object_index;
 		
 		
-		const returnVal = ıf(!_.isNil(idx),
+		const returnVal = ƒ.if(!_.isNil(idx),
 			this.game_state.creature_list[idx as number],
 			undefined
 		)
@@ -196,7 +185,7 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 					{`creatures: ${_.size(_GS.creature_list)}`}
 				</div>
 				<div>
-					{ `${ıf(_GS.selected_object_index !== undefined, _GS.selected_object_index)}` }
+					{ `${ƒ.if(_GS.selected_object_index !== undefined, _GS.selected_object_index)}` }
 				</div>
 			</div>
 		)

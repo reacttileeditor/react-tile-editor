@@ -168,11 +168,15 @@ export class Blit_Manager {
 			}
 		})
 
+		//follow up with a few bits of utility-drawing:
+		this.draw_fps();
+
 		//var bitmap = this._OffScreenBuffer.transferToImageBitmap();
 		this.ctx.drawImage(this._OffScreenBuffer, 0, 0);
 		
 		//then clear it, because the next frame needs to start from scratch
 		this._Draw_List = [];
+		
 	}
 
 	isDrawDataWithBounds( data: DrawData | DrawDataNoBounds ): data is DrawData {
@@ -203,19 +207,18 @@ export class Blit_Manager {
 		this.fps_tracker.current_millisecond = date.getTime();
 		
 		this.draw_fps_text(this.fps_tracker.prior_frame_count);
-
 	}
 
 	draw_fps_text = (value) => {
 		this.osb_ctx.save();
 		this.osb_ctx.font = '12px Helvetica, sans-serif';
 		this.osb_ctx.textAlign = 'center';
-		this.osb_ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+		this.osb_ctx.shadowColor = "rgba(255, 0, 0, 0.5)";
 	    this.osb_ctx.shadowOffsetY = 2;
 	    this.osb_ctx.shadowBlur = 3;
 	    this.osb_ctx.fillStyle = "#ffffff";
 		this.osb_ctx.textBaseline = 'middle';
-		this.osb_ctx.fillText(value.toString(), (this.ctx.canvas.width - 10), 10);
+		this.osb_ctx.fillText(value.toString(), (this.osb_ctx.canvas.width - 10), 10);
 		this.osb_ctx.restore();
 	}
 
