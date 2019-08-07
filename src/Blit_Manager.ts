@@ -30,7 +30,9 @@ interface DrawDataNoBounds {
 }
 
 interface BlitManagerState {
-	viewport_offset: Point2D,
+	//we've got two values here - we do a "intended" value for the viewport, but when we change the current camera position, we actually tween towards it gradually.  The current position we're *actually* aimed at gets stored in a different variable, since it either has to be derived from some sort of tweening function, or directly stored (if we did the tweeing function, the time-offset certainly would have to, so dimensionally this at least will always require one dimension of data storage).
+	intended_viewport_offset: Point2D,
+	actual_viewport_offset: Point2D,
 }
 
 
@@ -80,7 +82,8 @@ export class Blit_Manager {
 		};
 
 		this.state = {
-			viewport_offset: {x: 200, y: 0},
+			intended_viewport_offset: {x: 200, y: 0},
+			actual_viewport_offset: {x: 200, y: 0},
 		};
 	}
 
@@ -90,16 +93,16 @@ export class Blit_Manager {
 
 /*----------------------- state manipulation -----------------------*/
 	adjust_viewport_pos = (x, y) => {
-		this.state.viewport_offset = {
-			x: this.state.viewport_offset.x + x,
-			y: this.state.viewport_offset.y + y
+		this.state.intended_viewport_offset = {
+			x: this.state.intended_viewport_offset.x + x,
+			y: this.state.intended_viewport_offset.y + y
 		};
 	}
 
 	yield_world_coords_for_absolute_coords = (pos: Point2D) => {
 		return {
-			x: pos.x - this.state.viewport_offset.x,
-			y: pos.y - this.state.viewport_offset.y
+			x: pos.x - this.state.intended_viewport_offset.x,
+			y: pos.y - this.state.intended_viewport_offset.y
 		}
 	} 
 
@@ -132,7 +135,7 @@ export class Blit_Manager {
 
 				this.osb_ctx.save();
 
-				this.osb_ctx.translate( value.pos.x + this.state.viewport_offset.x, value.pos.y + this.state.viewport_offset.y );
+				this.osb_ctx.translate( value.pos.x + this.state.intended_viewport_offset.x, value.pos.y + this.state.intended_viewport_offset.y );
 				this.osb_ctx.drawImage	(
 					/* file */			value.drawing_data.image_ref,
 
@@ -153,7 +156,7 @@ export class Blit_Manager {
 
 				this.osb_ctx.save();
 
-				this.osb_ctx.translate( value.pos.x + this.state.viewport_offset.x, value.pos.y + this.state.viewport_offset.y );
+				this.osb_ctx.translate( value.pos.x + this.state.intended_viewport_offset.x, value.pos.y + this.state.intended_viewport_offset.y );
 
 				/*
 					The savvy amongst us might wonder - what the hell are we doing providing non-zero xy coords inside this drawImage call if we're already translating the canvas?  These exist to draw the tile with its origin not as 0,0, but as the center of the sprite image.
