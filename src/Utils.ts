@@ -38,3 +38,14 @@ export const ƒ = {
 	}
 
 }
+
+export const convert_bitmask_to_array_of_individual_bit_values = (byteVal) => {
+	var res = [] as Array<number>;
+	
+	while(byteVal){
+		res.push(byteVal & 1);
+		byteVal >>= 1;
+	}
+
+	return res;
+}

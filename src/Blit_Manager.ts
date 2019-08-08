@@ -121,7 +121,7 @@ export class Blit_Manager {
 	
 	draw_entire_frame = () => {
 		this.iterate_viewport_tween();
-		console.log(this.state.actual_viewport_offset);
+// 		console.log(this.state.actual_viewport_offset);
 	
 		//sort it all by painter's algorithm
 		const sortedBlits =	_.sortBy(

@@ -5,7 +5,7 @@ import _ from "lodash";
 var PATH_PREFIX = "/dist/assets/";
 import { Asset_Manager } from "./Asset_Manager";
 import { Tilemap_Manager } from "./Tilemap_Manager";
-
+import * as Utils from "./Utils";
 
 interface Props {
 	assets_loaded: boolean,
@@ -131,8 +131,26 @@ export class Canvas_View extends React.Component <Props, State> {
 
 
 	mousedownListener = (e) => {
+		console.warn(this.extract_which_mouse_button(e));
 		this.handle_canvas_click(e);
 		this.captureMouseEvents(e);
+	}
+
+	extract_which_mouse_button = (e) => {
+		var names = [
+			'left', 'right', 'middle', 'back', 'forward'
+		];
+
+		var buttons =	Utils.convert_bitmask_to_array_of_individual_bit_values(e.buttons)
+						.concat([0, 0, 0, 0, 0])
+						.slice(0, names.length);
+
+		return _.reduce(
+			buttons.map((val, idx) => {
+				return {[names[idx]]: Boolean(val === 1) };
+			}),
+			(a,b) => _.merge(a,b)
+		)
 	}
 
 	mousemoveListener = (e) => {
@@ -182,7 +200,7 @@ export class Canvas_View extends React.Component <Props, State> {
 			
 				onMouseDown={ this.mousedownListener }
 				onMouseMove={ this.mousemoveListener }
-				
+				onContextMenu={ (e) => { e.preventDefault() } }
 			/>
 		</div>;
 	}
