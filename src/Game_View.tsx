@@ -30,11 +30,17 @@ interface Game_State {
 
 interface Creature {
 	tile_pos: Point2D,
-	creature_image: string
+	creature_image: string,
+	planned_tile_pos: Point2D,
 	//type
 	//team
 }
 
+const GameStateInit = {
+	current_turn: 0,
+	selected_object_index: undefined,
+	creature_list: []
+};
 
 class Game_Manager {
 	_Blit_Manager: Blit_Manager;
@@ -70,9 +76,11 @@ class Game_Manager {
 			selected_object_index: undefined,
 			creature_list: [{
 				tile_pos: {x: 0, y: 6},
+				planned_tile_pos: {x: 0, y: 6},
 				creature_image: 'hermit',
 			},{
 				tile_pos: {x: 2, y: 4},
+				planned_tile_pos: {x: 2, y: 4},
 				creature_image: 'peasant',
 			}]
 		};
@@ -83,6 +91,10 @@ class Game_Manager {
 	}
 	
 	advance_turn = () => {
+		_.map(this.game_state.creature_list, (val,idx) => {
+			val.tile_pos = val.planned_tile_pos;
+		})
+	
 		this.game_state.current_turn += 1;
 	}
 	
@@ -96,6 +108,15 @@ class Game_Manager {
 				/* asset_name */				val.creature_image,
 				/* _BM */						this._Blit_Manager,
 				/* pos */						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+				/* zorder */					12,
+				/* should_use_tile_offset */	true,
+				/* current_milliseconds */		0
+			)
+
+			this._Asset_Manager.draw_image_for_asset_name (
+				/* asset_name */				val.creature_image,
+				/* _BM */						this._Blit_Manager,
+				/* pos */						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
 				/* zorder */					12,
 				/* should_use_tile_offset */	true,
 				/* current_milliseconds */		0
@@ -147,7 +168,7 @@ class Game_Manager {
 		if(newly_selected_creature === -1){
 			//do move command
 			if( this.game_state.selected_object_index != undefined ){
-				this.game_state.creature_list[ this.game_state.selected_object_index ].tile_pos = new_pos;
+				this.game_state.creature_list[ this.game_state.selected_object_index ].planned_tile_pos = new_pos;
 			}
 		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
 			this.game_state.selected_object_index = undefined;
@@ -174,7 +195,7 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 		super( props );
 
 		this.state = {
-			game_state: {}
+			game_state: _.cloneDeep(GameStateInit)
 		};
 	}
 
@@ -198,7 +219,7 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 					{ `${ƒ.if(_GS.selected_object_index !== undefined, _GS.selected_object_index)}` }
 				</div>
 				<button
-					onClick={this.props.advance_turn}
+					onClick={(evt)=>{this.props.advance_turn()}}
 				>
 					Next Turn
 				</button>
