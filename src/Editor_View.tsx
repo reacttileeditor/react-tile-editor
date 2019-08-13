@@ -14,11 +14,11 @@ import { Point2D, Rectangle } from './interfaces';
 
 interface Editor_View_Props {
 	_Asset_Manager: Asset_Manager,
-	dimensions: Point2D,
 	_Blit_Manager: Blit_Manager,
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
 	_Tilemap_Manager: Tilemap_Manager,
+	dimensions: Point2D,
 }
 
 interface Editor_View_State {
