@@ -139,8 +139,6 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 			/>
 			<div className="tile_palette">
 			{
-				false
-				&&
 				this.props.assets_loaded
 				&&
 				this.props._Asset_Manager.yield_tile_name_list().map( (value, index) => {

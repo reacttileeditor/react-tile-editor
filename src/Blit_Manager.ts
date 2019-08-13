@@ -86,8 +86,8 @@ export class Blit_Manager {
 
 		this.state = {
 			viewport_tween_progress: 0,
-			intended_viewport_offset: {x: 200, y: 0},
-			actual_viewport_offset: {x: 200, y: 0},
+			intended_viewport_offset: {x: 0, y: 0},
+			actual_viewport_offset: {x: 0, y: 0},
 		};
 	}
 

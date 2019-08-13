@@ -600,11 +600,11 @@ export class Asset_Manager {
 	}
 
 	
-	draw_all_assets_for_tile_type = (tile_name, ctx, should_use_tile_offset) => {
+	draw_all_assets_for_tile_type = (tile_name: string, _BM, pos: Point2D, should_use_tile_offset: boolean) => {
 		let zorders = this.yield_zorder_list_for_tile(tile_name); 
 	
 		zorders.map( (value,index) => {
-			this.draw_image_for_tile_type_at_zorder_and_pos(tile_name, ctx, value, 0, 0, should_use_tile_offset, null_tile_comparator, 0);
+			this.draw_image_for_tile_type_at_zorder_and_pos(tile_name, _BM, value, pos.x, pos.y, should_use_tile_offset, null_tile_comparator, 0);
 		});
 	}
 	

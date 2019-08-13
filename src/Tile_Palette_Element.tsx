@@ -3,6 +3,9 @@ import ReactDOM from "react-dom";
 import _ from "lodash";
 
 import { Asset_Manager } from "./Asset_Manager";
+import { Blit_Manager } from "./Blit_Manager";
+import { Tilemap_Manager } from "./Tilemap_Manager";
+import { Point2D, Rectangle } from './interfaces';
 
 
 interface Props {
@@ -16,6 +19,9 @@ interface Props {
 export class Tile_Palette_Element extends React.Component <Props> {
 	ctx: CanvasRenderingContext2D;
 	canvas: HTMLCanvasElement;
+	_Blit_Manager: Blit_Manager;
+	_Tilemap_Manager: Tilemap_Manager;
+	default_canvas_size: Point2D;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( props ) {
@@ -24,52 +30,49 @@ export class Tile_Palette_Element extends React.Component <Props> {
 		this.state = {
 		};
 		
+		this.default_canvas_size = {x: 50, y: 50};
 	}
 
 	componentDidMount() {
 		this.ctx = this.canvas!.getContext("2d")!;
+		this.initialize_tilemap_manager(this.ctx);
+		
 		this.draw_canvas();
 	}
 
 	componentDidUpdate() {
+		this.ctx = this.canvas!.getContext("2d")!;
+		this.initialize_tilemap_manager(this.ctx);
 		this.draw_canvas();
 	}
 
-/*----------------------- draw ops -----------------------*/
-	fill_canvas_with_solid_color = () => {
-		this.ctx.save();
-	    this.ctx.fillStyle = "#000000";
-		this.ctx.fillRect(0,0, this.ctx.canvas.width, this.ctx.canvas.height);
-		this.ctx.restore();
+	initialize_tilemap_manager = (ctx) => {
+		if( !this._Tilemap_Manager ){
+			this._Blit_Manager = new Blit_Manager(ctx, this.default_canvas_size);
+			this._Tilemap_Manager = new Tilemap_Manager(this.props.asset_manager, this._Blit_Manager);
+		} else {
+			this._Blit_Manager.reset_context(ctx);
+		}
 	}
 
-	draw_headline_text = () => {
-		this.ctx.save();
-		this.ctx.font = '32px Helvetica, sans-serif';
-		this.ctx.textAlign = 'center';
-		this.ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-	    this.ctx.shadowOffsetY = 2;
-	    this.ctx.shadowBlur = 3;
-	    this.ctx.fillStyle = "#ffffff";
-		this.ctx.textBaseline = 'middle';
-		this.ctx.fillText("test", this.ctx.canvas.width / 2.0, this.ctx.canvas.height /2.0);
-		this.ctx.restore();
-	}
+
+/*----------------------- draw ops -----------------------*/
+
 	
 	draw_canvas = () => {
 		let { consts } = this.props.asset_manager;
 
-		this.fill_canvas_with_solid_color();					
-
-		this.ctx.save();
-
-			this.ctx.translate	(
-									50,
-									50
-								);
-			this.props.asset_manager.draw_all_assets_for_tile_type( this.props.tile_name, this.ctx, false );
-
-		this.ctx.restore();
+		this._Blit_Manager.fill_canvas_with_solid_color();
+		this.props.asset_manager.draw_all_assets_for_tile_type(
+			this.props.tile_name,
+			this._Blit_Manager,
+			{
+				x: Math.floor(this.default_canvas_size.x/2),
+				y: Math.floor(this.default_canvas_size.y/2)
+			},
+			false
+		);
+		this._Blit_Manager.draw_entire_frame();
 	}
 	
 	handle_mouse_click = (e) => {
@@ -81,8 +84,12 @@ export class Tile_Palette_Element extends React.Component <Props> {
 		return <div className={`tile_cell${ this.props.selected_tile_type == this.props.tile_name ? ' active' : ''}`}>
 			<canvas
 				ref={(node) => {this.canvas = node!;}}
-				width="100"
-				height="100"
+				width={this.default_canvas_size.x}
+				height={this.default_canvas_size.y}
+				style={ {
+					width: this.default_canvas_size.x * 2,
+					height: this.default_canvas_size.y * 2
+				} }
 			
 				onClick={ this.handle_mouse_click }
 			/>
