@@ -11,6 +11,7 @@ interface Props {
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
 	_Tilemap_Manager: Tilemap_Manager,
+	dimensions: Point2D,
 	
 	handle_canvas_click: Function,
 	handle_canvas_keydown: Function,
@@ -28,7 +29,6 @@ export class Canvas_View extends React.Component <Props, State> {
 	ctx: CanvasRenderingContext2D;
 	render_loop_interval: number|undefined;
 	canvas: HTMLCanvasElement;
-	defaultCanvasBounds: Point2D;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( props ) {
@@ -36,11 +36,6 @@ export class Canvas_View extends React.Component <Props, State> {
 		
 		this.state = {
 			mousedown_pos: undefined,
-		}
-		
-		this.defaultCanvasBounds = {
-			x: 567,
-			y: 325,		
 		}
 	}
 
@@ -93,8 +88,8 @@ export class Canvas_View extends React.Component <Props, State> {
 				This exists to enable having a canvas that's got different bounds than its native pixel size (generally something like 2x, but this should be general enough to handle wacky alternatives, including situations where it's being vertically stretched or w/e.
 			*/
 		const scaleCoeff = {
-			x: bgRect.w / this.defaultCanvasBounds.x,
-			y: bgRect.h / this.defaultCanvasBounds.y
+			x: bgRect.w / this.props.dimensions.x,
+			y: bgRect.h / this.props.dimensions.y
 		}
 
 		const mousePosRaw = (() => { if(e.nativeEvent !== undefined) {
@@ -195,8 +190,8 @@ export class Canvas_View extends React.Component <Props, State> {
 		return <div className="canvas_holder">
 			<canvas
 				ref={(node) => {this.canvas = node!;}}
-				width={this.defaultCanvasBounds.x}
-				height={this.defaultCanvasBounds.y}
+				width={this.props.dimensions.x}
+				height={this.props.dimensions.y}
 			
 				onMouseDown={ this.mousedownListener }
 				onMouseMove={ this.mousemoveListener }

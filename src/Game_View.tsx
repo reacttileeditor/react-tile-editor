@@ -19,6 +19,7 @@ interface Game_View_Props {
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
 	_Tilemap_Manager: Tilemap_Manager,
+	dimensions: Point2D,
 }
 
 interface Game_State {
@@ -282,6 +283,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 		return <div className="master_node">
 			<Canvas_View
 				{...this.props}
+				dimensions={this.props.dimensions}
 				handle_canvas_click={ this._Game_Manager.handle_click }
 				handle_canvas_keydown={ ()=>{ console.log('game_keydown')} }
 				handle_canvas_mouse_move={ ()=>{ console.log('game_mouse_move')} }

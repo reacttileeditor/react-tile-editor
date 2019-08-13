@@ -14,6 +14,7 @@ import { Point2D, Rectangle } from './interfaces';
 
 interface Editor_View_Props {
 	_Asset_Manager: Asset_Manager,
+	dimensions: Point2D,
 	_Blit_Manager: Blit_Manager,
 	assets_loaded: boolean,
 	initialize_tilemap_manager: Function,
@@ -131,6 +132,7 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 			
 			<Canvas_View
 				{...this.props}
+				dimensions={this.props.dimensions}
 				handle_canvas_click={this.handle_canvas_click}
 				handle_canvas_keydown={this.handle_canvas_keydown}
 				handle_canvas_mouse_move={this.handle_canvas_mouse_move}

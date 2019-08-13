@@ -9,6 +9,7 @@ import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
 import { Game_View } from "./Game_View";
 import { Editor_View } from "./Editor_View";
+import { Point2D, Rectangle } from './interfaces';
 
 import "./Primary_View.scss";
 
@@ -22,10 +23,12 @@ interface State {
 
 
 export class Primary_View extends React.Component <Props, State> {
-/*----------------------- initialization and asset loading -----------------------*/
 	_Asset_Manager: Asset_Manager;
 	_Blit_Manager: Blit_Manager;
 	_Tilemap_Manager: Tilemap_Manager;
+	default_canvas_size: Point2D;
+
+/*----------------------- initialization and asset loading -----------------------*/
 
 	constructor( props ) {
 		super( props );
@@ -39,11 +42,13 @@ export class Primary_View extends React.Component <Props, State> {
 		this._Asset_Manager.launch_app( 
 			() => { this.setState({assets_loaded: true}); }
 		);
+		
+		this.default_canvas_size = {x: 567, y: 325};
 	}
 
 	initialize_tilemap_manager = (ctx) => {
 		if( !this._Tilemap_Manager ){
-			this._Blit_Manager = new Blit_Manager(ctx);
+			this._Blit_Manager = new Blit_Manager(ctx, this.default_canvas_size);
 			this._Tilemap_Manager = new Tilemap_Manager(this._Asset_Manager, this._Blit_Manager);
 		} else {
 			this._Blit_Manager.reset_context(ctx);
@@ -60,6 +65,7 @@ export class Primary_View extends React.Component <Props, State> {
 					?
 					<Editor_View
 						assets_loaded={this.state.assets_loaded}
+						dimensions={this.default_canvas_size}
 						_Asset_Manager={this._Asset_Manager}
 						_Blit_Manager={this._Blit_Manager}
 						_Tilemap_Manager={this._Tilemap_Manager}
@@ -68,6 +74,7 @@ export class Primary_View extends React.Component <Props, State> {
 					:
 					<Game_View
 						assets_loaded={this.state.assets_loaded}
+						dimensions={this.default_canvas_size}
 						_Asset_Manager={this._Asset_Manager}
 						_Blit_Manager={this._Blit_Manager}
 						_Tilemap_Manager={this._Tilemap_Manager}

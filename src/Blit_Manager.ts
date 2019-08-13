@@ -63,14 +63,16 @@ export class Blit_Manager {
 	_Draw_List: Array<DrawEntity>;
 	_OffScreenBuffer: HTMLCanvasElement;
 	osb_ctx: CanvasRenderingContext2D;
+	_dimensions: Point2D;
 
 /*----------------------- initialization and asset loading -----------------------*/
-	constructor( ctx: CanvasRenderingContext2D ) {
+	constructor( ctx: CanvasRenderingContext2D, dimensions: Point2D ) {
 		this.ctx = ctx;
 		
+		this._dimensions = _.cloneDeep(dimensions);
 		this._OffScreenBuffer = document.createElement('canvas');
-		this._OffScreenBuffer.width = 567;
-		this._OffScreenBuffer.height = 325;
+		this._OffScreenBuffer.width = dimensions.x;
+		this._OffScreenBuffer.height = dimensions.y;
 		this.osb_ctx = (this._OffScreenBuffer.getContext("2d") as CanvasRenderingContext2D);
 
 		
