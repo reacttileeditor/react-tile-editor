@@ -105,33 +105,36 @@ class Game_Manager {
 		this.update_game_state_for_ui(this.game_state);
 		
 		_.map(this.game_state.creature_list, (val,idx) => {
-			this._Asset_Manager.draw_image_for_asset_name (
-				/* asset_name */				val.creature_image,
-				/* _BM */						this._Blit_Manager,
-				/* pos */						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
-				/* zorder */					12,
-				/* should_use_tile_offset */	true,
-				/* current_milliseconds */		0
-			)
+			this._Asset_Manager.draw_image_for_asset_name({
+				asset_name:					val.creature_image,
+				_BM:						this._Blit_Manager,
+				pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+				zorder:						12,
+				should_use_tile_offset:		true,
+				current_milliseconds:		0,
+				opacity:					1.0,
+			})
 
-			this._Asset_Manager.draw_image_for_asset_name (
-				/* asset_name */				val.creature_image,
-				/* _BM */						this._Blit_Manager,
-				/* pos */						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
-				/* zorder */					12,
-				/* should_use_tile_offset */	true,
-				/* current_milliseconds */		0
-			)
+			this._Asset_Manager.draw_image_for_asset_name({
+				asset_name:					val.creature_image,
+				_BM:						this._Blit_Manager,
+				pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
+				zorder:						12,
+				should_use_tile_offset:		true,
+				current_milliseconds:		0,
+				opacity:					0.5,
+			})
 			
 			if(this.game_state.selected_object_index == idx){
-				this._Asset_Manager.draw_image_for_asset_name (
-					/* asset_name */				'cursor',
-					/* _BM */						this._Blit_Manager,
-					/* pos */						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
-					/* zorder */					10,
-					/* should_use_tile_offset */	true,
-					/* current_milliseconds */		0
-				)
+				this._Asset_Manager.draw_image_for_asset_name ({
+					asset_name:					'cursor',
+					_BM:						this._Blit_Manager,
+					pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+					zorder:						10,
+					should_use_tile_offset:		true,
+					current_milliseconds:		0,
+					opacity:					1.0,
+				})
 				
 			}
 		})

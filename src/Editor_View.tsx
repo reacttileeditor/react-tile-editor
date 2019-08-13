@@ -49,14 +49,15 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 	draw_cursor = () => {
 		//const pos = this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(0,4); 
 
-		this.props._Asset_Manager.draw_image_for_asset_name (
-			/* asset_name */				'cursor',
-			/* _BM */						this.props._Blit_Manager,
-			/* pos */						this.props._Tilemap_Manager.convert_tile_coords_to_pixel_coords( this.state.cursor_pos ),
-			/* zorder */					12,
-			/* should_use_tile_offset */	true,
-			/* current_milliseconds */		0
-		)
+		this.props._Asset_Manager.draw_image_for_asset_name({
+			asset_name:					'cursor',
+			_BM:						this.props._Blit_Manager,
+			pos:						this.props._Tilemap_Manager.convert_tile_coords_to_pixel_coords( this.state.cursor_pos ),
+			zorder:						12,
+			should_use_tile_offset:		true,
+			current_milliseconds:		0,
+			opacity:					1.0,
+		})
 	}
 
 

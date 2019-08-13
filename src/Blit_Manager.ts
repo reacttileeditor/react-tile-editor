@@ -13,6 +13,7 @@ import { Point2D, Rectangle } from './interfaces';
 interface DrawEntity {
 	pos: Point2D,
 	z_index: number,
+	opacity: number,
 	drawing_data: DrawData|DrawDataNoBounds,
 }
 
@@ -112,11 +113,17 @@ export class Blit_Manager {
 	} 
 
 /*----------------------- draw ops -----------------------*/
-	queue_draw_op = (pos: Point2D, z_index: number, drawing_data: DrawData ) => {
+	queue_draw_op = (p: {
+		pos:			Point2D,
+		z_index:		number,
+		opacity:		number,
+		drawing_data:	DrawData
+	}) => {
 		this._Draw_List.push({
-			pos: pos,
-			z_index: z_index,
-			drawing_data: drawing_data
+			pos:			p.pos,
+			z_index:		p.z_index,
+			opacity:		p.opacity,
+			drawing_data:	p.drawing_data
 		});
 	}
 	
@@ -144,6 +151,8 @@ export class Blit_Manager {
 				this.osb_ctx.save();
 
 				this.osb_ctx.translate( value.pos.x + this.state.actual_viewport_offset.x, value.pos.y + this.state.actual_viewport_offset.y );
+				this.osb_ctx.globalAlpha = value.opacity;
+				
 				this.osb_ctx.drawImage	(
 					/* file */			value.drawing_data.image_ref,
 
@@ -165,6 +174,7 @@ export class Blit_Manager {
 				this.osb_ctx.save();
 
 				this.osb_ctx.translate( value.pos.x + this.state.actual_viewport_offset.x, value.pos.y + this.state.actual_viewport_offset.y );
+				this.osb_ctx.globalAlpha = value.opacity;
 
 				/*
 					The savvy amongst us might wonder - what the hell are we doing providing non-zero xy coords inside this drawImage call if we're already translating the canvas?  These exist to draw the tile with its origin not as 0,0, but as the center of the sprite image.

@@ -634,14 +634,15 @@ export class Asset_Manager {
 			} 
 
 			if( value.id && allow_drawing ){
-				this.draw_image_for_asset_name(
-					value.id,
-					_BM,
-					{ x: pos_x, y: pos_y },
-					zorder,
-					should_use_tile_offset,
-					current_milliseconds,
-				);
+				this.draw_image_for_asset_name({
+					asset_name: 				value.id,
+					_BM:						_BM,
+					pos:						{ x: pos_x, y: pos_y },
+					zorder:						zorder,
+					should_use_tile_offset:		should_use_tile_offset,
+					current_milliseconds:		current_milliseconds,
+					opacity:					1.0,
+				});
 			}
 		});
 		//_BM.ctx.restore();	
@@ -688,19 +689,20 @@ export class Asset_Manager {
 		) ;
 	}
 	
-	draw_image_for_asset_name = (
+	draw_image_for_asset_name = (p: {
 		asset_name: string,
 		_BM,
 		pos: Point2D,
 		zorder: number,
 		should_use_tile_offset: boolean,
-		current_milliseconds: number
-	) => {
+		current_milliseconds: number,
+		opacity: number,
+	}) => {
 		let { raw_image_list, image_data_list, assets_meta } = this.static_vals;
 
-		let image = raw_image_list[ asset_name ]!;
-		let metadata = assets_meta[ asset_name ]!;
-		let image_data = _.find(image_data_list, {name: asset_name});
+		let image = raw_image_list[ p.asset_name ]!;
+		let metadata = assets_meta[ p.asset_name ]!;
+		let image_data = _.find(image_data_list, {name: p.asset_name});
 		let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
 
 		let frame_count = image_data.frames ? image_data.frames : 1;
@@ -712,7 +714,7 @@ export class Asset_Manager {
 			We start by doing a pretty simple absolute division operation; check our current millisec timer, and see what that would be in frames.
 			This is the number we feed into our various formulas.
 		*/
-		let absolute_frame_num = Math.floor(current_milliseconds / frame_duration);
+		let absolute_frame_num = Math.floor(p.current_milliseconds / frame_duration);
 		let current_frame_num;
 			
 		/*
@@ -731,37 +733,39 @@ export class Asset_Manager {
 		*/
 		
 		if( !this.isAssetSpritesheet(metadata) ){
-			_BM.queue_draw_op(
-				{ x: pos.x, y: pos.y },
-				zorder,
-				{
-					image_ref:	image,
-					dest_point:	{
-						x:			-Math.floor(dim.w/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-						y:			-Math.floor(dim.h/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
-					}
-				}
-			);
+			p._BM.queue_draw_op({
+				pos:			{ x: p.pos.x, y: p.pos.y },
+				z_index:		p.zorder,
+				opacity:		p.opacity,
+				drawing_data:	{
+									image_ref: image,
+									dest_point: {
+										x:			-Math.floor(dim.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+										y:			-Math.floor(dim.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+									}
+								}
+			});
 		} else {
-			_BM.queue_draw_op(
-				{ x: pos.x, y: pos.y },
-				zorder,
-				{
-					image_ref:	image,
-					src_rect:	{
-						x:	metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
-						y:	metadata.bounds.y,
-						w:	metadata.bounds.w,
-						h:	metadata.bounds.h,
-					},
-					dst_rect:	{
-						x:	-Math.floor(metadata.bounds.w/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-						y:	-Math.floor(metadata.bounds.h/2) + (should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
-						w:	metadata.bounds.w,
-						h:	metadata.bounds.h,
-					}
-				}
-			);
+			p._BM.queue_draw_op({
+				pos:			{ x: p.pos.x, y: p.pos.y },
+				z_index:		p.zorder,
+				opacity:		p.opacity,
+				drawing_data:	{
+									image_ref: image,
+									src_rect: {
+										x:	metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
+										y:	metadata.bounds.y,
+										w:	metadata.bounds.w,
+										h:	metadata.bounds.h,
+									},
+									dst_rect: {
+										x:	-Math.floor(metadata.bounds.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+										y:	-Math.floor(metadata.bounds.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+										w:	metadata.bounds.w,
+										h:	metadata.bounds.h,
+									}
+								}
+			});
 		}
 	}
 /*----------------------- auto-tiling logic -----------------------*/

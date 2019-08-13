@@ -120,8 +120,20 @@ export class Tilemap_Manager {
 															this._BM.fps_tracker.current_millisecond
 														);
 	}
+
+	
+	do_one_frame_of_rendering = () => {
+		if(this.state.initialized){
+			this._BM.fill_canvas_with_solid_color();
+			this.draw_tiles();
+			this._BM.draw_entire_frame();
+		} else {
+			this.initialize_tiles();
+		}
+	}
 	
 	
+/*----------------------- info ops -----------------------*/
 
 	get_tile_comparator_sample_for_pos = ( pos: Point2D ): TileComparatorSample => {
 		/*
@@ -175,16 +187,6 @@ export class Tilemap_Manager {
 		return tile_entry;
 	}
 	
-	
-	do_one_frame_of_rendering = () => {
-		if(this.state.initialized){
-			this._BM.fill_canvas_with_solid_color();
-			this.draw_tiles();
-			this._BM.draw_entire_frame();
-		} else {
-			this.initialize_tiles();
-		}
-	}
 
 	convert_pixel_coords_to_tile_coords = (pos: Point2D) => {
 		let { consts } = this._AM;
