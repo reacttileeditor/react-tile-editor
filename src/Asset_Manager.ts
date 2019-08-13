@@ -187,6 +187,33 @@ export class Asset_Manager {
 					h: 34,
 				},
 			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "sand1",
+				bounds: {
+					x: 1,
+					y: 277,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "sand2",
+				bounds: {
+					x: 1,
+					y: 313,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "sand3",
+				bounds: {
+					x: 1,
+					y: 349,
+					w: 54,
+					h: 34,
+				},
+			},{
 				url: "water-tiles.png",
 				name: "water-base1",
 				bounds: {
@@ -320,6 +347,24 @@ export class Asset_Manager {
 						}],
 					}],
 				},{
+					name: "sand",
+					variants: [{
+						graphics: [{
+							id: 'sand1',
+							zorder: 3,
+						}],
+					},{
+						graphics: [{
+							id: 'sand2',
+							zorder: 3,
+						}],
+					},{
+						graphics: [{
+							id: 'sand3',
+							zorder: 3,
+						}],
+					}],
+				},{
 					name: "water",
 					variants: [{
 						graphics: [{
@@ -329,7 +374,7 @@ export class Asset_Manager {
 							id: 'water-edge-nw1',
 							zorder: 1,
 							restrictions:	[
-												[/.*/, /(dirt|grass|menhir)/],
+												[/.*/, /(dirt|grass|menhir|sand)/],
 													[/.*/, /water/, /.*/],
 														[/.*/, /.*/]
 											]
@@ -337,7 +382,7 @@ export class Asset_Manager {
 							id: 'water-edge-ne1',
 							zorder: 1,
 							restrictions:	[
-												[/(dirt|grass|menhir)/, /.*/],
+												[/(dirt|grass|menhir|sand)/, /.*/],
 													[/.*/, /water/, /.*/],
 														[/.*/, /.*/]
 											]
@@ -346,7 +391,7 @@ export class Asset_Manager {
 							zorder: 1,
 							restrictions:	[
 														[/.*/, /.*/],
-													[/(dirt|grass|menhir)/, /water/, /.*/],
+													[/(dirt|grass|menhir|sand)/, /water/, /.*/],
 														[/.*/, /.*/]
 											]
 						},{
@@ -354,7 +399,7 @@ export class Asset_Manager {
 							zorder: 1,
 							restrictions:	[
 														[/.*/, /.*/],
-													[/.*/, /water/, /(dirt|grass|menhir)/],
+													[/.*/, /water/, /(dirt|grass|menhir|sand)/],
 														[/.*/, /.*/]
 											]
 						},{
@@ -363,7 +408,7 @@ export class Asset_Manager {
 							restrictions:	[
 														[/.*/, /.*/],
 													[/.*/, /water/, /.*/],
-														[/.*/, /(dirt|grass|menhir)/]
+														[/.*/, /(dirt|grass|menhir|sand)/]
 											]
 						},{
 							id: 'water-edge-se1',
@@ -371,7 +416,7 @@ export class Asset_Manager {
 							restrictions:	[
 														[/.*/, /.*/],
 													[/.*/, /water/, /.*/],
-														[ /(dirt|grass|menhir)/, /.*/]
+														[ /(dirt|grass|menhir|sand)/, /.*/]
 											]
 						}],
 					}],
