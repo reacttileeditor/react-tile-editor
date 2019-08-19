@@ -205,7 +205,7 @@ export class Tilemap_Manager {
 		let odd_row_offset = Utils.modulo(tile_coords.y, 2) == 1;
 
 		let tile_coords_revised = {
-			x: Math.floor( (position.x + (odd_row_offset ? Math.floor(consts.tile_width / 2) : 0)) / consts.tile_width ),
+			x: Math.floor( (position.x + (odd_row_offset ? Math.floor(-consts.tile_width / 2) : 0)) / consts.tile_width ),
 			y: tile_coords.y,
 		};
 		
@@ -214,7 +214,7 @@ export class Tilemap_Manager {
 	
 	convert_tile_coords_to_pixel_coords = (pos : Point2D) => ({
 		x:	pos.x * this._AM.consts.tile_width +
-			(( Utils.modulo(pos.y, 2) == 1) ? Math.floor(-this._AM.consts.tile_width / 2) : 0),
+			(( Utils.modulo(pos.y, 2) == 1) ? Math.floor(this._AM.consts.tile_width / 2) : 0),
 		y:	pos.y * this._AM.consts.tile_height
 	})
 

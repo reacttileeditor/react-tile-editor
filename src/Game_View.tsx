@@ -25,15 +25,18 @@ interface Game_View_Props {
 interface Game_State {
 	current_turn: number,
 	selected_object_index?: number,
+	turn_list: Array<Individual_Game_Turn_State>,
+}
+
+interface Individual_Game_Turn_State {
 	creature_list: Array<Creature>
-	//turn_num
 }
 
 interface Creature {
 	tile_pos: Point2D,
 	creature_image: string,
 	planned_tile_pos: Point2D,
-	//type
+	unique_id: string,
 	//team
 }
 
@@ -75,15 +78,19 @@ class Game_Manager {
 		this.game_state = {
 			current_turn: 0,
 			selected_object_index: undefined,
-			creature_list: [{
-				tile_pos: {x: 0, y: 6},
-				planned_tile_pos: {x: 0, y: 6},
-				creature_image: 'hermit',
-			},{
-				tile_pos: {x: 2, y: 4},
-				planned_tile_pos: {x: 2, y: 4},
-				creature_image: 'peasant',
-			}]
+			turn_list: [{
+				creature_list: [{
+					tile_pos: {x: 0, y: 6},
+					planned_tile_pos: {x: 0, y: 6},
+					creature_image: 'hermit',
+					unique_id: 'asdfasd',
+				},{
+					tile_pos: {x: 2, y: 4},
+					planned_tile_pos: {x: 2, y: 4},
+					creature_image: 'peasant',
+					unique_id: 'dsfargeg',
+				}],
+			}],
 		};
 	}
 
@@ -92,9 +99,26 @@ class Game_Manager {
 	}
 	
 	advance_turn = () => {
-		_.map(this.game_state.creature_list, (val,idx) => {
-			val.tile_pos = val.planned_tile_pos;
-		})
+		//push a new turn onto the end of the turns array
+		this.game_state.turn_list = _.concat(
+			this.game_state.turn_list,
+			[{
+				/*
+					This new turn is functionally identical to the last turn, except that we go through the creatures in it, and "resolve" their moves - we change their "real" position to what their planned position had been, and we "clear out" their plans (i.e. make them identical to where they currently are).
+					
+					When we have other verbs, we'd add them here.
+				*/
+				creature_list:	_.map( _.last(this.game_state.turn_list).creature_list, (val,idx) => {
+									return {
+										tile_pos: val.planned_tile_pos,
+										planned_tile_pos: val.planned_tile_pos,
+										creature_image: val.creature_image,
+										unique_id: val.unique_id,
+									}
+								})
+			}]
+		);	
+	
 	
 		this.game_state.current_turn += 1;
 	}
@@ -104,7 +128,7 @@ class Game_Manager {
 
 		this.update_game_state_for_ui(this.game_state);
 		
-		_.map(this.game_state.creature_list, (val,idx) => {
+		_.map( this.get_current_turn_state().creature_list, (val,idx) => {
 			this._Asset_Manager.draw_image_for_asset_name({
 				asset_name:					val.creature_image,
 				_BM:						this._Blit_Manager,
@@ -152,11 +176,15 @@ class Game_Manager {
 		
 		
 		const returnVal = ƒ.if(!_.isNil(idx),
-			this.game_state.creature_list[idx as number],
+			this.get_current_turn_state().creature_list[idx as number],
 			undefined
 		)
 		
 		return returnVal;
+	}
+	
+	get_current_turn_state = () => {
+		return _.last(this.game_state.turn_list)
 	}
 	
 	select_object_based_on_tile_click = (pos) => {
@@ -165,14 +193,14 @@ class Game_Manager {
 		*/
 		const new_pos = this._Tilemap_Manager.convert_pixel_coords_to_tile_coords( pos );
 		
-		const newly_selected_creature = _.findIndex( this.game_state.creature_list, {
+		const newly_selected_creature = _.findIndex( this.get_current_turn_state().creature_list, {
 			tile_pos: new_pos
 		} );
 		
 		if(newly_selected_creature === -1){
 			//do move command
 			if( this.game_state.selected_object_index != undefined ){
-				this.game_state.creature_list[ this.game_state.selected_object_index ].planned_tile_pos = new_pos;
+				this.get_current_turn_state().creature_list[ this.game_state.selected_object_index ].planned_tile_pos = new_pos;
 			}
 		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
 			this.game_state.selected_object_index = undefined;
@@ -217,7 +245,7 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 					{`turn: ${_GS.current_turn}`}
 				</div>
 				<div>
-					{`creatures: ${_.size(_GS.creature_list)}`}
+					{/*`creatures: ${_.size(_GS.creature_list)}`*/}
 				</div>
 				<div>
 					{ `${ƒ.if(_GS.selected_object_index !== undefined, _GS.selected_object_index)}` }
