@@ -52,14 +52,11 @@ export class Tilemap_Manager {
 
 
 /*----------------------- state mutation -----------------------*/
-	modify_tile_status = ( pos, selected_tile_type ) => {
+	modify_tile_status = ( pos: Point2D, selected_tile_type: string ): void => {
 		let { consts, static_vals } = this._AM;
 		
 		if(
-			pos.x >= 0 &&
-			pos.y >= 0 && 
-			pos.x < consts.row_length &&
-			pos.y < consts.col_height 
+			this.is_within_map_bounds( pos )
 		){
 			if(selected_tile_type && selected_tile_type != ''){
 				this.state.tileStatus[pos.y][pos.x] = selected_tile_type;
@@ -134,6 +131,12 @@ export class Tilemap_Manager {
 	
 	
 /*----------------------- info ops -----------------------*/
+	is_within_map_bounds = ( pos: Point2D ): boolean => (
+		pos.x >= 0 &&
+		pos.y >= 0 && 
+		pos.x < consts.row_length &&
+		pos.y < consts.col_height 
+	)
 
 	get_tile_comparator_sample_for_pos = ( pos: Point2D ): TileComparatorSample => {
 		/*
