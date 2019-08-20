@@ -53,6 +53,7 @@ class Game_Manager {
 	_Tilemap_Manager: Tilemap_Manager;
 	game_state: Game_State;
 	update_game_state_for_ui: Function;
+	_Node_Graph_Generator: Node_Graph_Generator;
 	
 	/*
 		We need to handle individual turns progressing, so we'll need something to track modality.  We'll need a set of flags indicating what our mode is - are we watching a turn be animated, are we watching the enemy do a move?  Are we watching the player do their move?
@@ -93,6 +94,8 @@ class Game_Manager {
 				}],
 			}],
 		};
+		
+		this._Node_Graph_Generator = new Node_Graph_Generator(this._Tilemap_Manager);
 	}
 
 	set_update_function = (func) => {
@@ -100,6 +103,9 @@ class Game_Manager {
 	}
 	
 	advance_turn = () => {
+		this._Node_Graph_Generator.build_node_graph_from_grid( this._Tilemap_Manager.state.tileStatus );
+		debugger;
+	
 		//push a new turn onto the end of the turns array
 		this.game_state.turn_list = _.concat(
 			this.game_state.turn_list,
