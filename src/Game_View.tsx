@@ -9,6 +9,7 @@ import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
 import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
+import { Node_Graph_Generator } from "./Pathfinding";
 
 import "./Primary_View.scss";
 import { Point2D, Rectangle } from './interfaces';
