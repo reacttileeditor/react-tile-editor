@@ -8,7 +8,7 @@ import * as Utils from "./Utils";
 
 var PATH_PREFIX = "/dist/assets/"
 
-import { TileComparatorSample } from "./Asset_Manager";
+import { TileComparatorSample, TilePositionComparatorSample } from "./Asset_Manager";
 import { Point2D, Rectangle } from './interfaces';
 
 interface tileViewState {
@@ -134,11 +134,21 @@ export class Tilemap_Manager {
 	is_within_map_bounds = ( pos: Point2D ): boolean => (
 		pos.x >= 0 &&
 		pos.y >= 0 && 
-		pos.x < consts.row_length &&
-		pos.y < consts.col_height 
+		pos.x < this._AM.consts.row_length &&
+		pos.y < this._AM.consts.col_height 
 	)
 
 	get_tile_comparator_sample_for_pos = ( pos: Point2D ): TileComparatorSample => {
+		const tpc = this.get_tile_position_comparator_for_pos(pos);
+		
+		return _.map(tpc, (row_val, row_idx) => {
+			return _.map(row_val, (col_val, col_idx) => {
+				return this.get_tile_name_for_pos( col_val )
+			})
+		});
+	}
+	
+	get_tile_position_comparator_for_pos = ( pos: Point2D ): TilePositionComparatorSample => {
 		/*
 			This would simply grab all 8 adjacent tiles (and ourselves, for a total of 9 tiles) as a square sample.  The problem here is that, although our tiles are in fact stored as "square" data in an array, we're actually a hex grid.  Because we're a hex grid, we're actually just looking for 7 tiles, so we'll need to adjust the result.  Depending on whether we're on an even or odd row, we need to lop off the first (or last) member of the first and last rows. 	
 		*/
@@ -157,7 +167,7 @@ export class Tilemap_Manager {
 											);
 			
 			return horizontal_tile_indices.map( (col_value, col_index) => {
-				return this.get_tile_name_for_pos({x: col_value, y: row_value});
+				return {x: col_value, y: row_value};
 			});
 		});
 	}

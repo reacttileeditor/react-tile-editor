@@ -4,11 +4,11 @@ import _ from "lodash";
 
 
 
-import { Tilemap_Manager } from "./Tilemap_Manager";
+import { Tilemap_Manager, TileComparatorSample, TilePositionComparatorSample } from "./Tilemap_Manager";
 import { Point2D, Rectangle } from './interfaces';
 
 interface tileViewState {
-	tileStatus: [[string]],
+	tileStatus: TileGrid,
 	initialized: boolean,
 }
 
@@ -16,24 +16,32 @@ interface NodeGraph {
 	[index: string]: Array<string>
 }
 
+type TileGrid = [[string]];
+
 export class Node_Graph {
 	_TM: Tilemap_Manager;
+
+	constructor( _TM: Tilemap_Manager ) {
+		
+		this._TM = _TM;
+	}
 	
 	
-	is_open = ( _grid: tileStatus, _coords: Point2D): boolean => (
+/*----------------------- core functionality -----------------------*/
+	is_open = ( _grid: TileGrid, _coords: Point2D ): boolean => (
 		//this is going to be incredibly subjective and data-dependent; this is sort of a placeholder for the time being
-		_grid[ _coords.y ][ _coords.x ] != 'water'
+		_grid[_coords.y][_coords.x] != 'water'
 	)
 	
 	
-	push_if_not_null = (_array: Array<string>, _push_val: string): void => {
+	push_if_not_null = (_array: Array<string>, _push_val: string|null): void => {
 		if(_push_val != null){
 			_array.push( _push_val );
 		}
 	}
 	
-	check_tile = ( _grid: tileStatus, _coords: Point2D ): string|null => {
-		if( is_within_map_bounds( _coords ) && this.is_open( _grid, _coords ) ){
+	check_tile = ( _grid: TileGrid, _coords: Point2D ): string|null => {
+		if( this._TM.is_within_map_bounds( _coords ) && this.is_open( _grid: TileGrid, _coords: Point2D ) ){
 			/*
 				If the tile we're checking is out of bounds, then it's blocked.
 				If the tile we're checking is open, it's a valid node connection, so we return it (so we can add it to the graph).
@@ -44,15 +52,22 @@ export class Node_Graph {
 		}
 	};
 
-	check_adjacencies = ( _grid: tileStatus, _coords: Point2D ): Array<string> => {
+
+	check_adjacencies = ( tile_identifier: string, _coords: Point2D ): Array<string> => {
+		const tile_data = this._TM.get_tile_position_comparator_for_pos(_coords) :: TilePositionComparatorSample;
 		var adjacent_nodes = [];
 
-		//check every adjacent tile in clockwise order, starting from the north.
-		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, {x: _coords.x,		y: _coords.y - 1 }, ));
-		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, {x: _coords.x + 1,	y: _coords.y },		));
-		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, {x: _coords.x,		y: _coords.y + 1 }, ));
-		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, {x: _coords.x - 1,	y: _coords.y },		));
-	
+		/*
+			Check every adjacent tile in clockwise order, starting from the north.
+			Skip the very middle tile [1][1] in the comparator, because we're attempting to build a graph of "vectors" (i.e. directions we can move towards), and this will break the algorithm if we include it.  Probably. 
+		*/
+		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, tile_data[0][0] ));
+		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, tile_data[0][1] ));
+		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, tile_data[1][0] ));
+		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, tile_data[1][2] ));
+		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, tile_data[2][0] ));
+		push_if_not_null( adjacent_nodes, this.check_tile ( _grid, tile_data[2][1] ));
+
 		return adjacent_nodes;
 	}
 	

@@ -78,6 +78,12 @@ interface TileComparatorRow extends Array<string> { 0: string; 1: string; }
 interface TileComparatorRowCenter extends Array<string> { 0: string; 1: string; 2: string; }
 export interface TileComparatorSample extends Array<TileComparatorRow|TileComparatorRowCenter> { 0: TileComparatorRow, 1: TileComparatorRowCenter, 2: TileComparatorRow };
 
+
+interface TilePositionComparatorRow extends Array<Point2D> { 0: Point2D; 1: Point2D; }
+interface TilePositionComparatorRowCenter extends Array<Point2D> { 0: Point2D; 1: Point2D; 2: Point2D; }
+export interface TilePositionComparatorSample extends Array<TilePositionComparatorRow|TilePositionComparatorRowCenter> { 0: TilePositionComparatorRow, 1: TilePositionComparatorRowCenter, 2: TilePositionComparatorRow };
+
+
 interface AutoTileRestrictionRow extends Array<RegExp> { 0: RegExp; 1: RegExp; }
 interface AutoTileRestrictionRowCenter extends Array<RegExp> { 0: RegExp; 1: RegExp; 2: RegExp; }
 interface AutoTileRestrictionSample extends Array<AutoTileRestrictionRow|AutoTileRestrictionRowCenter> { 0: AutoTileRestrictionRow, 1: AutoTileRestrictionRowCenter, 2: AutoTileRestrictionRow };
