@@ -89,3 +89,21 @@ export class Node_Graph_Generator {
 	}
 }
 
+
+
+
+
+export class Pathfinder {
+	constructor(  ) {
+		
+	}
+
+	find_path_between_map_tiles = (_TM: Tilemap_Manager, start_coords: Point2D, end_coords: Point2D) => {
+		let _Node_Graph_Generator = new Node_Graph_Generator(_TM);
+
+	
+		return _Node_Graph_Generator.build_node_graph_from_grid( _TM.state.tileStatus );
+	
+	}
+}
+

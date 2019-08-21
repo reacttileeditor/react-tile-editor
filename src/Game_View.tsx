@@ -9,7 +9,7 @@ import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
 import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
-import { Node_Graph_Generator } from "./Pathfinding";
+import { Pathfinder } from "./Pathfinding";
 
 import "./Primary_View.scss";
 import { Point2D, Rectangle } from './interfaces';
@@ -53,7 +53,7 @@ class Game_Manager {
 	_Tilemap_Manager: Tilemap_Manager;
 	game_state: Game_State;
 	update_game_state_for_ui: Function;
-	_Node_Graph_Generator: Node_Graph_Generator;
+	_Pathfinder: Pathfinder;
 	
 	/*
 		We need to handle individual turns progressing, so we'll need something to track modality.  We'll need a set of flags indicating what our mode is - are we watching a turn be animated, are we watching the enemy do a move?  Are we watching the player do their move?
@@ -95,7 +95,7 @@ class Game_Manager {
 			}],
 		};
 		
-		this._Node_Graph_Generator = new Node_Graph_Generator(this._Tilemap_Manager);
+		this._Pathfinder = new Pathfinder();
 	}
 
 	set_update_function = (func) => {
@@ -103,7 +103,7 @@ class Game_Manager {
 	}
 	
 	advance_turn = () => {
-		this._Node_Graph_Generator.build_node_graph_from_grid( this._Tilemap_Manager.state.tileStatus );
+		this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, {x: 2, y: 4}, {x: 2, y: 4} );
 		debugger;
 	
 		//push a new turn onto the end of the turns array
