@@ -104,7 +104,6 @@ class Game_Manager {
 	
 	advance_turn = () => {
 		this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, {x: 0, y: 0}, {x: 2, y: 4} );
-		debugger;
 	
 		//push a new turn onto the end of the turns array
 		this.game_state.turn_list = _.concat(

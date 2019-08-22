@@ -130,7 +130,7 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 
 	frontier.insert( _start_coords, 0 );
 	costs_so_far[ tuple_to_addr(_start_coords) ] = 0;
-	while( !(frontier.size() > 0) ){
+	while( (frontier.size() > 0) ){
 	
 		const _current_node = frontier.pop(false) as Point2D;
 		const current_node = tuple_to_addr(_current_node);
@@ -159,7 +159,6 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 	
 
 	const reconstruct_path = (came_from: NodeAddrToNodeAddrDict, start_node: string, goal_node: string): Array<string> => {
-	debugger
 		let current_node = goal_node;
 		let path: Array<string>  = [];
 		while( current_node != start_node ){
