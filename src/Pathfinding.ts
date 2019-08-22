@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
+import { PriorityQueue } from 'ts-pq';
 
 
 import { TileComparatorSample, TilePositionComparatorSample } from "./Asset_Manager";
@@ -16,6 +17,15 @@ interface tileViewState {
 interface NodeGraph {
 	[index: string]: Array<string>
 }
+
+interface NodeAddrToNodeAddrDict {
+	[index: string]: string
+}
+
+interface NodeAddrToNumberDict {
+	[index: string]: number
+}
+
 
 type TileGrid = [[string]];
 
@@ -89,6 +99,86 @@ export class Node_Graph_Generator {
 	}
 }
 
+const addr_to_tuple = (the_string: string): Point2D => {
+	return{ x: Number(the_string.split(',')[0]), y: Number(the_string.split(',')[1]) }
+}
+
+const tuple_to_addr = (the_tuple: Point2D): string => {
+	return  the_tuple.x + ',' + the_tuple.y;
+}
+			
+
+
+const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: Point2D ) => {
+	var discarded_nodes = [];
+
+	var frontier = new PriorityQueue<Point2D>();
+	var costs_so_far: NodeAddrToNumberDict = {};  //a map of node addresses (keys) to move cost (values)
+	var came_from: NodeAddrToNodeAddrDict = {}; //a map of node addresses (keys) to node addresses (values) 
+	
+	const remove_item_from_obj = (obj, victim) => _.pick(obj, _.filter(_.keys(obj), (val)=> val != victim ))
+	
+	const compute_node_heuristic = ( _node_coords, _end_coords ) => {
+		return Math.hypot( _node_coords.x - _end_coords.x, _node_coords.y - _end_coords.y);
+	}
+	
+	//search a queue for whatever node has the highest value, and extract that node's coords
+	const get_lowest_value = (obj) => {
+		return _.keys(obj).reduce((a, b) => obj[a] < obj[b] ? a : b);
+	}
+
+
+	frontier.insert( _start_coords, 0 );
+	costs_so_far[ tuple_to_addr(_start_coords) ] = 0;
+	while( !(frontier.size() > 0) ){
+	
+		const _current_node = frontier.pop(false) as Point2D;
+		const current_node = tuple_to_addr(_current_node);
+	
+		if(current_node == tuple_to_addr(_end_coords)){
+			break;
+		}
+	
+		_.map( _graph[ current_node ], (next_node, index) => {
+			var new_cost = costs_so_far[ current_node ] + 1; //this is where we'd add a weighted graph lookup for movecost.
+			
+			if(
+				!_.includes(_.keys(costs_so_far), next_node)
+				||
+				new_cost < costs_so_far[next_node]
+			){
+				costs_so_far[next_node] = new_cost;
+			
+				frontier.insert(addr_to_tuple(next_node), new_cost + compute_node_heuristic( addr_to_tuple(next_node), _end_coords ));
+				came_from[next_node] = current_node;
+			
+			}
+
+		})
+	}
+	
+
+	const reconstruct_path = (came_from: NodeAddrToNodeAddrDict, start_node: string, goal_node: string): Array<string> => {
+	debugger
+		let current_node = goal_node;
+		let path: Array<string>  = [];
+		while( current_node != start_node ){
+			path.push(current_node);
+			current_node = came_from[current_node];
+		}
+		path.push(start_node);
+		return path;
+	}
+
+	console.warn( reconstruct_path(came_from, tuple_to_addr(_start_coords), tuple_to_addr(_end_coords) ) )
+//				console.warn( came_from, costs_so_far );
+
+	return {
+		successful_path: reconstruct_path(came_from, tuple_to_addr(_start_coords), tuple_to_addr(_end_coords) ),
+		discarded_nodes: _.keys(came_from)
+	};
+	
+}
 
 
 
@@ -98,12 +188,13 @@ export class Pathfinder {
 		
 	}
 
-	find_path_between_map_tiles = (_TM: Tilemap_Manager, start_coords: Point2D, end_coords: Point2D) => {
-		let _Node_Graph_Generator = new Node_Graph_Generator(_TM);
+	find_path_between_map_tiles = (_TM: Tilemap_Manager, _start_coords: Point2D, _end_coords: Point2D) => {
+		const _Node_Graph_Generator = new Node_Graph_Generator(_TM);
 
 	
-		return _Node_Graph_Generator.build_node_graph_from_grid( _TM.state.tileStatus );
+		const _graph = _Node_Graph_Generator.build_node_graph_from_grid( _TM.state.tileStatus );
 	
+		return a_star_search( _graph, _start_coords, _end_coords );
 	}
 }
 

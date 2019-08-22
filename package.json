@@ -20,7 +20,9 @@
     "lodash": "^4.17.11",
     "prando": "^4.0.0",
     "react": "^16.5.2",
-    "react-dom": "^16.5.2"
+    "react-dom": "^16.5.2",
+    "tinyqueue": "^2.0.3",
+    "ts-pq": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

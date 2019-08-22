@@ -9,7 +9,9 @@
         "allowJs": true,             // allow a partial TypeScript and JavaScript codebase
 		"moduleResolution": "node",
 		"allowSyntheticDefaultImports": true,
-		"preserveWatchOutput": false
+		"preserveWatchOutput": false,
+        "lib": ["es5", "es6", "dom", "es2015.core"],
+		
     },
     "include": [
         "./src/"
