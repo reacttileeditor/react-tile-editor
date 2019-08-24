@@ -27,16 +27,23 @@ export const ƒ = {
 	if: (test, true_case, false_case?) => {
 		//because ternaries have awful legibility, but we need a "expression" rather than the "statement" provided by a builtin if() clause.  We need something terse that resolves to a value.
 		if( test ){
-			return true_case;
+			return lazy_evaluate(true_case);
 		} else {
 			if( !_.isUndefined(false_case) ){
-				return false_case;
+				return lazy_evaluate(false_case);
 			} else {
 				return undefined;
 			}
 		}
 	}
+}
 
+const lazy_evaluate = (param) => {
+	if(typeof(param) == 'function'){
+		return param();
+	} else {
+		return param;	
+	}
 }
 
 export const convert_bitmask_to_array_of_individual_bit_values = (byteVal) => {
