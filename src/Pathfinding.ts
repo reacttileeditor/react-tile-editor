@@ -132,7 +132,6 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 	}
 
 	//do some bigtime sanity checks so we don't crash
-	debugger;
 	if(
 		!(tuple_to_addr(_start_coords) in _graph)
 
@@ -182,7 +181,6 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 	
 
 	const reconstruct_path = (came_from: NodeAddrToNodeAddrDict, start_node: string, goal_node: string): Array<string> => {
-	debugger;
 		let current_node = goal_node;
 		let path: Array<string>  = [];
 		while( current_node != start_node ){
@@ -190,12 +188,11 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 			current_node = came_from[current_node];
 		}
 		path.push(start_node);
-		return path;
+		
+		let path_as_tuples = _.map(path, (val,idx) => ( addr_to_tuple(val) ) );
+		return path_as_tuples;
 	}
 
-//	console.warn( reconstruct_path(came_from, tuple_to_addr(_start_coords), tuple_to_addr(_end_coords) ) )
-//				console.warn( came_from, costs_so_far );
-	debugger;
 
 	return {
 		successful_path:	ƒ.if(search_has_succeeded,

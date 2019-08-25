@@ -38,6 +38,7 @@ interface Creature {
 	creature_image: string,
 	planned_tile_pos: Point2D,
 	unique_id: string,
+	path_this_turn: Array<Point2D>,
 	//team
 }
 
@@ -86,11 +87,13 @@ class Game_Manager {
 					planned_tile_pos: {x: 0, y: 6},
 					creature_image: 'hermit',
 					unique_id: 'asdfasd',
+					path_this_turn: [],
 				},{
 					tile_pos: {x: 2, y: 4},
 					planned_tile_pos: {x: 2, y: 4},
 					creature_image: 'peasant',
 					unique_id: 'dsfargeg',
+					path_this_turn: [],
 				}],
 			}],
 		};
@@ -103,7 +106,7 @@ class Game_Manager {
 	}
 	
 	advance_turn = () => {
-		this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, {x: 0, y: 0}, {x: 2, y: 4} );
+		//console.log( this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, {x: 0, y: 0}, {x: 2, y: 4} ) ); 
 	
 		//push a new turn onto the end of the turns array
 		this.game_state.turn_list = _.concat(
@@ -206,7 +209,10 @@ class Game_Manager {
 		if(newly_selected_creature === -1){
 			//do move command
 			if( this.game_state.selected_object_index != undefined ){
-				this.get_current_turn_state().creature_list[ this.game_state.selected_object_index ].planned_tile_pos = new_pos;
+				const creature = this.get_current_turn_state().creature_list[ this.game_state.selected_object_index ];
+				creature.planned_tile_pos = new_pos;
+				
+				creature.path_this_turn = this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos )
 			}
 		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
 			this.game_state.selected_object_index = undefined;
