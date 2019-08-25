@@ -160,13 +160,25 @@ class Game_Manager {
 			
 			if(this.game_state.selected_object_index == idx){
 				this._Asset_Manager.draw_image_for_asset_name ({
-					asset_name:					'cursor',
+					asset_name:					'cursor_green',
 					_BM:						this._Blit_Manager,
 					pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
 					zorder:						10,
 					should_use_tile_offset:		true,
 					current_milliseconds:		0,
 					opacity:					1.0,
+				})
+
+				_.map(val.path_this_turn.successful_path, (path_val, path_idx) => {
+					this._Asset_Manager.draw_image_for_asset_name ({
+						asset_name:					'cursor_green_small',
+						_BM:						this._Blit_Manager,
+						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(path_val),
+						zorder:						9,
+						should_use_tile_offset:		true,
+						current_milliseconds:		0,
+						opacity:					1.0,
+					})
 				})
 				
 			}
