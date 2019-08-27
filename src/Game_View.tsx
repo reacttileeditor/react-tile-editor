@@ -11,6 +11,8 @@ import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
 import { Pathfinder } from "./Pathfinding";
 
+import { Creature } from "./Creature";
+
 import "./Primary_View.scss";
 import { Point2D, Rectangle } from './interfaces';
 
@@ -33,19 +35,14 @@ interface Individual_Game_Turn_State {
 	creature_list: Array<Creature>
 }
 
-interface Creature {
-	tile_pos: Point2D,
-	creature_image: string,
-	planned_tile_pos: Point2D,
-	unique_id: string,
-	//team
-}
 
 const GameStateInit = {
 	current_turn: 0,
 	selected_object_index: undefined,
 	creature_list: []
 };
+
+
 
 class Game_Manager {
 	_Blit_Manager: Blit_Manager;
@@ -81,17 +78,15 @@ class Game_Manager {
 			current_turn: 0,
 			selected_object_index: undefined,
 			turn_list: [{
-				creature_list: [{
+				creature_list: [new Creature({
 					tile_pos: {x: 0, y: 6},
 					planned_tile_pos: {x: 0, y: 6},
 					creature_image: 'hermit',
-					unique_id: 'asdfasd',
-				},{
+				}), new Creature({
 					tile_pos: {x: 2, y: 4},
 					planned_tile_pos: {x: 2, y: 4},
 					creature_image: 'peasant',
-					unique_id: 'dsfargeg',
-				}],
+				})],
 			}],
 		};
 		
@@ -115,12 +110,12 @@ class Game_Manager {
 					When we have other verbs, we'd add them here.
 				*/
 				creature_list:	_.map( _.last(this.game_state.turn_list).creature_list, (val,idx) => {
-									return {
+									return new Creature({
 										tile_pos: val.planned_tile_pos,
 										planned_tile_pos: val.planned_tile_pos,
 										creature_image: val.creature_image,
 										unique_id: val.unique_id,
-									}
+									})
 								})
 			}]
 		);	
