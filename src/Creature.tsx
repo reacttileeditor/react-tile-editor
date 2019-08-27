@@ -20,6 +20,7 @@ export class Creature {
 	creature_image: string;
 	planned_tile_pos: Point2D;
 	unique_id: string;
+	path_this_turn: Array<Point2D>;
 
 	constructor(p: {
 		tile_pos: Point2D,
@@ -30,6 +31,7 @@ export class Creature {
 		this.tile_pos = p.tile_pos;
 		this.creature_image = p.creature_image;
 		this.planned_tile_pos = p.planned_tile_pos;
+		this.path_this_turn = [];
 		
 		if(p.unique_id != undefined){
 			this.unique_id = p.unique_id;

@@ -98,7 +98,7 @@ class Game_Manager {
 	}
 	
 	advance_turn = () => {
-		this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, {x: 0, y: 0}, {x: 2, y: 4} );
+		//console.log( this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, {x: 0, y: 0}, {x: 2, y: 4} ) ); 
 	
 		//push a new turn onto the end of the turns array
 		this.game_state.turn_list = _.concat(
@@ -152,13 +152,25 @@ class Game_Manager {
 			
 			if(this.game_state.selected_object_index == idx){
 				this._Asset_Manager.draw_image_for_asset_name ({
-					asset_name:					'cursor',
+					asset_name:					'cursor_green',
 					_BM:						this._Blit_Manager,
 					pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
 					zorder:						10,
 					should_use_tile_offset:		true,
 					current_milliseconds:		0,
 					opacity:					1.0,
+				})
+
+				_.map(val.path_this_turn.successful_path, (path_val, path_idx) => {
+					this._Asset_Manager.draw_image_for_asset_name ({
+						asset_name:					'cursor_green_small',
+						_BM:						this._Blit_Manager,
+						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(path_val),
+						zorder:						9,
+						should_use_tile_offset:		true,
+						current_milliseconds:		0,
+						opacity:					1.0,
+					})
 				})
 				
 			}
@@ -201,7 +213,10 @@ class Game_Manager {
 		if(newly_selected_creature === -1){
 			//do move command
 			if( this.game_state.selected_object_index != undefined ){
-				this.get_current_turn_state().creature_list[ this.game_state.selected_object_index ].planned_tile_pos = new_pos;
+				const creature = this.get_current_turn_state().creature_list[ this.game_state.selected_object_index ];
+				creature.planned_tile_pos = new_pos;
+				
+				creature.path_this_turn = this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos )
 			}
 		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
 			this.game_state.selected_object_index = undefined;

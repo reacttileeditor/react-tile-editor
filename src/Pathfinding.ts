@@ -4,6 +4,7 @@ import _ from "lodash";
 
 import { PriorityQueue } from 'ts-pq';
 
+import { ƒ } from "./Utils";
 
 import { TileComparatorSample, TilePositionComparatorSample } from "./Asset_Manager";
 import { Tilemap_Manager } from "./Tilemap_Manager";
@@ -111,6 +112,9 @@ const tuple_to_addr = (the_tuple: Point2D): string => {
 
 const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: Point2D ) => {
 	var discarded_nodes = [];
+	let search_was_aborted_early : boolean = false;
+	let search_has_succeeded : boolean = false;
+
 
 	var frontier = new PriorityQueue<Point2D>();
 	var costs_so_far: NodeAddrToNumberDict = {};  //a map of node addresses (keys) to move cost (values)
@@ -127,34 +131,52 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 		return _.keys(obj).reduce((a, b) => obj[a] < obj[b] ? a : b);
 	}
 
+	//do some bigtime sanity checks so we don't crash
+	if(
+		!(tuple_to_addr(_start_coords) in _graph)
 
-	frontier.insert( _start_coords, 0 );
-	costs_so_far[ tuple_to_addr(_start_coords) ] = 0;
-	while( (frontier.size() > 0) ){
+		//I'm really not sure if we should have end_coords in this check.  Sort of a todo for later.
+	){
+		/*
+			We're testing to see if the start coords were somehow blocked.  If they're not available as one of the graph keys it means they're not a passable tile.
+		
+			Remember that the graph isn't merely list of connections, but it's specifically a list of one-way connections; that is, indications that "if you were in tile A, you could go to tile B" - and that the reverse of that, the B->A case, is stored separately and NOT automatically the same as A->B in a node graph.  It's possible to have one-way connections in a node graph, even though we don't currently use them (but say, jumping off a cliff might count, and a lot more prosaic movement constraints might kick this rule into play when units have pretty limited moves-per-turn, and when there's a 'rounded' move cost for entering a tile).
+		
+			So if a node isn't in the graph, we know for sure the whole path reconstruction thing will fail.
+		*/
+		search_was_aborted_early = true;
+	} 
 	
-		const _current_node = frontier.pop(false) as Point2D;
-		const current_node = tuple_to_addr(_current_node);
+	if( !search_was_aborted_early ){
+		frontier.insert( _start_coords, 0 );
+		costs_so_far[ tuple_to_addr(_start_coords) ] = 0;
+		while( (frontier.size() > 0) ){
 	
-		if(current_node == tuple_to_addr(_end_coords)){
-			break;
-		}
+			const _current_node = frontier.pop(false) as Point2D;
+			const current_node = tuple_to_addr(_current_node);
 	
-		_.map( _graph[ current_node ], (next_node, index) => {
-			var new_cost = costs_so_far[ current_node ] + 1; //this is where we'd add a weighted graph lookup for movecost.
-			
-			if(
-				!_.includes(_.keys(costs_so_far), next_node)
-				||
-				new_cost < costs_so_far[next_node]
-			){
-				costs_so_far[next_node] = new_cost;
-			
-				frontier.insert(addr_to_tuple(next_node), new_cost + compute_node_heuristic( addr_to_tuple(next_node), _end_coords ));
-				came_from[next_node] = current_node;
-			
+			if(current_node == tuple_to_addr(_end_coords)){
+				search_has_succeeded = true;
+				break;
 			}
+	
+			_.map( _graph[ current_node ], (next_node, index) => {
+				var new_cost = costs_so_far[ current_node ] + 1; //this is where we'd add a weighted graph lookup for movecost.
+			
+				if(
+					!_.includes(_.keys(costs_so_far), next_node)
+					||
+					new_cost < costs_so_far[next_node]
+				){
+					costs_so_far[next_node] = new_cost;
+			
+					frontier.insert(addr_to_tuple(next_node), new_cost + compute_node_heuristic( addr_to_tuple(next_node), _end_coords ));
+					came_from[next_node] = current_node;
+			
+				}
 
-		})
+			})
+		}
 	}
 	
 
@@ -166,14 +188,17 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 			current_node = came_from[current_node];
 		}
 		path.push(start_node);
-		return path;
+		
+		let path_as_tuples = _.map(path, (val,idx) => ( addr_to_tuple(val) ) );
+		return path_as_tuples;
 	}
 
-	console.warn( reconstruct_path(came_from, tuple_to_addr(_start_coords), tuple_to_addr(_end_coords) ) )
-//				console.warn( came_from, costs_so_far );
 
 	return {
-		successful_path: reconstruct_path(came_from, tuple_to_addr(_start_coords), tuple_to_addr(_end_coords) ),
+		successful_path:	ƒ.if(search_has_succeeded,
+								()=>( reconstruct_path(came_from, tuple_to_addr(_start_coords), tuple_to_addr(_end_coords) )),
+								[]
+							),
 		discarded_nodes: _.keys(came_from)
 	};
 	
