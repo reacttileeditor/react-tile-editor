@@ -8,6 +8,7 @@ import { ƒ } from "./Utils";
 
 import { TileComparatorSample, TilePositionComparatorSample } from "./Asset_Manager";
 import { Tilemap_Manager } from "./Tilemap_Manager";
+import { Creature } from "./Creature";
 import { Point2D, Rectangle } from './interfaces';
 
 interface tileViewState {
@@ -32,17 +33,19 @@ type TileGrid = [[string]];
 
 export class Node_Graph_Generator {
 	_TM: Tilemap_Manager;
+	_Creature: Creature;
 
-	constructor( _TM: Tilemap_Manager ) {
+	constructor( _TM: Tilemap_Manager, _Creature: Creature ) {
 		
 		this._TM = _TM;
+		this._Creature = _Creature;
 	}
 	
 	
 /*----------------------- core functionality -----------------------*/
 	is_open = ( _grid: TileGrid, _coords: Point2D ): boolean => (
 		//this is going to be incredibly subjective and data-dependent; this is sort of a placeholder for the time being
-		_grid[_coords.y][_coords.x] != 'water'
+		this._Creature.yield_move_cost_for_tile_type( _grid[_coords.y][_coords.x] ) !== null
 	)
 	
 	
@@ -212,8 +215,11 @@ export class Pathfinder {
 		
 	}
 
-	find_path_between_map_tiles = (_TM: Tilemap_Manager, _start_coords: Point2D, _end_coords: Point2D) => {
-		const _Node_Graph_Generator = new Node_Graph_Generator(_TM);
+	find_path_between_map_tiles = (_TM: Tilemap_Manager, _start_coords: Point2D, _end_coords: Point2D, _Creature: Creature) => {
+		/*
+			We're going to go ahead and pass in the creature as a constructor argument; the idea here is that we can't really "reuse" an existing node graph generator and just pass in a new creature type; the moment anything changes about the creature we're using, we need to completely rebuild the node graph from scratch.  So there's no sense in pipelining it into the whole function tree inside the class - we have to nuke and rebuild anyways, so why not make the interface a bit simpler?
+		*/
+		const _Node_Graph_Generator = new Node_Graph_Generator(_TM, _Creature);
 
 	
 		const _graph = _Node_Graph_Generator.build_node_graph_from_grid( _TM.state.tileStatus );

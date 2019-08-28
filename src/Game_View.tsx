@@ -216,7 +216,7 @@ class Game_Manager {
 				const creature = this.get_current_turn_state().creature_list[ this.game_state.selected_object_index ];
 				creature.planned_tile_pos = new_pos;
 				
-				creature.path_this_turn = this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos )
+				creature.path_this_turn = this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos, creature )
 			}
 		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
 			this.game_state.selected_object_index = undefined;
