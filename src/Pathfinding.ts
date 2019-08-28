@@ -17,7 +17,7 @@ interface tileViewState {
 }
 
 interface NodeGraph {
-	[index: string]: Array<string>
+	[index: string]: Array<WeightedNode>
 }
 
 interface NodeAddrToNodeAddrDict {
@@ -28,6 +28,10 @@ interface NodeAddrToNumberDict {
 	[index: string]: number
 }
 
+interface WeightedNode {
+	tile_addr: string,
+	move_cost: number,
+}
 
 type TileGrid = [[string]];
 
@@ -43,32 +47,40 @@ export class Node_Graph_Generator {
 	
 	
 /*----------------------- core functionality -----------------------*/
-	is_open = ( _grid: TileGrid, _coords: Point2D ): boolean => (
-		//this is going to be incredibly subjective and data-dependent; this is sort of a placeholder for the time being
-		this._Creature.yield_move_cost_for_tile_type( _grid[_coords.y][_coords.x] ) !== null
+	move_cost_for_coords = ( _grid: TileGrid, _coords: Point2D ): number|null => (
+		this._Creature.yield_move_cost_for_tile_type( _grid[_coords.y][_coords.x] )
 	)
 	
 	
-	push_if_not_null = (_array: Array<string>, _push_val: string|null): void => {
+	push_if_not_null = (_array: Array<WeightedNode>, _push_val: WeightedNode|null): void => {
 		if(_push_val != null){
 			_array.push( _push_val );
 		}
 	}
 	
-	check_tile = ( _grid: TileGrid, _coords: Point2D ): string|null => {
-		if( this._TM.is_within_map_bounds( _coords ) && this.is_open( _grid, _coords ) ){
-			/*
-				If the tile we're checking is out of bounds, then it's blocked.
-				If the tile we're checking is open, it's a valid node connection, so we return it (so we can add it to the graph).
-			*/
-			return _coords.x + "," + _coords.y;
+	check_tile = ( _grid: TileGrid, _coords: Point2D ): WeightedNode|null => {
+		/*
+			If the tile we're checking is out of bounds, then it's blocked.
+			If the tile we're checking is open, it's a valid node connection, so we return it (so we can add it to the graph).
+		*/
+		if( this._TM.is_within_map_bounds( _coords ) ){
+			let weight = this.move_cost_for_coords( _grid, _coords );
+		
+			if( weight !== null ){
+				return {
+					tile_addr: _coords.x + "," + _coords.y,
+					move_cost: weight,	
+				};
+			} else {
+				return null;
+			}
 		} else {
 			return null;
 		}
 	};
 
 
-	check_adjacencies = ( _grid: TileGrid, _coords: Point2D ): Array<string> => {
+	check_adjacencies = ( _grid: TileGrid, _coords: Point2D ): Array<WeightedNode> => {
 		const tile_data: TilePositionComparatorSample = this._TM.get_tile_position_comparator_for_pos(_coords);
 		var adjacent_nodes = [];
 
@@ -93,7 +105,7 @@ export class Node_Graph_Generator {
 			_.map( row_value, (col_value, col_index) => {
 
 				//using this to skip solid tiles; we already handle tracking adjacencies *into* solid tile in the check_adjacencies function, but we need to skip looking *outwards* from solid tiles as well.
-				if( this.is_open( _grid, {x: col_index, y: row_index} ) ){
+				if( this.move_cost_for_coords( _grid, {x: col_index, y: row_index} ) !== null ){
 					graph_as_adjacency_list[col_index + "," + row_index] = this.check_adjacencies( _grid, { x: col_index, y: row_index } );
 				}
 			})
@@ -113,7 +125,7 @@ const tuple_to_addr = (the_tuple: Point2D): string => {
 			
 
 
-const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: Point2D ) => {
+const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: Point2D, _creature: Creature ) => {
 	var discarded_nodes = [];
 	let search_was_aborted_early : boolean = false;
 	let search_has_succeeded : boolean = false;
@@ -164,17 +176,24 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 			}
 	
 			_.map( _graph[ current_node ], (next_node, index) => {
-				var new_cost = costs_so_far[ current_node ] + 1; //this is where we'd add a weighted graph lookup for movecost.
+				/*
+					This cost calculation is a little fiddly; the code we've got right now doesn't load it from the graph, but instead loads it from the direct coordinates.  This is suitable for a node graph where "crossing particular edges" is largely agnostic to the ruleset - where the only thing that matters is the "type" of the destination tile.  But if we add anything to our ruleset like the common tropes of "eating a ton of extra rules to embark" and so forth, then we're absolutely going to have to change our node graph structure to include this as an additional piece of info.
+				*/
+				var new_cost = costs_so_far[ current_node ] + next_node.move_cost;
 			
 				if(
-					!_.includes(_.keys(costs_so_far), next_node)
+					!_.includes(_.keys(costs_so_far), next_node.tile_addr)
 					||
-					new_cost < costs_so_far[next_node]
+					new_cost < costs_so_far[next_node.tile_addr]
 				){
-					costs_so_far[next_node] = new_cost;
+					costs_so_far[next_node.tile_addr] = new_cost;
 			
-					frontier.insert(addr_to_tuple(next_node), new_cost + compute_node_heuristic( addr_to_tuple(next_node), _end_coords ));
-					came_from[next_node] = current_node;
+					frontier.insert(
+						addr_to_tuple(next_node.tile_addr),
+						new_cost + compute_node_heuristic( addr_to_tuple(next_node.tile_addr), _end_coords )
+					);
+					
+					came_from[next_node.tile_addr] = current_node;
 			
 				}
 
@@ -223,8 +242,7 @@ export class Pathfinder {
 
 	
 		const _graph = _Node_Graph_Generator.build_node_graph_from_grid( _TM.state.tileStatus );
-	
-		return a_star_search( _graph, _start_coords, _end_coords );
+		return a_star_search( _graph, _start_coords, _end_coords, _Creature );
 	}
 }
 

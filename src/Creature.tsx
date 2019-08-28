@@ -43,6 +43,8 @@ export class Creature {
 	yield_move_cost_for_tile_type = (tile_type: string): number|null => {
 		if(tile_type == 'water'){
 			return null;
+		} else if (tile_type == 'menhir'){
+			return 10;
 		} else {
 			return 1;
 		}
