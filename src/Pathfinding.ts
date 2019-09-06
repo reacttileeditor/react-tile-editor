@@ -177,7 +177,11 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 	
 			_.map( _graph[ current_node ], (next_node, index) => {
 				/*
-					This cost calculation is a little fiddly; the code we've got right now doesn't load it from the graph, but instead loads it from the direct coordinates.  This is suitable for a node graph where "crossing particular edges" is largely agnostic to the ruleset - where the only thing that matters is the "type" of the destination tile.  But if we add anything to our ruleset like the common tropes of "eating a ton of extra rules to embark" and so forth, then we're absolutely going to have to change our node graph structure to include this as an additional piece of info.
+					This loads the cost of "this particular unit" moving to the next tile from the weighted node graph.
+					
+					Note that this isn't "commutative" (the old math rule about a + b = b + a).  Going from "tile A to tile B" might have a different cost than "tile B to tile A".  
+					
+					This might sound a bit crazy, but it's mighty convenient, because it's frequently used in a lot of games.  A common trope is how jumping off a (short!) ledge is much cheaper than clambering up.  Another common trope is (in 4x strategy games like Civ) is having the act of moving troops onto water take far more time than having them move from water to land (the presumption being that they take a large amount of time to assemble boats from local materials upon embarking, but to disembark, they just hop off and abandon the ships). 
 				*/
 				var new_cost = costs_so_far[ current_node ] + next_node.move_cost;
 			
