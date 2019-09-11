@@ -97,6 +97,24 @@ class Game_Manager {
  		this.update_game_state_for_ui = func;
 	}
 	
+	process_turn = () => {
+		/*
+			First, sort the creatures by speed.  We'll store a concept called "reserved tiles", where basically the faster creatures will "take" a given tile they're planning to move to, and therefore, that tile is blocked (even though pathfinding will ignore this).
+	
+			We'll then step backwards through the path for each subsequent creature in our speed-sorted list, and place it in the first "open spot" in its path, closest to its actual goal.
+			
+			The next step after this will be enabling a concept of moving a limited number of tiles rather than an unlimited number, per turn.  You'll still pathfind as though you had infinite moves, you'll just move a subset of them (and recalc every turn).
+			
+			
+			There's a ton of stuff where this whole algorithm/approach will probably shit the bed, but since this whole game design is so experimental to begin with, we really cannot just follow a blueprint we know will work - we have to commit to something we can't trust will work out.  The biggest thing I envison is units lining up single file, and not correctly clustering around a goal, or moving around each other.
+			
+			We'll take this step by step.
+		*/
+		//creature.path_this_turn = this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos, creature )
+
+	
+	}
+	
 	advance_turn = () => {
 		//console.log( this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, {x: 0, y: 0}, {x: 2, y: 4} ) ); 
 	
