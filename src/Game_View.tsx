@@ -97,7 +97,7 @@ class Game_Manager {
  		this.update_game_state_for_ui = func;
 	}
 	
-	process_turn = () => {
+	advance_turn = () => {
 		/*
 			First, sort the creatures by speed.  We'll store a concept called "reserved tiles", where basically the faster creatures will "take" a given tile they're planning to move to, and therefore, that tile is blocked (even though pathfinding will ignore this).
 	
@@ -111,13 +111,10 @@ class Game_Manager {
 			We'll take this step by step.
 		*/
 		//creature.path_this_turn = this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos, creature )
+		
+		const creature_movespeed = 5;
+		const reserved_tiles : Array<Point2D> = [];
 
-	
-	}
-	
-	advance_turn = () => {
-		//console.log( this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, {x: 0, y: 0}, {x: 2, y: 4} ) ); 
-	
 		//push a new turn onto the end of the turns array
 		this.game_state.turn_list = _.concat(
 			this.game_state.turn_list,
@@ -127,14 +124,25 @@ class Game_Manager {
 					
 					When we have other verbs, we'd add them here.
 				*/
-				creature_list:	_.map( _.last(this.game_state.turn_list).creature_list, (val,idx) => {
-									return new Creature({
-										tile_pos: val.planned_tile_pos,
-										planned_tile_pos: val.planned_tile_pos,
-										creature_image: val.creature_image,
-										unique_id: val.unique_id,
-									})
-								})
+				creature_list: _.map( _.last(this.game_state.turn_list).creature_list, (creature, idx) => {
+					let new_position = _.find( creature.path_this_turn.successful_path, (path_element) => {
+						return (_.find(reserved_tiles, path_element) === undefined); 
+					});
+			
+					if( new_position == undefined){ //if we didn't find *any* open slots, give up and remain at our current pos
+						new_position = creature.tile_pos;
+					} else {
+						reserved_tiles.push(new_position);
+					}
+			
+			
+					return new Creature({
+						tile_pos: new_position,
+						planned_tile_pos: new_position,
+						creature_image: creature.creature_image,
+						unique_id: creature.unique_id,
+					})
+				})
 			}]
 		);	
 	
