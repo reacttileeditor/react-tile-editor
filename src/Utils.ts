@@ -35,6 +35,10 @@ export const ƒ = {
 				return undefined;
 			}
 		}
+	},
+	dump: (expr) => {
+		console.log(expr);
+		return expr;
 	}
 }
 

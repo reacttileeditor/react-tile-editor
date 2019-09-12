@@ -125,10 +125,18 @@ class Game_Manager {
 					When we have other verbs, we'd add them here.
 				*/
 				creature_list: _.map( _.last(this.game_state.turn_list).creature_list, (creature, idx) => {
-					let new_position = _.find( creature.path_this_turn.successful_path, (path_element) => {
-						return (_.find(reserved_tiles, path_element) === undefined); 
-					});
+					let new_position =
+						_.find(
+							ƒ.dump(_.slice( creature.path_this_turn.successful_path,
+								_.size(creature.path_this_turn.successful_path) - creature.yield_moves_per_turn(),
+								_.size(creature.path_this_turn.successful_path)
+							)),
+							(path_element) => {
+								return (_.find(reserved_tiles, path_element) === undefined); 
+							}
+						);
 			
+					console.error(new_position);
 					if( new_position == undefined){ //if we didn't find *any* open slots, give up and remain at our current pos
 						new_position = creature.tile_pos;
 					} else {

@@ -49,6 +49,14 @@ export class Creature {
 			return 1;
 		}
 	}
+	
+	yield_moves_per_turn = (): number => {
+		if(this.creature_image == 'hermit'){
+			return 5;
+		} else /* if(this.creature_image == 'peasant') */ {
+			return 8;
+		}
+	}
 }
 
 
