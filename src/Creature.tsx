@@ -22,6 +22,8 @@ export class Creature {
 	unique_id: string;
 	path_this_turn: Array<Point2D>;
 
+	creature_basetype_delegate: 
+
 	constructor(p: {
 		tile_pos: Point2D,
 		creature_image: string,
@@ -60,6 +62,23 @@ export class Creature {
 }
 
 
-export class Creature_Type {
+type CreatureType = CT_Hermit | CT_Peasant | CT_Skeleton;
+
+// export class Creature_Type {
+// 
+// }
+
+class Creature_Base_Type {
+
+	yield_move_cost_for_tile_type = () => {
+		if(tile_type == 'water'){
+			return null;
+		} else if (tile_type == 'menhir'){
+			return 10;
+		} else {
+			return 1;
+		}
+	}
+
 
 }
