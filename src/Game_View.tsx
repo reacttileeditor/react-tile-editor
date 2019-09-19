@@ -81,11 +81,11 @@ class Game_Manager {
 				creature_list: [new Creature({
 					tile_pos: {x: 0, y: 6},
 					planned_tile_pos: {x: 0, y: 6},
-					creature_image: 'hermit',
+					type_name: 'hermit',
 				}), new Creature({
 					tile_pos: {x: 2, y: 4},
 					planned_tile_pos: {x: 2, y: 4},
-					creature_image: 'peasant',
+					type_name: 'peasant',
 				})],
 			}],
 		};
@@ -147,7 +147,7 @@ class Game_Manager {
 					return new Creature({
 						tile_pos: new_position,
 						planned_tile_pos: new_position,
-						creature_image: creature.creature_image,
+						type_name: creature.type_name,
 						unique_id: creature.unique_id,
 					})
 				})
@@ -165,7 +165,7 @@ class Game_Manager {
 		
 		_.map( this.get_current_turn_state().creature_list, (val,idx) => {
 			this._Asset_Manager.draw_image_for_asset_name({
-				asset_name:					val.creature_image,
+				asset_name:					val.yield_creature_image(),
 				_BM:						this._Blit_Manager,
 				pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
 				zorder:						12,
@@ -175,7 +175,7 @@ class Game_Manager {
 			})
 
 			this._Asset_Manager.draw_image_for_asset_name({
-				asset_name:					val.creature_image,
+				asset_name:					val.yield_creature_image(),
 				_BM:						this._Blit_Manager,
 				pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
 				zorder:						12,
