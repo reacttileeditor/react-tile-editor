@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import _ from "lodash";
 
+import { ƒ } from "./Utils";
 import { Asset_Manager } from "./Asset_Manager";
 
 var PATH_PREFIX = "/dist/assets/"
@@ -98,7 +99,10 @@ export class Blit_Manager {
 
 /*----------------------- state manipulation -----------------------*/
 	adjust_viewport_pos = (x, y) => {
-		this.state.viewport_tween_progress = 0.0;
+		this.state.viewport_tween_progress = ƒ.if(this.state.viewport_tween_progress == 1.0,
+			0.0,
+			this.state.viewport_tween_progress * 0.3
+		);
 		this.state.intended_viewport_offset = {
 			x: this.state.intended_viewport_offset.x + x,
 			y: this.state.intended_viewport_offset.y + y
@@ -211,7 +215,7 @@ export class Blit_Manager {
 		const { viewport_tween_progress, intended_viewport_offset, actual_viewport_offset } = this.state;
 	
 		if( viewport_tween_progress < 1.0 ){
-			this.state.viewport_tween_progress += 0.01;
+			this.state.viewport_tween_progress += 0.02;
 			this.state.actual_viewport_offset = {
 				x: Math.floor(actual_viewport_offset.x + viewport_tween_progress * ( intended_viewport_offset.x - actual_viewport_offset.x )),
 				y: Math.floor(actual_viewport_offset.y + viewport_tween_progress * ( intended_viewport_offset.y - actual_viewport_offset.y )),
