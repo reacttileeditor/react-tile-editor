@@ -33,7 +33,7 @@ interface WeightedNode {
 	move_cost: number,
 }
 
-type TileGrid = [[string]];
+type TileGrid = Array<Array<string>>;
 
 export type Pathfinding_Result = {
 	successful_path: Array<Point2D>,

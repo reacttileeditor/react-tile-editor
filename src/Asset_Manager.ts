@@ -74,9 +74,9 @@ type GraphicItemGeneric = GraphicItemAutotiled|GraphicItem;
 
 
 
-interface TileComparatorRow extends Array<string> { 0: string; 1: string; }
-interface TileComparatorRowCenter extends Array<string> { 0: string; 1: string; 2: string; }
-export interface TileComparatorSample extends Array<TileComparatorRow|TileComparatorRowCenter> { 0: TileComparatorRow, 1: TileComparatorRowCenter, 2: TileComparatorRow };
+type TileComparatorRow = [string, string];
+type TileComparatorRowCenter = [string, string, string];
+export type TileComparatorSample = [TileComparatorRow, TileComparatorRowCenter, TileComparatorRow];
 
 
 interface TilePositionComparatorRow extends Array<Point2D> { 0: Point2D; 1: Point2D; }

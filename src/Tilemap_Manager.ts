@@ -12,7 +12,7 @@ import { TileComparatorSample, TilePositionComparatorSample } from "./Asset_Mana
 import { Point2D, Rectangle } from './interfaces';
 
 interface tileViewState {
-	tileStatus: [[string]],
+	tileStatus: Array<Array<string>>,
 	initialized: boolean,
 }
 
@@ -141,11 +141,13 @@ export class Tilemap_Manager {
 	get_tile_comparator_sample_for_pos = ( pos: Point2D ): TileComparatorSample => {
 		const tpc = this.get_tile_position_comparator_for_pos(pos);
 		
-		return _.map(tpc, (row_val, row_idx) => {
+		const val = _.map(tpc, (row_val, row_idx) => {
 			return _.map(row_val, (col_val, col_idx) => {
 				return this.get_tile_name_for_pos( col_val )
 			})
 		});
+		
+		return (val as TileComparatorSample); //casting this because Typescript is being extra insistent that the tuple lengths match, but we can't guarantee this without dramatically complicating our code in a particularly bad way.
 	}
 	
 	get_tile_position_comparator_for_pos = ( pos: Point2D ): TilePositionComparatorSample => {
@@ -169,7 +171,7 @@ export class Tilemap_Manager {
 			return horizontal_tile_indices.map( (col_value, col_index) => {
 				return {x: col_value, y: row_value};
 			});
-		});
+		}) as TilePositionComparatorSample;
 	}
 	
 	get_tile_name_for_pos = ( pos: Point2D ) => {
