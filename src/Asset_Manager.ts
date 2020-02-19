@@ -570,13 +570,25 @@ export class Asset_Manager {
 		}
 	}
 
+	get_tile_variant_data = (tile_name: string): Array<VariantItem> => {
+		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
+
+		let markup_data_for_tile = _.find( tile_types, (value, index) => (value.name == tile_name))
+		
+		if(markup_data_for_tile == undefined){
+			console.error(`Nothing found in asset list for tile type ${tile_name}`);
+			return [];
+		} else {
+			return markup_data_for_tile.variants;
+		}
+	}
+	
+
 	get_asset_data_for_tile_at_zorder = (tile_name, zorder):Array<GraphicItemGeneric> => {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		
-		let tile_variants = _.find( tile_types, (value, index) => {
-								return value.name == tile_name;
-							}).variants;
+		let tile_variants = this.get_tile_variant_data(tile_name);
 
 		let tile_data = _.filter(
 			tile_variants[this._tile_dice( tile_variants.length ) -1].graphics,
@@ -591,24 +603,18 @@ export class Asset_Manager {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		
-		let markup_data_for_tile = _.find( tile_types, (value, index) => (value.name == tile_name))
-
-		if(markup_data_for_tile == undefined){
-			console.error(`Nothing found in asset list for tile type ${tile_name}`);
-			return [];
-		} else {
-			let variant_graphic_sets: Array<Array<GraphicItem|GraphicItemAutotiled>> = _.map( markup_data_for_tile.variants, (val) => (val.graphics) );
+		let variant_graphic_sets: Array<Array<GraphicItem|GraphicItemAutotiled>> = _.map( this.get_tile_variant_data(tile_name), (val) => (val.graphics) );
+	
+		let number_arrays: Array<Array<number>> = _.map( variant_graphic_sets, (val) => {
+			return _.map(val, (val2) => (val2.zorder))
+		} );
+	
+		let combined_number_arrays: Array<number> = _.flatten(number_arrays);
+	
+		let final_array: Array<number> = _.uniq(combined_number_arrays);
+	
+		return final_array;
 		
-			let number_arrays: Array<Array<number>> = _.map( variant_graphic_sets, (val) => {
-				return _.map(val, (val2) => (val2.zorder))
-			} );
-		
-			let combined_number_arrays: Array<number> = _.flatten(number_arrays);
-		
-			let final_array: Array<number> = _.uniq(combined_number_arrays);
-		
-			return final_array;
-		}
 	}
 
 	
@@ -715,69 +721,74 @@ export class Asset_Manager {
 		let image = raw_image_list[ p.asset_name ]!;
 		let metadata = assets_meta[ p.asset_name ]!;
 		let image_data = _.find(image_data_list, {name: p.asset_name});
-		let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
-
-		let frame_count = image_data.frames ? image_data.frames : 1;
-		let frame_duration = image_data.frame_duration ? image_data.frame_duration : 20;
-		let frame_padding = image_data.pad ? image_data.pad : 0;
-
-		/*
-			And this is where we get into the business of calculating the current frame.
-			We start by doing a pretty simple absolute division operation; check our current millisec timer, and see what that would be in frames.
-			This is the number we feed into our various formulas.
-		*/
-		let absolute_frame_num = Math.floor(p.current_milliseconds / frame_duration);
-		let current_frame_num;
-			
-		/*
-			For relatively simple setups, like a straightforward 1,2,3 frame ordering, it's a piece of cake:
-		*/
-		if( !image_data.ping_pong ){
-			current_frame_num = Utils.modulo(absolute_frame_num, frame_count);
-		} else {
-			current_frame_num = this.calculate_pingpong_frame_num( absolute_frame_num, frame_count );	
-		}
-
-		/*
-			This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
-			
-			This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
-		*/
 		
-		if( !this.isAssetSpritesheet(metadata) ){
-			p._BM.queue_draw_op({
-				pos:			{ x: p.pos.x, y: p.pos.y },
-				z_index:		p.zorder,
-				opacity:		p.opacity,
-				drawing_data:	{
-									image_ref: image,
-									dest_point: {
-										x:			-Math.floor(dim.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-										y:			-Math.floor(dim.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
-									}
-								}
-			});
+		if(image_data == undefined){
+			console.error(`Could not find an image in our image_data_list for the asset named ${p.asset_name}.`); 
 		} else {
-			p._BM.queue_draw_op({
-				pos:			{ x: p.pos.x, y: p.pos.y },
-				z_index:		p.zorder,
-				opacity:		p.opacity,
-				drawing_data:	{
-									image_ref: image,
-									src_rect: {
-										x:	metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
-										y:	metadata.bounds.y,
-										w:	metadata.bounds.w,
-										h:	metadata.bounds.h,
-									},
-									dst_rect: {
-										x:	-Math.floor(metadata.bounds.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-										y:	-Math.floor(metadata.bounds.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
-										w:	metadata.bounds.w,
-										h:	metadata.bounds.h,
+			let dim = metadata ? metadata.dim : { w: 20, h: 20 };  //safe-access
+
+			let frame_count = image_data.frames ? image_data.frames : 1;
+			let frame_duration = image_data.frame_duration ? image_data.frame_duration : 20;
+			let frame_padding = image_data.pad ? image_data.pad : 0;
+
+			/*
+				And this is where we get into the business of calculating the current frame.
+				We start by doing a pretty simple absolute division operation; check our current millisec timer, and see what that would be in frames.
+				This is the number we feed into our various formulas.
+			*/
+			let absolute_frame_num = Math.floor(p.current_milliseconds / frame_duration);
+			let current_frame_num;
+			
+			/*
+				For relatively simple setups, like a straightforward 1,2,3 frame ordering, it's a piece of cake:
+			*/
+			if( !image_data.ping_pong ){
+				current_frame_num = Utils.modulo(absolute_frame_num, frame_count);
+			} else {
+				current_frame_num = this.calculate_pingpong_frame_num( absolute_frame_num, frame_count );	
+			}
+
+			/*
+				This assumes the canvas is pre-translated so our draw position is at the final point, so we don't have to do any calculation for that, here.
+			
+				This is the place where we do all 'spritesheet' handling, and also where we do all animation handling.
+			*/
+		
+			if( !this.isAssetSpritesheet(metadata) ){
+				p._BM.queue_draw_op({
+					pos:			{ x: p.pos.x, y: p.pos.y },
+					z_index:		p.zorder,
+					opacity:		p.opacity,
+					drawing_data:	{
+										image_ref: image,
+										dest_point: {
+											x:			-Math.floor(dim.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+											y:			-Math.floor(dim.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+										}
 									}
-								}
-			});
+				});
+			} else {
+				p._BM.queue_draw_op({
+					pos:			{ x: p.pos.x, y: p.pos.y },
+					z_index:		p.zorder,
+					opacity:		p.opacity,
+					drawing_data:	{
+										image_ref: image,
+										src_rect: {
+											x:	metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
+											y:	metadata.bounds.y,
+											w:	metadata.bounds.w,
+											h:	metadata.bounds.h,
+										},
+										dst_rect: {
+											x:	-Math.floor(metadata.bounds.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+											y:	-Math.floor(metadata.bounds.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+											w:	metadata.bounds.w,
+											h:	metadata.bounds.h,
+										}
+									}
+				});
+			}
 		}
 	}
 /*----------------------- auto-tiling logic -----------------------*/
