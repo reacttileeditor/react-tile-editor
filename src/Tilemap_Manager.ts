@@ -148,6 +148,7 @@ export class Tilemap_Manager {
 		});
 		
 		return (val as TileComparatorSample); //casting this because Typescript is being extra insistent that the tuple lengths match, but we can't guarantee this without dramatically complicating our code in a particularly bad way.
+		//https://github.com/microsoft/TypeScript/issues/11312
 	}
 	
 	get_tile_position_comparator_for_pos = ( pos: Point2D ): TilePositionComparatorSample => {
