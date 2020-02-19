@@ -35,6 +35,12 @@ interface WeightedNode {
 
 type TileGrid = [[string]];
 
+export type Pathfinding_Result = {
+	successful_path: Array<Point2D>,
+	discarded_nodes: Array<string>,
+}
+
+
 export class Node_Graph_Generator {
 	_TM: Tilemap_Manager;
 	_Creature: Creature;
@@ -125,7 +131,7 @@ const tuple_to_addr = (the_tuple: Point2D): string => {
 			
 
 
-const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: Point2D, _creature: Creature ) => {
+const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: Point2D, _creature: Creature ): Pathfinding_Result => {
 	var discarded_nodes = [];
 	let search_was_aborted_early : boolean = false;
 	let search_has_succeeded : boolean = false;
@@ -206,7 +212,7 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 	}
 	
 
-	const reconstruct_path = (came_from: NodeAddrToNodeAddrDict, start_node: string, goal_node: string): Array<string> => {
+	const reconstruct_path = (came_from: NodeAddrToNodeAddrDict, start_node: string, goal_node: string): Array<Point2D> => {
 		let current_node = goal_node;
 		let path: Array<string>  = [];
 		while( current_node != start_node ){

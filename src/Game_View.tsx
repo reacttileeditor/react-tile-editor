@@ -35,19 +35,27 @@ interface Individual_Game_Turn_State {
 	creature_list: Array<Creature>
 }
 
+const Individual_Game_Turn_State_Init = {
+	creature_list: []
+}
 
-const GameStateInit = {
+const GameStateInit: Game_State = {
 	current_turn: 0,
 	selected_object_index: undefined,
-	creature_list: []
+	turn_list: []
 };
 
+interface AnimationState {
+	is_animating_turn_end: boolean,
+	time_turn_end_anim_started__in_ms: number
+}
 
 
 class Game_Manager {
 	_Blit_Manager: Blit_Manager;
 	_Asset_Manager: Asset_Manager;
 	_Tilemap_Manager: Tilemap_Manager;
+	animation_state: AnimationState;
 	game_state: Game_State;
 	update_game_state_for_ui: Function;
 	_Pathfinder: Pathfinder;
@@ -73,6 +81,11 @@ class Game_Manager {
 		this._Asset_Manager = _Asset_Manager;
 		this._Tilemap_Manager = _Tilemap_Manager;
 		this.update_game_state_for_ui = ()=>{};
+
+		this.animation_state = {
+			is_animating_turn_end: false,
+			time_turn_end_anim_started__in_ms: 0
+		};
 
 		this.game_state = {
 			current_turn: 0,
@@ -124,12 +137,12 @@ class Game_Manager {
 					
 					When we have other verbs, we'd add them here.
 				*/
-				creature_list: _.map( _.last(this.game_state.turn_list).creature_list, (creature, idx) => {
+				creature_list: _.map( this.get_current_turn_state().creature_list, (creature, idx) => {
 					let new_position =
 						_.find(
-							ƒ.dump(_.slice( creature.path_this_turn.successful_path,
-								_.size(creature.path_this_turn.successful_path) - creature.yield_moves_per_turn(),
-								_.size(creature.path_this_turn.successful_path)
+							ƒ.dump(_.slice( creature.path_this_turn,
+								_.size(creature.path_this_turn) - creature.yield_moves_per_turn(),
+								_.size(creature.path_this_turn)
 							)),
 							(path_element) => {
 								return (_.find(reserved_tiles, path_element) === undefined); 
@@ -153,9 +166,21 @@ class Game_Manager {
 				})
 			}]
 		);	
+
+		var date = new Date();
 	
+		this.animation_state = {
+			is_animating_turn_end: true,
+			time_turn_end_anim_started__in_ms: date.getTime()
+		};
 	
 		this.game_state.current_turn += 1;
+	}
+	
+	get_time_offset = () => {
+		var date = new Date();
+
+		return (date.getTime() - this.animation_state.time_turn_end_anim_started__in_ms);
 	}
 	
 	do_one_frame_of_rendering = () => {
@@ -184,6 +209,9 @@ class Game_Manager {
 				opacity:					0.5,
 			})
 			
+			
+			
+			
 			if(this.game_state.selected_object_index == idx){
 				this._Asset_Manager.draw_image_for_asset_name ({
 					asset_name:					'cursor_green',
@@ -195,7 +223,7 @@ class Game_Manager {
 					opacity:					1.0,
 				})
 
-				_.map(val.path_this_turn.successful_path, (path_val, path_idx) => {
+				_.map(val.path_this_turn, (path_val, path_idx) => {
 					this._Asset_Manager.draw_image_for_asset_name ({
 						asset_name:					'cursor_green_small',
 						_BM:						this._Blit_Manager,
@@ -231,7 +259,9 @@ class Game_Manager {
 	}
 	
 	get_current_turn_state = () => {
-		return _.last(this.game_state.turn_list)
+		const state = _.last(this.game_state.turn_list);
+	
+		return state ? state : Individual_Game_Turn_State_Init;
 	}
 	
 	select_object_based_on_tile_click = (pos) => {
@@ -250,7 +280,9 @@ class Game_Manager {
 				const creature = this.get_current_turn_state().creature_list[ this.game_state.selected_object_index ];
 				creature.planned_tile_pos = new_pos;
 				
-				creature.path_this_turn = this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos, creature )
+				creature.set_path(
+					this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos, creature ).successful_path
+				);
 			}
 		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
 			this.game_state.selected_object_index = undefined;
