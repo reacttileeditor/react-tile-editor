@@ -550,10 +550,10 @@ export class Asset_Manager {
 
 
 /*----------------------- object draw ops -----------------------*/
-	get_image_data_for_object = (image_name):ImageData|undefined => {
+	get_image_data_for_object = (image_name: string):ImageData|undefined => {
 		let { image_data_list } = this.static_vals;
 
-		return _.find( image_data_list, (value, index) => (value.name = image_name) );
+		return _.find( image_data_list, (value, index) => (value.name == image_name) );
 	}
 
 
@@ -574,13 +574,6 @@ export class Asset_Manager {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		
-		if(tile_name == 'cursor'){
-			return [{
-				id: 'cursor',
-				zorder: 0
-			}];
-		}
-
 		let tile_variants = _.find( tile_types, (value, index) => {
 								return value.name == tile_name;
 							}).variants;
@@ -594,23 +587,28 @@ export class Asset_Manager {
 	}
 
 
-	yield_zorder_list_for_tile = (tile_name) => {
+	yield_zorder_list_for_tile = (tile_name): Array<number> => {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
-		let _array = tile_name == 'cursor'
-			?
-			'cursor'
-			:
-			_.map(_.first(
-				_.find( tile_types, (value, index) => {
-					return value.name == tile_name;
-				}).variants
-			).graphics,
-				(value,index) =>{ 
-					return value.zorder
-				});
 		
-		return _array;
+		let markup_data_for_tile = _.find( tile_types, (value, index) => (value.name == tile_name))
+
+		if(markup_data_for_tile == undefined){
+			console.error(`Nothing found in asset list for tile type ${tile_name}`);
+			return [];
+		} else {
+			let variant_graphic_sets: Array<Array<GraphicItem|GraphicItemAutotiled>> = _.map( markup_data_for_tile.variants, (val) => (val.graphics) );
+		
+			let number_arrays: Array<Array<number>> = _.map( variant_graphic_sets, (val) => {
+				return _.map(val, (val2) => (val2.zorder))
+			} );
+		
+			let combined_number_arrays: Array<number> = _.flatten(number_arrays);
+		
+			let final_array: Array<number> = _.uniq(combined_number_arrays);
+		
+			return final_array;
+		}
 	}
 
 	
