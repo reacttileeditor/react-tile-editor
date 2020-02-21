@@ -97,14 +97,16 @@ export class Creature {
 	}
 	
 	calculate_total_anim_duration = (): number => {
-		return _.reduce(
-			_.map(animation_this_turn, (val)=> (val.duration))
-			(left,right) => (left + right)
+		return ƒ.if( _.size(this.animation_this_turn),
+			_.reduce(
+				_.map(this.animation_this_turn, (val)=> (val.duration)),
+				(left,right) => (left + right)
+			) as number,
+			0
 		)
 	}
 	
 	yield_position_for_time_in_post_turn_animation = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number):Point2D => {
-//	this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos)
 		var animation_segment = _.find(this.animation_this_turn, (val) => (
 			val.start_time <= offset_in_ms
 			&&
@@ -112,14 +114,23 @@ export class Creature {
 		))
 		
 		if(animation_segment == undefined){
-			
-		
-			if(offset_in_ms >= this.calculate_total_anim_duration() ){
-				_.last(
-			}
-		}
+			/*
+				There are a few reasons we might not be able to find a corresponding animation segment.
+				If the desired time is off the end of the animation, return our final position.
+				
+				If it's absolutely anything else, then let's just return the initial starting position.  The most common case for this would be one where we just don't really have an animation.
+				(Nominally this would include "before the start of the animation", but as much as that's an error case, it makes no sense why we'd end up there)
+			*/
 
-		return {x: 0, y: 0};
+			if(offset_in_ms >= this.calculate_total_anim_duration() ){
+				return _Tilemap_Manager.convert_tile_coords_to_pixel_coords(this.planned_tile_pos)
+			} else {
+				return _Tilemap_Manager.convert_tile_coords_to_pixel_coords(this.tile_pos)
+			}
+		} else {
+			//cheating for some test code - first we'll just do the start pos; then we'll linearly interpolate.   We want to linearly interpolate here, because any "actual" easing function should happen over the whole animation, not one segment (otherwise we'll have a very 'stuttery' movement pattern.
+			return animation_segment.start_pos;
+		}
 	}
 }
 
