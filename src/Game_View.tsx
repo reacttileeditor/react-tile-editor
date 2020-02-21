@@ -183,60 +183,92 @@ class Game_Manager {
 		return (date.getTime() - this.animation_state.time_turn_end_anim_started__in_ms);
 	}
 	
+	get_total_anim_duration = ():number => {
+		if( _.size(this.get_previous_turn_state().creature_list) > 0){
+			return _.reduce(
+				_.map(
+					this.get_previous_turn_state().creature_list,
+					(val) => ( val.calculate_total_anim_duration() )
+				),
+				(left, right) => ( ƒ.if( left > right, left, right) )
+			)
+		} else {
+			return 0;
+		}
+	}
+	
 	do_one_frame_of_rendering = () => {
-		//const pos = this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(0,4); 
-
 		this.update_game_state_for_ui(this.game_state);
 		
-		_.map( this.get_current_turn_state().creature_list, (val,idx) => {
-			this._Asset_Manager.draw_image_for_asset_name({
-				asset_name:					val.yield_creature_image(),
-				_BM:						this._Blit_Manager,
-				pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
-				zorder:						12,
-				should_use_tile_offset:		true,
-				current_milliseconds:		0,
-				opacity:					1.0,
-			})
+		
+			if(this.animation_state.is_animating_turn_end){
+	
+				//console.log(this.get_time_offset());
+				//console.log('pos:', val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ) );
+				if(this.get_time_offset() > this.get_total_anim_duration() ){
+					this.animation_state.is_animating_turn_end = false;
+				} else {
+					_.map( this.get_previous_turn_state().creature_list, (val,idx) => {
+						this._Asset_Manager.draw_image_for_asset_name({
+							asset_name:					val.yield_creature_image(),
+							_BM:						this._Blit_Manager,
+							pos:						val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
+							zorder:						12,
+							should_use_tile_offset:		true,
+							current_milliseconds:		0,
+							opacity:					1.0,
+						})
+					})
+				}
 
-			this._Asset_Manager.draw_image_for_asset_name({
-				asset_name:					val.yield_creature_image(),
-				_BM:						this._Blit_Manager,
-				pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
-				zorder:						12,
-				should_use_tile_offset:		true,
-				current_milliseconds:		0,
-				opacity:					0.5,
-			})
-			
-			
-			
-			
-			if(this.game_state.selected_object_index == idx){
-				this._Asset_Manager.draw_image_for_asset_name ({
-					asset_name:					'cursor_green',
-					_BM:						this._Blit_Manager,
-					pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
-					zorder:						10,
-					should_use_tile_offset:		true,
-					current_milliseconds:		0,
-					opacity:					1.0,
-				})
-
-				_.map(val.path_this_turn, (path_val, path_idx) => {
-					this._Asset_Manager.draw_image_for_asset_name ({
-						asset_name:					'cursor_green_small',
+			} else {
+				_.map( this.get_current_turn_state().creature_list, (val,idx) => {
+					this._Asset_Manager.draw_image_for_asset_name({
+						asset_name:					val.yield_creature_image(),
 						_BM:						this._Blit_Manager,
-						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(path_val),
-						zorder:						9,
+						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+						zorder:						12,
 						should_use_tile_offset:		true,
 						current_milliseconds:		0,
 						opacity:					1.0,
 					})
+
+					this._Asset_Manager.draw_image_for_asset_name({
+						asset_name:					val.yield_creature_image(),
+						_BM:						this._Blit_Manager,
+						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
+						zorder:						12,
+						should_use_tile_offset:		true,
+						current_milliseconds:		0,
+						opacity:					0.5,
+					})			
+			
+			
+					if(this.game_state.selected_object_index == idx){
+						this._Asset_Manager.draw_image_for_asset_name ({
+							asset_name:					'cursor_green',
+							_BM:						this._Blit_Manager,
+							pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+							zorder:						10,
+							should_use_tile_offset:		true,
+							current_milliseconds:		0,
+							opacity:					1.0,
+						})
+
+						_.map(val.path_this_turn, (path_val, path_idx) => {
+							this._Asset_Manager.draw_image_for_asset_name ({
+								asset_name:					'cursor_green_small',
+								_BM:						this._Blit_Manager,
+								pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(path_val),
+								zorder:						9,
+								should_use_tile_offset:		true,
+								current_milliseconds:		0,
+								opacity:					1.0,
+							})
+						})
+					}
 				})
-				
 			}
-		})
 	}
 
 	handle_click = (pos) => {
@@ -256,6 +288,12 @@ class Game_Manager {
 		)
 		
 		return returnVal;
+	}
+
+	get_previous_turn_state = () => {
+		const state = this.game_state.turn_list[ _.size(this.game_state.turn_list) -2 ];
+	
+		return state ? state : Individual_Game_Turn_State_Init;
 	}
 	
 	get_current_turn_state = () => {

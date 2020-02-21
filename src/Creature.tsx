@@ -107,11 +107,14 @@ export class Creature {
 	}
 	
 	yield_position_for_time_in_post_turn_animation = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number):Point2D => {
-		var animation_segment = _.find(this.animation_this_turn, (val) => (
-			val.start_time <= offset_in_ms
+		console.log(this.animation_this_turn);
+		var animation_segment = _.find(this.animation_this_turn, (val) => {
+			console.log(`start ${val.start_time}, offset ${offset_in_ms}, end ${val.start_time + val.duration}`);
+		
+			return val.start_time <= offset_in_ms
 			&&
-			offset_in_ms < val.start_time + val.duration
-		))
+			offset_in_ms < (val.start_time + val.duration)
+		})
 		
 		if(animation_segment == undefined){
 			/*
@@ -129,7 +132,7 @@ export class Creature {
 			}
 		} else {
 			//cheating for some test code - first we'll just do the start pos; then we'll linearly interpolate.   We want to linearly interpolate here, because any "actual" easing function should happen over the whole animation, not one segment (otherwise we'll have a very 'stuttery' movement pattern.
-			return animation_segment.start_pos;
+			return _Tilemap_Manager.convert_tile_coords_to_pixel_coords(animation_segment.start_pos);
 		}
 	}
 }
