@@ -141,8 +141,8 @@ class Game_Manager {
 					let new_position =
 						_.find(
 							ƒ.dump(_.slice( creature.path_this_turn,
-								_.size(creature.path_this_turn) - creature.yield_moves_per_turn(),
-								_.size(creature.path_this_turn)
+								0, //_.size(creature.path_this_turn) - creature.yield_moves_per_turn(),
+								creature.yield_moves_per_turn()
 							)),
 							(path_element) => {
 								return (_.find(reserved_tiles, path_element) === undefined); 

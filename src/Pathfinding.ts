@@ -222,7 +222,8 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 		path.push(start_node);
 		
 		let path_as_tuples = _.map(path, (val,idx) => ( addr_to_tuple(val) ) );
-		return path_as_tuples;
+		let path_in_natural_order = _.reverse(_.cloneDeep(path_as_tuples));
+		return path_in_natural_order;
 	}
 
 
