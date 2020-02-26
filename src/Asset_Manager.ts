@@ -138,6 +138,10 @@ export class Asset_Manager {
 				name: "cursor_green_small",
 				not_a_tile: true,
 			},{
+				url: "map-cursor-red-small.png",
+				name: "cursor_red_small",
+				not_a_tile: true,
+			},{
 				url: "test2.png",
 				name: "dirt1",
 			},{

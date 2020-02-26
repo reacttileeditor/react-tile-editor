@@ -21,6 +21,7 @@ export class Creature {
 	planned_tile_pos: Point2D;
 	unique_id: string;
 	path_this_turn: Array<Point2D>;
+	path_reachable_this_turn: Array<Point2D>;
 	animation_this_turn: Array<Anim_Schedule_Element>;
 	type_name: string;
 
@@ -73,10 +74,26 @@ export class Creature {
 		}
 	}
 	
-	set_path = (newPath: Array<Point2D>) => {
-		this.path_this_turn = newPath;
+	set_path = (new_path: Array<Point2D>) => {
+		this.path_this_turn = new_path;
+		this.path_reachable_this_turn = this.yield_path_reachable_this_turn(new_path);
 		
 		this.build_anim_from_path();
+	}
+	
+	yield_path_reachable_this_turn = (new_path: Array<Point2D>):Array<Point2D> => {
+		let moves_remaining = this.yield_moves_per_turn();
+		let final_path: Array<Point2D> = [];
+	
+		_.map( new_path, (val) => {
+			moves_remaining = moves_remaining - 1;
+			
+			if(moves_remaining > 0){
+				final_path.push(val);
+			}
+		})
+		
+		return final_path;
 	}
 	
 	build_anim_from_path = () => {

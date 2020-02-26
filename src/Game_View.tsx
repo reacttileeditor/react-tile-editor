@@ -256,8 +256,13 @@ class Game_Manager {
 						})
 
 						_.map(val.path_this_turn, (path_val, path_idx) => {
+							let asset_name = ƒ.if( _.includes(val.path_reachable_this_turn, path_val),
+								'cursor_green_small',
+								'cursor_red_small'
+							);
+						
 							this._Asset_Manager.draw_image_for_asset_name ({
-								asset_name:					'cursor_green_small',
+								asset_name:					asset_name,
 								_BM:						this._Blit_Manager,
 								pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(path_val),
 								zorder:						9,
