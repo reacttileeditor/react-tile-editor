@@ -124,9 +124,9 @@ export class Creature {
 	}
 	
 	yield_position_for_time_in_post_turn_animation = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number):Point2D => {
-		console.log(this.animation_this_turn);
+//		console.log(this.animation_this_turn);
 		var animation_segment = _.find(this.animation_this_turn, (val) => {
-			console.log(`start ${val.start_time}, offset ${offset_in_ms}, end ${val.start_time + val.duration}`);
+//			console.log(`start ${val.start_time}, offset ${offset_in_ms}, end ${val.start_time + val.duration}`);
 		
 			return val.start_time <= offset_in_ms
 			&&

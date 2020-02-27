@@ -140,16 +140,17 @@ class Game_Manager {
 				creature_list: _.map( this.get_current_turn_state().creature_list, (creature, idx) => {
 					let new_position =
 						_.find(
-							ƒ.dump(_.slice( creature.path_this_turn,
-								0, //_.size(creature.path_this_turn) - creature.yield_moves_per_turn(),
-								creature.yield_moves_per_turn()
-							)),
+							_.reverse(creature.path_reachable_this_turn),
+// 							ƒ.dump(_.slice( creature.path_this_turn,
+// 								0, //_.size(creature.path_this_turn) - creature.yield_moves_per_turn(),
+// 								creature.yield_moves_per_turn()
+// 							)),
 							(path_element) => {
 								return (_.find(reserved_tiles, path_element) === undefined); 
 							}
 						);
 			
-					console.error(new_position);
+					console.error(`new pos ${new_position}`);
 					if( new_position == undefined){ //if we didn't find *any* open slots, give up and remain at our current pos
 						new_position = creature.tile_pos;
 					} else {
@@ -441,8 +442,8 @@ export class Game_View extends React.Component <Game_View_Props> {
 				{...this.props}
 				dimensions={this.props.dimensions}
 				handle_canvas_click={ this._Game_Manager.handle_click }
-				handle_canvas_keydown={ ()=>{ console.log('game_keydown')} }
-				handle_canvas_mouse_move={ ()=>{ console.log('game_mouse_move')} }
+				handle_canvas_keydown={ ()=>{ /*console.log('game_keydown')*/} }
+				handle_canvas_mouse_move={ ()=>{ /*console.log('game_mouse_move')*/} }
 			/>
 			<Game_Status_Display
 				ref={(node) => {this.gsd = node!;}}
