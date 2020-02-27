@@ -98,14 +98,15 @@ export class Creature {
 	
 	build_anim_from_path = () => {
 		var time_so_far = 0;
+		this.animation_this_turn = [];
 
-		_.map(this.path_this_turn, (val,idx) => {
-			if(idx != _.size(this.path_this_turn) - 1){
+		_.map(this.path_reachable_this_turn, (val,idx) => {
+			if(idx != _.size(this.path_reachable_this_turn) - 1){
 				this.animation_this_turn.push({
 					duration: 100,
 					start_time: time_so_far,
 					start_pos: val,
-					end_pos: this.path_this_turn[idx + 1],
+					end_pos: this.path_reachable_this_turn[idx + 1],
 				})
 				
 				time_so_far = time_so_far + 100;
