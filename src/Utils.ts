@@ -1,5 +1,6 @@
 import _ from "lodash";
 import Prando from 'prando';
+import { Point2D, Rectangle } from './interfaces';
 
 
 /*----------------------- utility functions -----------------------*/
@@ -39,7 +40,16 @@ export const ƒ = {
 	dump: (expr) => {
 		console.log(expr);
 		return expr;
-	}
+	},
+	tween: (thing_one: number, thing_two: number, proportion: number) => (
+		thing_one*(proportion) + thing_two*(1.0-proportion)
+	),
+	tween_points: (thing_one: Point2D, thing_two: Point2D, proportion: number) => (
+		{
+			x: ƒ.tween(thing_one.x, thing_two.x, proportion),
+			y: ƒ.tween(thing_one.y, thing_two.y, proportion)
+		}
+	)
 }
 
 const lazy_evaluate = (param) => {
