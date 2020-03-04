@@ -4,7 +4,7 @@ import { Point2D, Rectangle } from './interfaces';
 
 
 /*----------------------- utility functions -----------------------*/
-export const dice = (sides) => (
+export const dice = (sides: number) => (
 	Math.floor( Math.random() * sides ) + 1
 )
 
@@ -25,7 +25,7 @@ export const modulo = (numerator: number, denominator: number): number => (
 )
 
 export const ƒ = {
-	if: (test, true_case, false_case?) => {
+	if: (test: boolean, true_case: unknown, false_case?:unknown) => {
 		//because ternaries have awful legibility, but we need a "expression" rather than the "statement" provided by a builtin if() clause.  We need something terse that resolves to a value.
 		if( test ){
 			return lazy_evaluate(true_case);
@@ -37,7 +37,7 @@ export const ƒ = {
 			}
 		}
 	},
-	dump: (expr) => {
+	dump: (expr: unknown) => {
 		console.log(expr);
 		return expr;
 	},
@@ -52,7 +52,7 @@ export const ƒ = {
 	)
 }
 
-const lazy_evaluate = (param) => {
+const lazy_evaluate = (param: unknown) => {
 	if(typeof(param) == 'function'){
 		return param();
 	} else {
@@ -60,7 +60,7 @@ const lazy_evaluate = (param) => {
 	}
 }
 
-export const convert_bitmask_to_array_of_individual_bit_values = (byteVal) => {
+export const convert_bitmask_to_array_of_individual_bit_values = (byteVal: any) => {
 	var res = [] as Array<number>;
 	
 	while(byteVal){
