@@ -104,9 +104,6 @@ export class Asset_Manager {
 		row_length: number,
 		col_height: number,
 	};
-	state: {
-	
-	};
 	static_vals: StaticValues;
 	TileRNG: Prando;
 
@@ -514,7 +511,7 @@ export class Asset_Manager {
 	}
 
 
-	launch_app = ( do_once_app_ready ) => {
+	launch_app = ( do_once_app_ready: ()=>void ) => {
 		this.static_vals.image_data_list.map( ( value, index ) => {
 
 			var temp_image = new Image();
@@ -537,7 +534,7 @@ export class Asset_Manager {
 		});
 	}
 
-	launch_if_all_assets_are_loaded = ( do_once_app_ready ) => {
+	launch_if_all_assets_are_loaded = ( do_once_app_ready: ()=>void ) => {
 		/*
 			There's a big problem most canvas apps have, which is that the canvas will start doing its thing right away and start trying to render, even if you haven't loaded any of the images yet.  What we want to do is have it wait until all the images are done loading, so we're rolling a minimalist "asset manager" here.  The only way (I'm aware of) to tell if an image has loaded is the onload callback.  Thus, we register one of these on each and every image, before attempting to load it.
 
@@ -562,7 +559,7 @@ export class Asset_Manager {
 
 
 /*----------------------- tile draw ops -----------------------*/
-	get_asset_name_for_tile_at_zorder = (tile_name, zorder):string|undefined => {
+	get_asset_name_for_tile_at_zorder = (tile_name: string, zorder: number):string|undefined => {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		let tile_data = this.get_asset_data_for_tile_at_zorder(tile_name, zorder);
@@ -588,7 +585,7 @@ export class Asset_Manager {
 	}
 	
 
-	get_asset_data_for_tile_at_zorder = (tile_name, zorder):Array<GraphicItemGeneric> => {
+	get_asset_data_for_tile_at_zorder = (tile_name: string, zorder: number):Array<GraphicItemGeneric> => {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		
@@ -603,7 +600,7 @@ export class Asset_Manager {
 	}
 
 
-	yield_zorder_list_for_tile = (tile_name): Array<number> => {
+	yield_zorder_list_for_tile = (tile_name: string): Array<number> => {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
 		
@@ -622,7 +619,7 @@ export class Asset_Manager {
 	}
 
 	
-	draw_all_assets_for_tile_type = (tile_name: string, _BM, pos: Point2D, should_use_tile_offset: boolean) => {
+	draw_all_assets_for_tile_type = (tile_name: string, _BM: Blit_Manager, pos: Point2D, should_use_tile_offset: boolean) => {
 		let zorders = this.yield_zorder_list_for_tile(tile_name); 
 	
 		zorders.map( (value,index) => {
@@ -632,7 +629,7 @@ export class Asset_Manager {
 	
 	draw_image_for_tile_type_at_zorder_and_pos = (
 			tile_name: string,
-			_BM,
+			_BM: Blit_Manager,
 			zorder: number,
 			pos_x: number,
 			pos_y: number,
@@ -671,7 +668,7 @@ export class Asset_Manager {
 	}
 
 /*----------------------- generic draw ops -----------------------*/
-	calculate_pingpong_frame_num = (absolute_frame_num, count) => {
+	calculate_pingpong_frame_num = (absolute_frame_num: number, count: number) => {
 		/*
 			This is a bit ugly, so here's the lowdown:
 			
@@ -713,7 +710,7 @@ export class Asset_Manager {
 	
 	draw_image_for_asset_name = (p: {
 		asset_name: string,
-		_BM,
+		_BM: Blit_Manager,
 		pos: Point2D,
 		zorder: number,
 		should_use_tile_offset: boolean,
@@ -817,7 +814,7 @@ export class Asset_Manager {
 
 	
 /*----------------------- utility functions -----------------------*/
-	_tile_dice = (sides) => (
+	_tile_dice = (sides: number) => (
 		Utils.dice_anchored_on_specific_random_seed( sides, this.TileRNG )
 	)
 }

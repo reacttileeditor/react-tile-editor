@@ -98,7 +98,7 @@ export class Blit_Manager {
 	}
 
 /*----------------------- state manipulation -----------------------*/
-	adjust_viewport_pos = (x, y) => {
+	adjust_viewport_pos = (x: number, y: number) => {
 		this.state.viewport_tween_progress = ƒ.if(this.state.viewport_tween_progress == 1.0,
 			0.0,
 			this.state.viewport_tween_progress * 0.3
@@ -121,7 +121,7 @@ export class Blit_Manager {
 		pos:			Point2D,
 		z_index:		number,
 		opacity:		number,
-		drawing_data:	DrawData
+		drawing_data:	DrawData|DrawDataNoBounds
 	}) => {
 		this._Draw_List.push({
 			pos:			p.pos,
@@ -257,7 +257,7 @@ export class Blit_Manager {
 		this.draw_fps_text(this.fps_tracker.prior_frame_count);
 	}
 
-	draw_fps_text = (value) => {
+	draw_fps_text = (value: number) => {
 		this.osb_ctx.save();
 		this.osb_ctx.font = '12px Helvetica, sans-serif';
 		this.osb_ctx.textAlign = 'center';

@@ -17,14 +17,14 @@ interface Props {
 
 
 export class Tile_Palette_Element extends React.Component <Props> {
-	ctx: CanvasRenderingContext2D;
-	canvas: HTMLCanvasElement;
-	_Blit_Manager: Blit_Manager;
-	_Tilemap_Manager: Tilemap_Manager;
+	ctx!: CanvasRenderingContext2D;
+	canvas!: HTMLCanvasElement;
+	_Blit_Manager!: Blit_Manager;
+	_Tilemap_Manager!: Tilemap_Manager;
 	default_canvas_size: Point2D;
 
 /*----------------------- initialization and asset loading -----------------------*/
-	constructor( props ) {
+	constructor( props: Props ) {
 		super( props );
 		
 		this.state = {
@@ -46,7 +46,7 @@ export class Tile_Palette_Element extends React.Component <Props> {
 		this.draw_canvas();
 	}
 
-	initialize_tilemap_manager = (ctx) => {
+	initialize_tilemap_manager = (ctx: CanvasRenderingContext2D) => {
 		if( !this._Tilemap_Manager ){
 			this._Blit_Manager = new Blit_Manager(ctx, this.default_canvas_size);
 			this._Tilemap_Manager = new Tilemap_Manager(this.props.asset_manager, this._Blit_Manager);
@@ -75,7 +75,7 @@ export class Tile_Palette_Element extends React.Component <Props> {
 		this._Blit_Manager.draw_entire_frame();
 	}
 	
-	handle_mouse_click = (e) => {
+	handle_mouse_click = (e: React.MouseEvent<HTMLCanvasElement>) => {
 		this.props.handle_click();
 	}
 	

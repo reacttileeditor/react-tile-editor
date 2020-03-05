@@ -32,7 +32,7 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 		cursor_pos: Point2D,
 	}
 
-	constructor( props ) {
+	constructor( props: Editor_View_Props ) {
 		super( props );
 
 		this.state = {
@@ -42,7 +42,7 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 	}
 
 /*----------------------- cursor stuff -----------------------*/
-	set_cursor_pos = (coords) => {
+	set_cursor_pos = (coords: Point2D) => {
 		this.state.cursor_pos = coords;
 	}
 
@@ -100,14 +100,14 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 		);
 	}
 
-	handle_canvas_mouse_move = (mouse_pos) => {
+	handle_canvas_mouse_move = (mouse_pos: Point2D) => {
 		this.set_cursor_pos(
 			this.props._Tilemap_Manager.convert_pixel_coords_to_tile_coords(mouse_pos)
 		);
 		
 	}
 
-	handle_canvas_keydown = (event) => {
+	handle_canvas_keydown = (event:  React.KeyboardEvent<HTMLCanvasElement>) => {
 		switch (event.key) {
 			case "Down": // IE/Edge specific value
 			case "ArrowDown":

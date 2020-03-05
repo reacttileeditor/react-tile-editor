@@ -106,7 +106,7 @@ class Game_Manager {
 		this._Pathfinder = new Pathfinder();
 	}
 
-	set_update_function = (func) => {
+	set_update_function = (func: Function) => {
  		this.update_game_state_for_ui = func;
 	}
 	
@@ -277,7 +277,7 @@ class Game_Manager {
 			}
 	}
 
-	handle_click = (pos) => {
+	handle_click = (pos: Point2D) => {
 // 		this.game_state.creature_list = [{
 // 			tile_pos: this._Tilemap_Manager.convert_pixel_coords_to_tile_coords( pos )
 // 		}]
@@ -308,7 +308,7 @@ class Game_Manager {
 		return state ? state : Individual_Game_Turn_State_Init;
 	}
 	
-	select_object_based_on_tile_click = (pos) => {
+	select_object_based_on_tile_click = (pos: Point2D) => {
 		/*
 			This handles two "modes" simultaneously.  If we click on an object, then we change the current selected object to be the one we clicked on (its position is occupied, and ostensibly can't be moved into - this might need to change with our game rules being what they are, but we'll cross that bridge later).  If we click on the ground, then we're intending to move the current object to that location.
 		*/
@@ -349,7 +349,7 @@ interface Game_Status_Display_Props {
 
 
 class Game_Status_Display extends React.Component <Game_Status_Display_Props, {game_state: Game_State}> {
-	constructor( props ) {
+	constructor( props: Game_Status_Display_Props ) {
 		super( props );
 
 		this.state = {
@@ -392,12 +392,13 @@ export class Game_View extends React.Component <Game_View_Props> {
 	render_loop_interval: number|undefined;
 	_Game_Manager: Game_Manager;
 	awaiting_render: boolean;
-	gsd: Game_Status_Display;
+	gsd!: Game_Status_Display;
 
-	constructor( props ) {
+	constructor( props: Game_View_Props ) {
 		super( props );
 
 		this._Game_Manager = new Game_Manager(this.props._Blit_Manager, this.props._Asset_Manager, this.props._Tilemap_Manager);
+		this.awaiting_render = false;
 	}
 
 

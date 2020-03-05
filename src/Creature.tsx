@@ -37,6 +37,7 @@ export class Creature {
 		this.type_name = p.type_name;
 		this.planned_tile_pos = p.planned_tile_pos;
 		this.path_this_turn = [];
+		this.path_reachable_this_turn = [];
 		this.animation_this_turn = [];
 		
 		if(p.unique_id != undefined){
@@ -115,7 +116,7 @@ export class Creature {
 	}
 	
 	calculate_total_anim_duration = (): number => {
-		return ƒ.if( _.size(this.animation_this_turn),
+		return ƒ.if( _.size(this.animation_this_turn) > 0,
 			_.reduce(
 				_.map(this.animation_this_turn, (val)=> (val.duration)),
 				(left,right) => (left + right)

@@ -88,7 +88,7 @@ export class Node_Graph_Generator {
 
 	check_adjacencies = ( _grid: TileGrid, _coords: Point2D ): Array<WeightedNode> => {
 		const tile_data: TilePositionComparatorSample = this._TM.get_tile_position_comparator_for_pos(_coords);
-		var adjacent_nodes = [];
+		var adjacent_nodes: Array<WeightedNode> = [];
 
 		/*
 			Check every adjacent tile in clockwise order, starting from the north.
@@ -105,14 +105,14 @@ export class Node_Graph_Generator {
 	}
 	
 	build_node_graph_from_grid = ( _grid: TileGrid ): NodeGraph => {
-		var graph_as_adjacency_list = [];
+		var graph_as_adjacency_list: Array<string> = [];
 		
 		_.map( _grid, (row_value: Array<string>, row_index) => {
 			_.map( row_value, (col_value, col_index) => {
 
 				//using this to skip solid tiles; we already handle tracking adjacencies *into* solid tile in the check_adjacencies function, but we need to skip looking *outwards* from solid tiles as well.
 				if( this.move_cost_for_coords( _grid, {x: col_index, y: row_index} ) !== null ){
-					graph_as_adjacency_list[col_index + "," + row_index] = this.check_adjacencies( _grid, { x: col_index, y: row_index } );
+					(graph_as_adjacency_list[`${col_index},${row_index}` as any] as any) = this.check_adjacencies( _grid, { x: col_index, y: row_index } );
 				}
 			})
 		});
@@ -141,16 +141,11 @@ const a_star_search = ( _graph: NodeGraph, _start_coords: Point2D, _end_coords: 
 	var costs_so_far: NodeAddrToNumberDict = {};  //a map of node addresses (keys) to move cost (values)
 	var came_from: NodeAddrToNodeAddrDict = {}; //a map of node addresses (keys) to node addresses (values) 
 	
-	const remove_item_from_obj = (obj, victim) => _.pick(obj, _.filter(_.keys(obj), (val)=> val != victim ))
 	
-	const compute_node_heuristic = ( _node_coords, _end_coords ) => {
+	const compute_node_heuristic = ( _node_coords: Point2D, _end_coords: Point2D ) => {
 		return Math.hypot( _node_coords.x - _end_coords.x, _node_coords.y - _end_coords.y);
 	}
 	
-	//search a queue for whatever node has the highest value, and extract that node's coords
-	const get_lowest_value = (obj) => {
-		return _.keys(obj).reduce((a, b) => obj[a] < obj[b] ? a : b);
-	}
 
 	//do some bigtime sanity checks so we don't crash
 	if(

@@ -79,7 +79,7 @@ export class Tilemap_Manager {
 		this._AM.TileRNG.reset();
 	}
 
-	draw_tiles_for_zorder = (zorder) => {
+	draw_tiles_for_zorder = (zorder: number) => {
 
 		this.state.tileStatus.map( (row_value, row_index) => {
 			row_value.map( (col_value, col_index) => {
@@ -193,7 +193,7 @@ export class Tilemap_Manager {
 	
 	
 	
-	get_tile_name_for_tile_at_pos_with_data = ( pos, tile_entry ) => {
+	get_tile_name_for_tile_at_pos_with_data = ( pos: Point2D, tile_entry: string ) => {
 		/*
 			Tile_entry is whatever mnemonic or other indicator is stored at that position in the array. 
 			Currently we're just doing 1 0 values because we're in the midst of hacking, but we'll decide on a more 'real' markup later.

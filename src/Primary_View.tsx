@@ -24,13 +24,13 @@ interface State {
 
 export class Primary_View extends React.Component <Props, State> {
 	_Asset_Manager: Asset_Manager;
-	_Blit_Manager: Blit_Manager;
-	_Tilemap_Manager: Tilemap_Manager;
+	_Blit_Manager!: Blit_Manager;
+	_Tilemap_Manager!: Tilemap_Manager;
 	default_canvas_size: Point2D;
 
 /*----------------------- initialization and asset loading -----------------------*/
 
-	constructor( props ) {
+	constructor( props: Props ) {
 		super( props );
 		
 		this.state = {
@@ -46,7 +46,7 @@ export class Primary_View extends React.Component <Props, State> {
 		this.default_canvas_size = {x: 567, y: 325};
 	}
 
-	initialize_tilemap_manager = (ctx) => {
+	initialize_tilemap_manager = (ctx: CanvasRenderingContext2D) => {
 		if( !this._Tilemap_Manager ){
 			this._Blit_Manager = new Blit_Manager(ctx, this.default_canvas_size);
 			this._Tilemap_Manager = new Tilemap_Manager(this._Asset_Manager, this._Blit_Manager);
