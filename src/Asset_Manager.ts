@@ -148,6 +148,19 @@ export class Asset_Manager {
 				url: "char2.png",
 				name: "peasant",
 			},{
+				url: "char2-se-walk.png",
+				name: "peasant-se-walk",
+				frames: 8,
+				frame_duration: 200,
+				ping_pong: false,
+				pad: 2,
+				bounds: {
+					x: 1,
+					y: 1,
+					w: 58,
+					h: 118,
+				},
+			},{
 				url: "hex-tile-experiment-tiles.png",
 				name: "menhir1",
 				bounds: {

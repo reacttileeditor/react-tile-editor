@@ -211,12 +211,12 @@ class Game_Manager {
 				} else {
 					_.map( this.get_previous_turn_state().creature_list, (val,idx) => {
 						this._Asset_Manager.draw_image_for_asset_name({
-							asset_name:					val.yield_creature_image(),
+							asset_name:					'peasant-se-walk',//val.yield_creature_image(),
 							_BM:						this._Blit_Manager,
 							pos:						val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
 							zorder:						12,
 							should_use_tile_offset:		true,
-							current_milliseconds:		0,
+							current_milliseconds:		this.get_time_offset(),
 							opacity:					1.0,
 						})
 					})

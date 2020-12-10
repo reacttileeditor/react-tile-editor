@@ -104,13 +104,13 @@ export class Creature {
 		_.map(this.path_reachable_this_turn, (val,idx) => {
 			if(idx != _.size(this.path_reachable_this_turn) - 1){
 				this.animation_this_turn.push({
-					duration: 100,
+					duration: 300,
 					start_time: time_so_far,
 					start_pos: val,
 					end_pos: this.path_reachable_this_turn[idx + 1],
 				})
 				
-				time_so_far = time_so_far + 100;
+				time_so_far = time_so_far + 300;
 			}
 		})
 	}
