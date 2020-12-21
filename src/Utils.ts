@@ -37,7 +37,7 @@ export const ƒ = {
 			}
 		}
 	},
-	dump: (expr: unknown) => {
+	dump: (expr: any):any => {
 		console.log(expr);
 		return expr;
 	},
@@ -49,13 +49,13 @@ export const ƒ = {
 			x: ƒ.tween(thing_one.x, thing_two.x, proportion),
 			y: ƒ.tween(thing_one.y, thing_two.y, proportion)
 		}
-    )
+    ),
     round_point_to_nearest_pixel: (source: Point2D):Point2D => (
         {
             x: Math.round(source.x),
             y: Math.round(source.y),
         }
-    )
+    ),
 }
 
 const lazy_evaluate = (param: unknown) => {

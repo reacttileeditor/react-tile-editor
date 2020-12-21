@@ -57,6 +57,10 @@ export class Creature {
 		this.creature_basetype_delegate.yield_moves_per_turn()
 	)
 	
+	yield_walk_asset_for_direction = (direction: Direction):string => (
+		this.creature_basetype_delegate.yield_walk_asset_for_direction(direction)
+	)
+
 	yield_creature_image = () => (
 		this.creature_basetype_delegate.yield_creature_image()
 	)
@@ -104,6 +108,10 @@ export class Creature {
 		_.map(this.path_reachable_this_turn, (val,idx) => {
 			if(idx != _.size(this.path_reachable_this_turn) - 1){
 				this.animation_this_turn.push({
+					direction: this.extract_direction_from_map_vector(
+						val,
+						this.path_reachable_this_turn[idx + 1]	
+					),
 					duration: 300,
 					start_time: time_so_far,
 					start_pos: val,
@@ -113,6 +121,28 @@ export class Creature {
 				time_so_far = time_so_far + 300;
 			}
 		})
+	}
+
+	extract_direction_from_map_vector = (start_pos: Point2D, end_pos: Point2D):Direction => {
+		if( start_pos.y == end_pos.y ){
+			if(start_pos.x < end_pos.x){
+				return Direction.east;
+			} else {
+				return Direction.west;
+			}
+		} else if( start_pos.y >= end_pos.y  ){
+			if(start_pos.x < end_pos.x){
+				return Direction.north_east;
+			} else {
+				return Direction.north_west;
+			}
+		} else {
+			if(start_pos.x < end_pos.x){
+				return Direction.south_east;
+			} else {
+				return Direction.south_west;
+			}
+		}
 	}
 	
 	calculate_total_anim_duration = (): number => {
@@ -124,16 +154,38 @@ export class Creature {
 			0
 		)
 	}
-	
-	yield_position_for_time_in_post_turn_animation = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number):Point2D => {
-//		console.log(this.animation_this_turn);
-		var animation_segment = _.find(this.animation_this_turn, (val) => {
-//			console.log(`start ${val.start_time}, offset ${offset_in_ms}, end ${val.start_time + val.duration}`);
+
+	yield_animation_segment_for_time_offset = (offset_in_ms: number): Anim_Schedule_Element|undefined => (
+		_.find(this.animation_this_turn, (val) => {
+			//			console.log(`start ${val.start_time}, offset ${offset_in_ms}, end ${val.start_time + val.duration}`);
 		
 			return val.start_time <= offset_in_ms
 			&&
 			offset_in_ms < (val.start_time + val.duration)
 		})
+	)
+
+
+	yield_direction_for_time_in_post_turn_animation = ( offset_in_ms: number ):Direction => {
+		var animation_segment = this.yield_animation_segment_for_time_offset(offset_in_ms);
+
+		if(animation_segment == undefined){
+			/*
+				TODO -I don't really have the time to think through this - this comment's getting written during some test implementation.
+				We'll just return 'east' for now.
+			*/
+			return Direction.east;
+		} else {
+			return this.extract_direction_from_map_vector(
+				animation_segment.start_pos,
+				animation_segment.end_pos 
+			);
+		}
+	}
+	
+	yield_position_for_time_in_post_turn_animation = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number):Point2D => {
+//		console.log(this.animation_this_turn);
+		var animation_segment = this.yield_animation_segment_for_time_offset(offset_in_ms);
 		
 		if(animation_segment == undefined){
 			/*
@@ -168,7 +220,17 @@ export class Creature {
 	}
 }
 
+enum Direction {
+	north_east,
+	east,
+	south_east,
+	north_west,
+	west,
+	south_west,
+}
+
 type Anim_Schedule_Element = {
+	direction: Direction,
 	duration: number,
 	start_time: number,
 	start_pos: Point2D,
@@ -180,6 +242,8 @@ type CreatureType = CT_Hermit | CT_Peasant | CT_Skeleton;
 
 
 class Creature_Base_Type {
+	yield_walk_asset_for_direction = (direction:Direction):string => ( this.yield_creature_image() )
+
 
 	yield_move_cost_for_tile_type = (tile_type: string): number|null => {
 		if(tile_type == 'water'){
@@ -205,6 +269,23 @@ class CT_Hermit extends Creature_Base_Type {
 }
 
 class CT_Peasant extends Creature_Base_Type {
+
+	yield_walk_asset_for_direction = (direction:Direction):string => {
+		switch(direction){
+			case Direction.north_east:
+				return 'peasant-ne-walk'; break;
+			case Direction.north_west:
+				return 'peasant-ne-walk'; break;
+			case Direction.east:
+				return 'peasant-ne-walk'; break;
+			case Direction.south_east:
+				return 'peasant-se-walk'; break;
+			case Direction.west:
+				return 'peasant-se-walk'; break;
+			case Direction.south_west:
+				return 'peasant-se-walk'; break;
+		}
+	}
 
 	yield_moves_per_turn = () => ( 8 )
 	yield_creature_image = () => ( 'peasant' )
