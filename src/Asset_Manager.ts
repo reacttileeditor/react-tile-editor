@@ -151,7 +151,20 @@ export class Asset_Manager {
 				url: "char2-se-walk.png",
 				name: "peasant-se-walk",
 				frames: 8,
-				frame_duration: 200,
+				frame_duration: 100,
+				ping_pong: false,
+				pad: 2,
+				bounds: {
+					x: 1,
+					y: 1,
+					w: 58,
+					h: 118,
+				},
+			},{
+				url: "char2-ne-walk.png",
+				name: "peasant-ne-walk",
+				frames: 8,
+				frame_duration: 100,
 				ping_pong: false,
 				pad: 2,
 				bounds: {

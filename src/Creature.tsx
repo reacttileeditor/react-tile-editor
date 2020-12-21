@@ -155,11 +155,13 @@ export class Creature {
 			let time_offset_in_anim_segment = (offset_in_ms - animation_segment.start_time);
 			let time_offset_normalized = 1.0 - (time_offset_in_anim_segment / animation_segment.duration)
 			
-			return ƒ.tween_points(
-				_Tilemap_Manager.convert_tile_coords_to_pixel_coords( animation_segment.start_pos ),
-				_Tilemap_Manager.convert_tile_coords_to_pixel_coords( animation_segment.end_pos ),
-				time_offset_normalized
-			);
+            return ƒ.round_point_to_nearest_pixel( 
+                ƒ.tween_points(
+                    _Tilemap_Manager.convert_tile_coords_to_pixel_coords( animation_segment.start_pos ),
+                    _Tilemap_Manager.convert_tile_coords_to_pixel_coords( animation_segment.end_pos ),
+                    time_offset_normalized
+                )
+            );
 			
 			//return _Tilemap_Manager.convert_tile_coords_to_pixel_coords(animation_segment.start_pos);
 		}
