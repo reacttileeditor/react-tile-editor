@@ -794,6 +794,12 @@ export class Asset_Manager {
 					vertically_flipped:		p.vertically_flipped,
 					drawing_data:			{
 												image_ref: image,
+												src_rect: {
+													x:	0,
+													y:	0,
+													w:	metadata.dim.w,
+													h:	metadata.dim.h,
+												},
 												dest_point: {
 													x:			-Math.floor(dim.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
 													y:			-Math.floor(dim.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),

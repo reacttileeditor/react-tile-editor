@@ -236,8 +236,8 @@ class Game_Manager {
 						should_use_tile_offset:		true,
 						current_milliseconds:		0,
 						opacity:					1.0,
-						horizontally_flipped:		true,
-						vertically_flipped:			true,
+						horizontally_flipped:		false,
+						vertically_flipped:			false,
 					})
 
 					/*

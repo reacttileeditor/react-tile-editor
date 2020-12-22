@@ -30,6 +30,7 @@ interface DrawDataNoBounds {
 	//images that are just direct references don't need rectangular dimensions to draw
 	//honestly we probably want to remove this, but for now we'll support it to keep the code train rolling.
 	image_ref: HTMLImageElement,
+	src_rect: Rectangle,
 	dest_point: Point2D
 }
 
@@ -188,7 +189,10 @@ export class Blit_Manager {
 
 				this.osb_ctx.save();
 
-				this.osb_ctx.translate( value.pos.x + this.state.actual_viewport_offset.x, value.pos.y + this.state.actual_viewport_offset.y );
+				this.osb_ctx.translate(
+					value.pos.x + this.state.actual_viewport_offset.x + value.drawing_data.dest_point.x,
+					value.pos.y + this.state.actual_viewport_offset.y + value.drawing_data.dest_point.y
+				);
 				this.osb_ctx.globalAlpha = value.opacity;
 
 				this.osb_ctx.scale(
@@ -197,13 +201,19 @@ export class Blit_Manager {
 				);
 
 				/*
-					The savvy amongst us might wonder - what the hell are we doing providing non-zero xy coords inside this drawImage call if we're already translating the canvas?  These exist to draw the image with its origin not as 0,0, but as the center of the sprite image.
+					The following transforms essentially exist so that flipped images will draw in their intended position, rather than a full image size increment in the opposite cardinal direction.
 				*/
 
 				this.osb_ctx.drawImage	(
 					/* file */				value.drawing_data.image_ref,
-					/* dst upper-left x */	value.drawing_data.dest_point.x,
-					/* dst upper-left y */	value.drawing_data.dest_point.y,
+					/* dst upper-left x */	ƒ.if(value.horizontally_flipped,
+												-value.drawing_data.src_rect.w,
+												0
+											),
+					/* dst upper-left y */	ƒ.if(value.vertically_flipped,
+												-value.drawing_data.src_rect.h,
+												0
+											),
 									);
 				this.osb_ctx.restore();
 			}
@@ -221,7 +231,7 @@ export class Blit_Manager {
 	}
 
 	isDrawDataWithBounds( data: DrawData | DrawDataNoBounds ): data is DrawData {
-		return (<DrawData>data).src_rect !== undefined;
+		return (<DrawData>data).dst_rect !== undefined;
 	}
 
 
