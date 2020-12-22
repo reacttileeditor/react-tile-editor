@@ -208,11 +208,6 @@ export class Tilemap_Manager {
 		let { consts } = this._AM;
 		let position = this._BM.yield_world_coords_for_absolute_coords({x: pos.x, y: pos.y});
 
-		// let tile_coords = {
-		// 	x: Math.floor( (position.x) / consts.tile_width ),
-		// 	y: Math.floor( (position.y) / consts.tile_height ),
-		// };
-
 		let odd_row_offset = Utils.modulo(
 			Math.floor((
 				position.y +
@@ -220,12 +215,6 @@ export class Tilemap_Manager {
 			) / consts.tile_height),
 		2) == 1;
 
-		let tilecoord_y = Math.floor((
-			position.y +
-			Math.floor(consts.tile_height / 2)
-		) / consts.tile_height);
-
-		console.log( `odd: ${odd_row_offset}`, position.y, tilecoord_y)
 		let tile_coords_revised = {
 			x:	Math.floor(
 					(
@@ -233,7 +222,8 @@ export class Tilemap_Manager {
 						ƒ.if(odd_row_offset,
 							Math.floor(-consts.tile_width / 2),
 							0,
-						)
+						) +
+						Math.floor(consts.tile_width / 2)
 					) / consts.tile_width 
 				),
 			y: Math.floor(
