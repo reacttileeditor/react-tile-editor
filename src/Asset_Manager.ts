@@ -801,8 +801,8 @@ export class Asset_Manager {
 													h:	metadata.dim.h,
 												},
 												dest_point: {
-													x:			-Math.floor(dim.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-													y:			-Math.floor(dim.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+													x:			-Math.floor(dim.w/2),
+													y:			-Math.floor(dim.h/2),
 												}
 											}
 				});
@@ -822,8 +822,8 @@ export class Asset_Manager {
 													h:	metadata.bounds.h,
 												},
 												dst_rect: {
-													x:	-Math.floor(metadata.bounds.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-													y:	-Math.floor(metadata.bounds.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+													x:	-Math.floor(metadata.bounds.w/2),
+													y:	-Math.floor(metadata.bounds.h/2),
 													w:	metadata.bounds.w,
 													h:	metadata.bounds.h,
 												},

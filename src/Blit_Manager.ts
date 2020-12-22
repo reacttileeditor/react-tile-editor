@@ -91,8 +91,8 @@ export class Blit_Manager {
 
 		this.state = {
 			viewport_tween_progress: 0,
-			intended_viewport_offset: {x: 0, y: 0},
-			actual_viewport_offset: {x: 0, y: 0},
+			intended_viewport_offset: {x: 40, y: 30},
+			actual_viewport_offset: {x: 40, y: 30},
 		};
 	}
 
@@ -161,7 +161,10 @@ export class Blit_Manager {
 
 				this.osb_ctx.save();
 
-				this.osb_ctx.translate( value.pos.x + this.state.actual_viewport_offset.x, value.pos.y + this.state.actual_viewport_offset.y );
+				this.osb_ctx.translate(
+					value.pos.x + this.state.actual_viewport_offset.x,
+					value.pos.y + this.state.actual_viewport_offset.y
+				);
 				this.osb_ctx.globalAlpha = value.opacity;
 
 				this.osb_ctx.scale(
