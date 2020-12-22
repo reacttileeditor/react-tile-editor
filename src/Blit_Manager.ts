@@ -15,13 +15,15 @@ interface DrawEntity {
 	pos: Point2D,
 	z_index: number,
 	opacity: number,
+	horizontally_flipped: boolean,
+	vertically_flipped: boolean,
 	drawing_data: DrawData|DrawDataNoBounds,
 }
 
 interface DrawData {
 	image_ref: HTMLImageElement,
 	src_rect: Rectangle,
-	dst_rect: Rectangle
+	dst_rect: Rectangle,
 }
 
 interface DrawDataNoBounds {
@@ -118,16 +120,20 @@ export class Blit_Manager {
 
 /*----------------------- draw ops -----------------------*/
 	queue_draw_op = (p: {
-		pos:			Point2D,
-		z_index:		number,
-		opacity:		number,
-		drawing_data:	DrawData|DrawDataNoBounds
+		pos:					Point2D,
+		z_index:				number,
+		opacity:				number,
+		horizontally_flipped: 	boolean,
+		vertically_flipped: 	boolean,
+		drawing_data:			DrawData|DrawDataNoBounds
 	}) => {
 		this._Draw_List.push({
-			pos:			p.pos,
-			z_index:		p.z_index,
-			opacity:		p.opacity,
-			drawing_data:	p.drawing_data
+			pos:					p.pos,
+			z_index:				p.z_index,
+			opacity:				p.opacity,
+			horizontally_flipped:	p.horizontally_flipped,
+			vertically_flipped:		p.vertically_flipped,
+			drawing_data:			p.drawing_data
 		});
 	}
 	
@@ -156,6 +162,11 @@ export class Blit_Manager {
 
 				this.osb_ctx.translate( value.pos.x + this.state.actual_viewport_offset.x, value.pos.y + this.state.actual_viewport_offset.y );
 				this.osb_ctx.globalAlpha = value.opacity;
+
+				this.osb_ctx.scale(
+					ƒ.if(value.horizontally_flipped, -1, 1),
+					ƒ.if(value.vertically_flipped, -1, 1),
+				);
 				
 				this.osb_ctx.drawImage	(
 					/* file */			value.drawing_data.image_ref,
@@ -180,8 +191,13 @@ export class Blit_Manager {
 				this.osb_ctx.translate( value.pos.x + this.state.actual_viewport_offset.x, value.pos.y + this.state.actual_viewport_offset.y );
 				this.osb_ctx.globalAlpha = value.opacity;
 
+				this.osb_ctx.scale(
+					ƒ.if(value.horizontally_flipped, -1, 1),
+					ƒ.if(value.vertically_flipped, -1, 1),
+				);
+
 				/*
-					The savvy amongst us might wonder - what the hell are we doing providing non-zero xy coords inside this drawImage call if we're already translating the canvas?  These exist to draw the tile with its origin not as 0,0, but as the center of the sprite image.
+					The savvy amongst us might wonder - what the hell are we doing providing non-zero xy coords inside this drawImage call if we're already translating the canvas?  These exist to draw the image with its origin not as 0,0, but as the center of the sprite image.
 				*/
 
 				this.osb_ctx.drawImage	(

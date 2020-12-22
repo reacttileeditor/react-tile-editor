@@ -220,7 +220,9 @@ class Game_Manager {
 							should_use_tile_offset:		true,
 							current_milliseconds:		this.get_time_offset(),
 							opacity:					1.0,
-						})
+							horizontally_flipped:		false,
+							vertically_flipped:			false,
+					})
 					})
 				}
 
@@ -234,8 +236,13 @@ class Game_Manager {
 						should_use_tile_offset:		true,
 						current_milliseconds:		0,
 						opacity:					1.0,
+						horizontally_flipped:		true,
+						vertically_flipped:			true,
 					})
 
+					/*
+						Draw the "ghost" image of the position the unit will be in at the end of their move.
+					*/
 					this._Asset_Manager.draw_image_for_asset_name({
 						asset_name:					val.yield_creature_image(),
 						_BM:						this._Blit_Manager,
@@ -244,6 +251,8 @@ class Game_Manager {
 						should_use_tile_offset:		true,
 						current_milliseconds:		0,
 						opacity:					0.5,
+						horizontally_flipped:		false,
+						vertically_flipped:			false,
 					})			
 			
 			
@@ -256,7 +265,9 @@ class Game_Manager {
 							should_use_tile_offset:		true,
 							current_milliseconds:		0,
 							opacity:					1.0,
-						})
+							horizontally_flipped:		false,
+							vertically_flipped:			false,
+					})
 
 						_.map(val.path_this_turn, (path_val, path_idx) => {
 							let asset_name = ƒ.if( _.includes(val.path_reachable_this_turn, path_val),
@@ -272,6 +283,8 @@ class Game_Manager {
 								should_use_tile_offset:		true,
 								current_milliseconds:		0,
 								opacity:					1.0,
+								horizontally_flipped:		false,
+								vertically_flipped:			false,
 							})
 						})
 					}

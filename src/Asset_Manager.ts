@@ -687,6 +687,8 @@ export class Asset_Manager {
 					should_use_tile_offset:		should_use_tile_offset,
 					current_milliseconds:		current_milliseconds,
 					opacity:					1.0,
+					horizontally_flipped:		false,  //TODO - we may want to enable random, deterministic flipping of tiles for additional tile variety.  Only horizontal though.
+					vertically_flipped:			false,
 				});
 			}
 		});
@@ -742,6 +744,8 @@ export class Asset_Manager {
 		should_use_tile_offset: boolean,
 		current_milliseconds: number,
 		opacity: number,
+		horizontally_flipped: boolean,
+		vertically_flipped: boolean,
 	}) => {
 		let { raw_image_list, image_data_list, assets_meta } = this.static_vals;
 
@@ -783,37 +787,41 @@ export class Asset_Manager {
 		
 			if( !this.isAssetSpritesheet(metadata) ){
 				p._BM.queue_draw_op({
-					pos:			{ x: p.pos.x, y: p.pos.y },
-					z_index:		p.zorder,
-					opacity:		p.opacity,
-					drawing_data:	{
-										image_ref: image,
-										dest_point: {
-											x:			-Math.floor(dim.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-											y:			-Math.floor(dim.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
-										}
-									}
+					pos:					{ x: p.pos.x, y: p.pos.y },
+					z_index:				p.zorder,
+					opacity:				p.opacity,
+					horizontally_flipped:	p.horizontally_flipped,
+					vertically_flipped:		p.vertically_flipped,
+					drawing_data:			{
+												image_ref: image,
+												dest_point: {
+													x:			-Math.floor(dim.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+													y:			-Math.floor(dim.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+												}
+											}
 				});
 			} else {
 				p._BM.queue_draw_op({
-					pos:			{ x: p.pos.x, y: p.pos.y },
-					z_index:		p.zorder,
-					opacity:		p.opacity,
-					drawing_data:	{
-										image_ref: image,
-										src_rect: {
-											x:	metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
-											y:	metadata.bounds.y,
-											w:	metadata.bounds.w,
-											h:	metadata.bounds.h,
-										},
-										dst_rect: {
-											x:	-Math.floor(metadata.bounds.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
-											y:	-Math.floor(metadata.bounds.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
-											w:	metadata.bounds.w,
-											h:	metadata.bounds.h,
-										}
-									}
+					pos:					{ x: p.pos.x, y: p.pos.y },
+					z_index:				p.zorder,
+					opacity:				p.opacity,
+					horizontally_flipped:	p.horizontally_flipped,
+					vertically_flipped:		p.vertically_flipped,
+					drawing_data:			{
+												image_ref: image,
+												src_rect: {
+													x:	metadata.bounds.x + (current_frame_num * metadata.bounds.w) + ((current_frame_num) * frame_padding),
+													y:	metadata.bounds.y,
+													w:	metadata.bounds.w,
+													h:	metadata.bounds.h,
+												},
+												dst_rect: {
+													x:	-Math.floor(metadata.bounds.w/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_width/2) : 0),
+													y:	-Math.floor(metadata.bounds.h/2) + (p.should_use_tile_offset ? Math.floor(this.consts.tile_height/2) : 0),
+													w:	metadata.bounds.w,
+													h:	metadata.bounds.h,
+												},
+											}
 				});
 			}
 		}
