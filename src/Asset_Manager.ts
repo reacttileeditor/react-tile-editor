@@ -645,11 +645,11 @@ export class Asset_Manager {
 	}
 
 	
-	draw_all_assets_for_tile_type = (tile_name: string, _BM: Blit_Manager, pos: Point2D, should_use_tile_offset: boolean) => {
+	draw_all_assets_for_tile_type = (tile_name: string, _BM: Blit_Manager, pos: Point2D) => {
 		let zorders = this.yield_zorder_list_for_tile(tile_name); 
 	
 		zorders.map( (value,index) => {
-			this.draw_image_for_tile_type_at_zorder_and_pos(tile_name, _BM, value, pos.x, pos.y, should_use_tile_offset, null_tile_comparator, 0);
+			this.draw_image_for_tile_type_at_zorder_and_pos(tile_name, _BM, value, pos.x, pos.y, null_tile_comparator, 0);
 		});
 	}
 	
@@ -659,7 +659,6 @@ export class Asset_Manager {
 			zorder: number,
 			pos_x: number,
 			pos_y: number,
-			should_use_tile_offset: boolean,
 			comparator: TileComparatorSample,
 			current_milliseconds: number
 		) =>
@@ -684,7 +683,6 @@ export class Asset_Manager {
 					_BM:						_BM,
 					pos:						{ x: pos_x, y: pos_y },
 					zorder:						zorder,
-					should_use_tile_offset:		should_use_tile_offset,
 					current_milliseconds:		current_milliseconds,
 					opacity:					1.0,
 					horizontally_flipped:		false,  //TODO - we may want to enable random, deterministic flipping of tiles for additional tile variety.  Only horizontal though.
@@ -741,7 +739,6 @@ export class Asset_Manager {
 		_BM: Blit_Manager,
 		pos: Point2D,
 		zorder: number,
-		should_use_tile_offset: boolean,
 		current_milliseconds: number,
 		opacity: number,
 		horizontally_flipped: boolean,

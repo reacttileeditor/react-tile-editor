@@ -54,9 +54,10 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 			_BM:						this.props._Blit_Manager,
 			pos:						this.props._Tilemap_Manager.convert_tile_coords_to_pixel_coords( this.state.cursor_pos ),
 			zorder:						12,
-			should_use_tile_offset:		true,
 			current_milliseconds:		0,
 			opacity:					1.0,
+			horizontally_flipped:		false,
+			vertically_flipped:			false,
 		})
 	}
 

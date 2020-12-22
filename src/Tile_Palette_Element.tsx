@@ -70,7 +70,6 @@ export class Tile_Palette_Element extends React.Component <Props> {
 				x: Math.floor(this.default_canvas_size.x/2),
 				y: Math.floor(this.default_canvas_size.y/2)
 			},
-			false
 		);
 		this._Blit_Manager.draw_entire_frame();
 	}

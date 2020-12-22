@@ -5,6 +5,7 @@ import _ from "lodash";
 import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
 import * as Utils from "./Utils";
+import { ƒ } from "./Utils";
 
 var PATH_PREFIX = "/dist/assets/"
 
@@ -112,7 +113,6 @@ export class Tilemap_Manager {
 															zorder,
 						/* x */								(pos.x + 0) * consts.tile_width + universal_hex_offset,
 						/* y */								(pos.y + 0) * consts.tile_height,
-						/* should_use_tile_offset */		true,
 						/* comparator */					this.get_tile_comparator_sample_for_pos(pos),
 															this._BM.fps_tracker.current_millisecond
 														);
@@ -208,18 +208,40 @@ export class Tilemap_Manager {
 		let { consts } = this._AM;
 		let position = this._BM.yield_world_coords_for_absolute_coords({x: pos.x, y: pos.y});
 
-		let universal_hex_offset = Utils.modulo(pos.y, 2) == 1 ? Math.floor(consts.tile_width / 2) : 0;
-	
-		let tile_coords = {
-			x: Math.floor( (position.x) / consts.tile_width ),
-			y: Math.floor( (position.y) / consts.tile_height ),
-		};
+		// let tile_coords = {
+		// 	x: Math.floor( (position.x) / consts.tile_width ),
+		// 	y: Math.floor( (position.y) / consts.tile_height ),
+		// };
 
-		let odd_row_offset = Utils.modulo(tile_coords.y, 2) == 1;
+		let odd_row_offset = Utils.modulo(
+			Math.floor((
+				position.y +
+				Math.floor(consts.tile_height / 2)
+			) / consts.tile_height),
+		2) == 1;
 
+		let tilecoord_y = Math.floor((
+			position.y +
+			Math.floor(consts.tile_height / 2)
+		) / consts.tile_height);
+
+		console.log( `odd: ${odd_row_offset}`, position.y, tilecoord_y)
 		let tile_coords_revised = {
-			x: Math.floor( (position.x + (odd_row_offset ? Math.floor(-consts.tile_width / 2) : 0)) / consts.tile_width ),
-			y: tile_coords.y,
+			x:	Math.floor(
+					(
+						position.x +
+						ƒ.if(odd_row_offset,
+							Math.floor(-consts.tile_width / 2),
+							0,
+						)
+					) / consts.tile_width 
+				),
+			y: Math.floor(
+					(
+						position.y +
+						Math.floor(consts.tile_height / 2)
+					)  / consts.tile_height 
+				),
 		};
 		
 		return tile_coords_revised;

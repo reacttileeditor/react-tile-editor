@@ -217,7 +217,6 @@ class Game_Manager {
 							_BM:						this._Blit_Manager,
 							pos:						val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
 							zorder:						12,
-							should_use_tile_offset:		true,
 							current_milliseconds:		this.get_time_offset(),
 							opacity:					1.0,
 							horizontally_flipped:		false,
@@ -229,14 +228,13 @@ class Game_Manager {
 			} else {
 				_.map( this.get_current_turn_state().creature_list, (val,idx) => {
 					this._Asset_Manager.draw_image_for_asset_name({
-						asset_name:					val.yield_creature_image(),
+						asset_name:					val.yield_walk_asset_for_direction(1),
 						_BM:						this._Blit_Manager,
 						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
 						zorder:						12,
-						should_use_tile_offset:		true,
 						current_milliseconds:		0,
 						opacity:					1.0,
-						horizontally_flipped:		false,
+						horizontally_flipped:		true,
 						vertically_flipped:			false,
 					})
 
@@ -248,7 +246,6 @@ class Game_Manager {
 						_BM:						this._Blit_Manager,
 						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
 						zorder:						12,
-						should_use_tile_offset:		true,
 						current_milliseconds:		0,
 						opacity:					0.5,
 						horizontally_flipped:		false,
@@ -262,7 +259,6 @@ class Game_Manager {
 							_BM:						this._Blit_Manager,
 							pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
 							zorder:						10,
-							should_use_tile_offset:		true,
 							current_milliseconds:		0,
 							opacity:					1.0,
 							horizontally_flipped:		false,
@@ -280,7 +276,6 @@ class Game_Manager {
 								_BM:						this._Blit_Manager,
 								pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(path_val),
 								zorder:						9,
-								should_use_tile_offset:		true,
 								current_milliseconds:		0,
 								opacity:					1.0,
 								horizontally_flipped:		false,
