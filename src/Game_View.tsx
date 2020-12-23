@@ -11,7 +11,7 @@ import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager } from "./Tilemap_Manager";
 import { Pathfinder } from "./Pathfinding";
 
-import { Creature } from "./Creature";
+import { Creature, Direction } from "./Creature";
 
 import "./Primary_View.scss";
 import { Point2D, Rectangle } from './interfaces';
@@ -198,6 +198,15 @@ class Game_Manager {
 		}
 	}
 	
+	get_flip_state_from_direction = ( direction: Direction ): boolean => (
+		ƒ.if(	direction == Direction.north_west ||
+				direction == Direction.west ||
+				direction == Direction.south_west,
+					true,
+					false
+		)
+	)
+
 	do_one_frame_of_rendering = () => {
 		this.update_game_state_for_ui(this.game_state);
 		
@@ -210,31 +219,31 @@ class Game_Manager {
 					this.animation_state.is_animating_turn_end = false;
 				} else {
 					_.map( this.get_previous_turn_state().creature_list, (val,idx) => {
+						const direction = val.yield_direction_for_time_in_post_turn_animation(this.get_time_offset());
+
 						this._Asset_Manager.draw_image_for_asset_name({
-							asset_name:					val.yield_walk_asset_for_direction(
-								val.yield_direction_for_time_in_post_turn_animation(this.get_time_offset())
-							), //i.e. 'peasant-se-walk',
+							asset_name:					val.yield_walk_asset_for_direction( direction ), //i.e. 'peasant-se-walk',
 							_BM:						this._Blit_Manager,
 							pos:						val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
 							zorder:						12,
 							current_milliseconds:		this.get_time_offset(),
 							opacity:					1.0,
-							horizontally_flipped:		false,
+							horizontally_flipped:		this.get_flip_state_from_direction(direction),
 							vertically_flipped:			false,
-					})
+						})
 					})
 				}
 
 			} else {
 				_.map( this.get_current_turn_state().creature_list, (val,idx) => {
 					this._Asset_Manager.draw_image_for_asset_name({
-						asset_name:					val.yield_walk_asset_for_direction(1),
+						asset_name:					val.yield_creature_image(),
 						_BM:						this._Blit_Manager,
 						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
 						zorder:						12,
 						current_milliseconds:		0,
 						opacity:					1.0,
-						horizontally_flipped:		true,
+						horizontally_flipped:		false,
 						vertically_flipped:			false,
 					})
 

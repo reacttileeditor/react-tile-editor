@@ -220,7 +220,7 @@ export class Creature {
 	}
 }
 
-enum Direction {
+export enum Direction {
 	north_east,
 	east,
 	south_east,
