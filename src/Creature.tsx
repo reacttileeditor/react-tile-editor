@@ -9,7 +9,7 @@ import { ƒ } from "./Utils";
 // import { Asset_Manager } from "./Asset_Manager";
 // import { Blit_Manager } from "./Blit_Manager";
 // import { Tile_Palette_Element } from "./Tile_Palette_Element";
-import { Tilemap_Manager } from "./Tilemap_Manager";
+import { Tilemap_Manager, Direction } from "./Tilemap_Manager";
 import { Pathfinder, Pathfinding_Result } from "./Pathfinding";
 
 import { Point2D, Rectangle } from './interfaces';
@@ -79,11 +79,13 @@ export class Creature {
 		}
 	}
 	
-	set_path = (new_path: Array<Point2D>) => {
+	set_path = (new_path: Array<Point2D>, _Tilemap_Manager: Tilemap_Manager) => {
 		this.path_this_turn = new_path;
 		this.path_reachable_this_turn = this.yield_path_reachable_this_turn(new_path);
 		
-		this.build_anim_from_path();
+		this.build_anim_from_path(_Tilemap_Manager);
+
+		console.log('anim:', this.animation_this_turn)
 	}
 	
 	yield_path_reachable_this_turn = (new_path: Array<Point2D>):Array<Point2D> => {
@@ -101,7 +103,7 @@ export class Creature {
 		return final_path;
 	}
 	
-	build_anim_from_path = () => {
+	build_anim_from_path = (_Tilemap_Manager: Tilemap_Manager) => {
 		var time_so_far = 0;
 		this.animation_this_turn = [];
 
@@ -110,7 +112,8 @@ export class Creature {
 				this.animation_this_turn.push({
 					direction: this.extract_direction_from_map_vector(
 						val,
-						this.path_reachable_this_turn[idx + 1]	
+						this.path_reachable_this_turn[idx + 1],
+						_Tilemap_Manager
 					),
 					duration: 300,
 					start_time: time_so_far,
@@ -123,21 +126,28 @@ export class Creature {
 		})
 	}
 
-	extract_direction_from_map_vector = (start_pos: Point2D, end_pos: Point2D):Direction => {
-		if( start_pos.y == end_pos.y ){
-			if(start_pos.x < end_pos.x){
+	extract_direction_from_map_vector = (
+		start_pos: Point2D,
+		end_pos: Point2D,
+		_Tilemap_Manager: Tilemap_Manager
+	):Direction => {
+		const pixel_start_pos = _Tilemap_Manager.convert_tile_coords_to_pixel_coords(start_pos);
+		const pixel_end_pos = _Tilemap_Manager.convert_tile_coords_to_pixel_coords(end_pos);
+
+		if( pixel_start_pos.y == pixel_end_pos.y ){
+			if(pixel_start_pos.x < pixel_end_pos.x){
 				return Direction.east;
 			} else {
 				return Direction.west;
 			}
-		} else if( start_pos.y >= end_pos.y  ){
-			if(start_pos.x < end_pos.x){
+		} else if( pixel_start_pos.y >= pixel_end_pos.y  ){
+			if(pixel_start_pos.x < pixel_end_pos.x){
 				return Direction.north_east;
 			} else {
 				return Direction.north_west;
 			}
 		} else {
-			if(start_pos.x < end_pos.x){
+			if(pixel_start_pos.x < pixel_end_pos.x){
 				return Direction.south_east;
 			} else {
 				return Direction.south_west;
@@ -176,10 +186,7 @@ export class Creature {
 			*/
 			return Direction.east;
 		} else {
-			return this.extract_direction_from_map_vector(
-				animation_segment.start_pos,
-				animation_segment.end_pos 
-			);
+			return animation_segment.direction;
 		}
 	}
 	
@@ -220,14 +227,6 @@ export class Creature {
 	}
 }
 
-export enum Direction {
-	north_east,
-	east,
-	south_east,
-	north_west,
-	west,
-	south_west,
-}
 
 type Anim_Schedule_Element = {
 	direction: Direction,

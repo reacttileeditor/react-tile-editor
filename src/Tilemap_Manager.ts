@@ -17,6 +17,16 @@ interface tileViewState {
 	initialized: boolean,
 }
 
+export enum Direction {
+	north_east,
+	east,
+	south_east,
+	north_west,
+	west,
+	south_west,
+}
+
+
 
 export class Tilemap_Manager {
 	state: tileViewState;
@@ -243,4 +253,30 @@ export class Tilemap_Manager {
 		y:	pos.y * this._AM.consts.tile_height
 	})
 
+
+
+
+/*----------------------- direction handling -----------------------*/
+
+	extract_direction_from_map_vector = (start_pos: Point2D, end_pos: Point2D):Direction => {
+		if( start_pos.y == end_pos.y ){
+			if(start_pos.x < end_pos.x){
+				return Direction.east;
+			} else {
+				return Direction.west;
+			}
+		} else if( start_pos.y >= end_pos.y  ){
+			if(start_pos.x < end_pos.x){
+				return Direction.north_east;
+			} else {
+				return Direction.north_west;
+			}
+		} else {
+			if(start_pos.x < end_pos.x){
+				return Direction.south_east;
+			} else {
+				return Direction.south_west;
+			}
+		}
+	}
 }

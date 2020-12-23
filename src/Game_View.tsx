@@ -8,10 +8,10 @@ import { Canvas_View } from "./Canvas_View";
 import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
 import { Tile_Palette_Element } from "./Tile_Palette_Element";
-import { Tilemap_Manager } from "./Tilemap_Manager";
+import { Tilemap_Manager, Direction } from "./Tilemap_Manager";
 import { Pathfinder } from "./Pathfinding";
 
-import { Creature, Direction } from "./Creature";
+import { Creature } from "./Creature";
 
 import "./Primary_View.scss";
 import { Point2D, Rectangle } from './interfaces';
@@ -344,7 +344,8 @@ class Game_Manager {
 				creature.planned_tile_pos = new_pos;
 				
 				creature.set_path(
-					this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos, creature ).successful_path
+					this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos, creature ).successful_path,
+					this._Tilemap_Manager
 				);
 			}
 		} else if(newly_selected_creature === this.game_state.selected_object_index ) {
