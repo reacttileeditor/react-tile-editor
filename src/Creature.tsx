@@ -18,6 +18,7 @@ import { Point2D, Rectangle } from './interfaces';
 
 export class Creature {
 	tile_pos: Point2D;
+	facing_direction: Direction;
 	planned_tile_pos: Point2D;
 	unique_id: string;
 	path_this_turn: Array<Point2D>;
@@ -34,6 +35,7 @@ export class Creature {
 		unique_id?: string,
 	}) {
 		this.tile_pos = p.tile_pos;
+		this.facing_direction = Direction.south_east;
 		this.type_name = p.type_name;
 		this.planned_tile_pos = p.planned_tile_pos;
 		this.path_this_turn = [];
@@ -287,7 +289,7 @@ class CT_Peasant extends Creature_Base_Type {
 	}
 
 	yield_moves_per_turn = () => ( 8 )
-	yield_creature_image = () => ( 'peasant' )
+	yield_creature_image = () => ( 'peasant-se' )
 
 }
 

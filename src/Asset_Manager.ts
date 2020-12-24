@@ -145,8 +145,11 @@ export class Asset_Manager {
 				url: "char1.png",
 				name: "hermit",
 			},{
+				url: "char2-ne.png",
+				name: "peasant-ne",
+			},{
 				url: "char2.png",
-				name: "peasant",
+				name: "peasant-se",
 			},{
 				url: "char2-se-walk.png",
 				name: "peasant-se-walk",
