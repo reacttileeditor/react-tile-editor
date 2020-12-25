@@ -187,6 +187,15 @@ export class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
+				name: "menhir2",
+				bounds: {
+					x: 57,
+					y: 1,
+					w: 54,
+					h: 58,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
 				name: "grass1",
 				bounds: {
 					x: 1,
@@ -227,6 +236,15 @@ export class Asset_Manager {
 				bounds: {
 					x: 1,
 					y: 241,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "sandy-dirt1",
+				bounds: {
+					x: 57,
+					y: 61,
 					w: 54,
 					h: 34,
 				},
@@ -391,6 +409,14 @@ export class Asset_Manager {
 						}],
 					}],
 				},{
+					name: "sandy-dirt",
+					variants: [{
+						graphics: [{
+							id: 'sandy-dirt1',
+							zorder: 3,
+						}],
+					}],
+				},{
 					name: "sand",
 					variants: [{
 						graphics: [{
@@ -465,14 +491,25 @@ export class Asset_Manager {
 						}],
 					}],
 				},{
-					name: "menhir",
+					name: "menhir2",
+					variants: [{
+						graphics: [{
+							id: 'dirt1',
+							zorder: 3,
+						},{
+							id: 'menhir2',
+							zorder: 12,
+						}],
+					}],
+				},{
+					name: "menhir1",
 					variants: [{
 						graphics: [{
 							id: 'dirt1',
 							zorder: 3,
 						},{
 							id: 'menhir1',
-							zorder: 4,
+							zorder: 12,
 						}],
 					}],
 				}

@@ -247,9 +247,9 @@ class Creature_Base_Type {
 
 
 	yield_move_cost_for_tile_type = (tile_type: string): number|null => {
-		if(tile_type == 'water'){
+		if(tile_type == 'menhir1' || tile_type == 'menhir2'){
 			return null;
-		} else if (tile_type == 'menhir'){
+		} else if (tile_type == 'water'){
 			return 10;
 		} else {
 			return 1;
