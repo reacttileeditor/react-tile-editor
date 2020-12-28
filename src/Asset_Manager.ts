@@ -187,6 +187,24 @@ export class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
+				name: "menhir3",
+				bounds: {
+					x: 113,
+					y: 1,
+					w: 54,
+					h: 58,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "menhir4",
+				bounds: {
+					x: 169,
+					y: 1,
+					w: 54,
+					h: 58,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
 				name: "menhir2",
 				bounds: {
 					x: 57,
@@ -196,16 +214,7 @@ export class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
-				name: "grass1",
-				bounds: {
-					x: 1,
-					y: 61,
-					w: 54,
-					h: 34,
-				},
-			},{
-				url: "hex-tile-experiment-tiles.png",
-				name: "grass2",
+				name: "grass-and-scree1",
 				bounds: {
 					x: 1,
 					y: 97,
@@ -214,7 +223,25 @@ export class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
-				name: "grass3",
+				name: "grass-and-scree2",
+				bounds: {
+					x: 57,
+					y: 97,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "grass-and-scree3",
+				bounds: {
+					x: 113,
+					y: 97,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "grass1",
 				bounds: {
 					x: 1,
 					y: 133,
@@ -223,19 +250,10 @@ export class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
-				name: "grass4",
-				bounds: {
-					x: 1,
-					y: 169,
-					w: 54,
-					h: 34,
-				},
-			},{
-				url: "hex-tile-experiment-tiles.png",
 				name: "dirt2",
 				bounds: {
-					x: 1,
-					y: 241,
+					x: 57,
+					y: 205,
 					w: 54,
 					h: 34,
 				},
@@ -279,8 +297,8 @@ export class Asset_Manager {
 				url: "hex-tile-experiment-tiles.png",
 				name: "sand2",
 				bounds: {
-					x: 1,
-					y: 313,
+					x: 57,
+					y: 277,
 					w: 54,
 					h: 34,
 				},
@@ -288,8 +306,8 @@ export class Asset_Manager {
 				url: "hex-tile-experiment-tiles.png",
 				name: "sand3",
 				bounds: {
-					x: 1,
-					y: 349,
+					x: 113,
+					y: 277,
 					w: 54,
 					h: 34,
 				},
@@ -396,19 +414,23 @@ export class Asset_Manager {
 								id: 'grass1',
 								zorder: 3,
 							}],
-						},{
+						}
+					],
+				},{
+					name: "grass-and-scree",
+					variants: [{
 							graphics: [{
-								id: 'grass2',
+								id: 'grass-and-scree1',
 								zorder: 3,
 							}],
 						},{
 							graphics: [{
-								id: 'grass3',
+								id: 'grass-and-scree2',
 								zorder: 3,
 							}],
 						},{
 							graphics: [{
-								id: 'grass4',
+								id: 'grass-and-scree3',
 								zorder: 3,
 							}],
 						}
@@ -540,6 +562,22 @@ export class Asset_Manager {
 							zorder: 3,
 						},{
 							id: 'menhir1',
+							zorder: 12,
+						}],
+					},{
+						graphics: [{
+							id: 'dirt1',
+							zorder: 3,
+						},{
+							id: 'menhir4',
+							zorder: 12,
+						}],
+					},{
+						graphics: [{
+							id: 'dirt1',
+							zorder: 3,
+						},{
+							id: 'menhir3',
 							zorder: 12,
 						}],
 					}],
