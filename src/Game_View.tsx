@@ -11,7 +11,7 @@ import { Tile_Palette_Element } from "./Tile_Palette_Element";
 import { Tilemap_Manager, Direction } from "./Tilemap_Manager";
 import { Pathfinder } from "./Pathfinding";
 
-import { Creature } from "./Creature";
+import { Creature, PathNodeWithDirection } from "./Creature";
 
 import "./Primary_View.scss";
 import { Point2D, Rectangle } from './interfaces';
@@ -126,7 +126,7 @@ class Game_Manager {
 		//creature.path_this_turn = this._Pathfinder.find_path_between_map_tiles( this._Tilemap_Manager, creature.tile_pos, new_pos, creature )
 		
 		const creature_movespeed = 5;
-		const reserved_tiles : Array<Point2D> = [];
+		const reserved_tiles : Array<PathNodeWithDirection> = [];
 
 		//push a new turn onto the end of the turns array
 		this.game_state.turn_list = _.concat(
@@ -140,7 +140,7 @@ class Game_Manager {
 				creature_list: _.map( this.get_current_turn_state().creature_list, (creature, idx) => {
 					let new_position =
 						_.find(
-							_.reverse(creature.path_reachable_this_turn),
+							_.reverse(creature.path_reachable_this_turn_with_directions),
 // 							ƒ.dump(_.slice( creature.path_this_turn,
 // 								0, //_.size(creature.path_this_turn) - creature.yield_moves_per_turn(),
 // 								creature.yield_moves_per_turn()
@@ -152,15 +152,19 @@ class Game_Manager {
 			
 					console.error(`new pos ${new_position}`);
 					if( new_position == undefined){ //if we didn't find *any* open slots, give up and remain at our current pos
-						new_position = creature.tile_pos;
+						new_position = {
+							position: creature.tile_pos,
+							direction: creature.facing_direction,
+						};
 					} else {
 						reserved_tiles.push(new_position);
 					}
 			
 			
 					return new Creature({
-						tile_pos: new_position,
-						planned_tile_pos: new_position,
+						tile_pos: new_position.position,
+						direction: new_position.direction,
+						planned_tile_pos: new_position.position,
 						type_name: creature.type_name,
 						unique_id: creature.unique_id,
 					})
@@ -237,13 +241,13 @@ class Game_Manager {
 			} else {
 				_.map( this.get_current_turn_state().creature_list, (val,idx) => {
 					this._Asset_Manager.draw_image_for_asset_name({
-						asset_name:					val.yield_creature_image(),
+						asset_name:					val.yield_stand_asset_for_direction(val.facing_direction),
 						_BM:						this._Blit_Manager,
 						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
 						zorder:						12,
 						current_milliseconds:		0,
 						opacity:					1.0,
-						horizontally_flipped:		false,
+						horizontally_flipped:		this.get_flip_state_from_direction(val.facing_direction),
 						vertically_flipped:			false,
 					})
 
@@ -251,13 +255,13 @@ class Game_Manager {
 						Draw the "ghost" image of the position the unit will be in at the end of their move.
 					*/
 					this._Asset_Manager.draw_image_for_asset_name({
-						asset_name:					val.yield_creature_image(),
+						asset_name:					val.yield_stand_asset_for_direction(val.facing_direction),
 						_BM:						this._Blit_Manager,
 						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
 						zorder:						12,
 						current_milliseconds:		0,
 						opacity:					0.5,
-						horizontally_flipped:		false,
+						horizontally_flipped:		this.get_flip_state_from_direction(val.facing_direction),
 						vertically_flipped:			false,
 					})			
 			

@@ -14,7 +14,7 @@ import { Pathfinder, Pathfinding_Result } from "./Pathfinding";
 
 import { Point2D, Rectangle } from './interfaces';
 
-type PathNodeWithDirection = {
+export type PathNodeWithDirection = {
 	position: Point2D,
 	direction: Direction,
 }
@@ -27,6 +27,7 @@ export class Creature {
 	path_this_turn: Array<Point2D>;
 	path_this_turn_with_directions: Array<PathNodeWithDirection>;
 	path_reachable_this_turn: Array<Point2D>;
+	path_reachable_this_turn_with_directions: Array<PathNodeWithDirection>;
 	animation_this_turn: Array<Anim_Schedule_Element>;
 	type_name: string;
 
@@ -34,17 +35,19 @@ export class Creature {
 
 	constructor(p: {
 		tile_pos: Point2D,
+		direction?: Direction,
 		planned_tile_pos: Point2D,
 		type_name: string,
 		unique_id?: string,
 	}) {
 		this.tile_pos = p.tile_pos;
-		this.facing_direction = Direction.south_east;
+		this.facing_direction = ƒ.if(p.direction !== undefined, p.direction, Direction.south_east);
 		this.type_name = p.type_name;
 		this.planned_tile_pos = p.planned_tile_pos;
 		this.path_this_turn = [];
 		this.path_this_turn_with_directions = [];
 		this.path_reachable_this_turn = [];
+		this.path_reachable_this_turn_with_directions = [];
 		this.animation_this_turn = [];
 		
 		if(p.unique_id != undefined){
@@ -67,6 +70,11 @@ export class Creature {
 	yield_walk_asset_for_direction = (direction: Direction):string => (
 		this.creature_basetype_delegate.yield_walk_asset_for_direction(direction)
 	)
+
+	yield_stand_asset_for_direction = (direction: Direction):string => (
+		this.creature_basetype_delegate.yield_stand_asset_for_direction(direction)
+	)
+
 
 	yield_creature_image = () => (
 		this.creature_basetype_delegate.yield_creature_image()
@@ -94,6 +102,10 @@ export class Creature {
 			this.path_this_turn,
 			_Tilemap_Manager
 		);
+
+		this.path_reachable_this_turn_with_directions = this.yield_directional_path_reachable_this_turn(this.path_this_turn_with_directions);
+
+
 		console.log("directional path", this.path_this_turn_with_directions)
 
 		this.build_anim_from_path(_Tilemap_Manager);
@@ -115,6 +127,22 @@ export class Creature {
 		
 		return final_path;
 	}
+
+	yield_directional_path_reachable_this_turn = (new_path: Array<PathNodeWithDirection>):Array<PathNodeWithDirection> => {
+		let moves_remaining = this.yield_moves_per_turn();
+		let final_path: Array<PathNodeWithDirection> = [];
+	
+		_.map( new_path, (val) => {
+			moves_remaining = moves_remaining - 1;
+			
+			if(moves_remaining > 0){
+				final_path.push(val);
+			}
+		})
+		
+		return final_path;
+	}
+
 	
 	build_anim_from_path = (_Tilemap_Manager: Tilemap_Manager) => {
 		var time_so_far = 0;
@@ -281,7 +309,7 @@ type CreatureType = CT_Hermit | CT_Peasant | CT_Skeleton;
 
 class Creature_Base_Type {
 	yield_walk_asset_for_direction = (direction:Direction):string => ( this.yield_creature_image() )
-
+	yield_stand_asset_for_direction = (direction:Direction):string => ( this.yield_creature_image() )
 
 	yield_move_cost_for_tile_type = (tile_type: string): number|null => {
 		if(tile_type == 'menhir1' || tile_type == 'menhir2'){
@@ -324,6 +352,24 @@ class CT_Peasant extends Creature_Base_Type {
 				return 'peasant-se-walk'; break;
 		}
 	}
+	
+	yield_stand_asset_for_direction = (direction:Direction):string => {
+		switch(direction){
+			case Direction.north_east:
+				return 'peasant-ne'; break;
+			case Direction.north_west:
+				return 'peasant-ne'; break;
+			case Direction.east:
+				return 'peasant-ne'; break;
+			case Direction.south_east:
+				return 'peasant-se'; break;
+			case Direction.west:
+				return 'peasant-se'; break;
+			case Direction.south_west:
+				return 'peasant-se'; break;
+		}
+	}
+	
 
 	yield_moves_per_turn = () => ( 8 )
 	yield_creature_image = () => ( 'peasant-se' )
