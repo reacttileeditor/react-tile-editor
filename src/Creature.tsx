@@ -14,7 +14,10 @@ import { Pathfinder, Pathfinding_Result } from "./Pathfinding";
 
 import { Point2D, Rectangle } from './interfaces';
 
-
+type PathNodeWithDirection = {
+	position: Point2D,
+	direction: Direction,
+}
 
 export class Creature {
 	tile_pos: Point2D;
@@ -22,6 +25,7 @@ export class Creature {
 	planned_tile_pos: Point2D;
 	unique_id: string;
 	path_this_turn: Array<Point2D>;
+	path_this_turn_with_directions: Array<PathNodeWithDirection>;
 	path_reachable_this_turn: Array<Point2D>;
 	animation_this_turn: Array<Anim_Schedule_Element>;
 	type_name: string;
@@ -39,6 +43,7 @@ export class Creature {
 		this.type_name = p.type_name;
 		this.planned_tile_pos = p.planned_tile_pos;
 		this.path_this_turn = [];
+		this.path_this_turn_with_directions = [];
 		this.path_reachable_this_turn = [];
 		this.animation_this_turn = [];
 		
@@ -85,6 +90,12 @@ export class Creature {
 		this.path_this_turn = new_path;
 		this.path_reachable_this_turn = this.yield_path_reachable_this_turn(new_path);
 		
+		this.path_this_turn_with_directions = this.build_directional_path_from_path(
+			this.path_this_turn,
+			_Tilemap_Manager
+		);
+		console.log("directional path", this.path_this_turn_with_directions)
+
 		this.build_anim_from_path(_Tilemap_Manager);
 
 		console.log('anim:', this.animation_this_turn)
@@ -127,6 +138,32 @@ export class Creature {
 			}
 		})
 	}
+
+	build_directional_path_from_path = (
+		raw_path: Array<Point2D>,
+		_Tilemap_Manager: Tilemap_Manager
+	): Array<PathNodeWithDirection> => (
+
+		_.map( raw_path, (val, idx) => {
+
+
+			if( idx == 0){
+				return {
+					position: raw_path[idx],
+					direction: this.facing_direction
+				}
+			} else {
+				return {
+					position: raw_path[idx],
+					direction: this.extract_direction_from_map_vector(
+						raw_path[idx - 1],
+						raw_path[idx],
+						_Tilemap_Manager
+					)
+				}
+			}
+		} )
+	)
 
 	extract_direction_from_map_vector = (
 		start_pos: Point2D,
