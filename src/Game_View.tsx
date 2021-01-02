@@ -406,6 +406,11 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 			<div
 				className="game_status_display"
 			>
+				<button
+					onClick={(evt)=>{this.props.advance_turn()}}
+				>
+					Next Turn
+				</button>
 				<Label_and_Data_Pair
 					label={'Turn #:'}
 					data={`${_GS.current_turn}`}
@@ -427,11 +432,6 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 					)
 				}
 				</>
-				<button
-					onClick={(evt)=>{this.props.advance_turn()}}
-				>
-					Next Turn
-				</button>
 			</div>
 		)
 	}

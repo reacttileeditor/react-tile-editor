@@ -11,7 +11,6 @@
 		border: 3px solid black;
 		border-radius: 3px;
 	
-		background: white;
 		
 		flex-shrink: 0;
 		
@@ -24,7 +23,7 @@
 		line-height: 1.5;
 		
 		button {
-			margin-top: 1rem;
+			margin-bottom: 1rem;
 		}
 
 
@@ -33,13 +32,17 @@
 			display: flex;
 			flex-flow: row;
 			justify-content: flex-start;
+			align-items: baseline;
+			line-height: 1.5;
 
 			.label {
 				font-weight: 600;
 				margin-right: 0.3em;
+				font-size: 14px;
 			}
 			.data {
 				color: #555;
+				font-size: 16px;
 			}
 		}
 	}

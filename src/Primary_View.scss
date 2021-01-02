@@ -1,5 +1,9 @@
 @import './normalize.css';
 
+body {
+	backrgound: #dedede;
+}
+
 .master_node {
 	font-family: Gill Sans, sans-serif;
 	padding: 3em;
@@ -19,7 +23,7 @@
 
 		.canvas_holder {
 			canvas {
-				box-shadow: cadetblue 0px 2px 8px;
+				box-shadow: darkslategrey 0px 4px 8px;
 				image-rendering: pixelated;
 				image-rendering: crisp-edges;
 				width: calc(567px * 2);
@@ -36,7 +40,6 @@
 			border: 3px solid black;
 			border-radius: 3px;
 		
-			background: white;
 			
 			flex-shrink: 0;
 			
@@ -54,7 +57,7 @@
 				background: aliceblue;
 				
 				&.active {
-					box-shadow: cadetblue 0px 2px 8px;
+					box-shadow: darkslategrey 0px 4px 8px;
 				}
 				
 				&:last-of-type {
