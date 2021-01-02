@@ -388,8 +388,19 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 		this.setState({game_state: _.cloneDeep(game_state)});
 	}
 
+	get_selected_creature = (): Creature|undefined => {
+		const _gs = this.state.game_state;
+
+		if( _gs.selected_object_index != undefined ){
+			return _gs.turn_list[_gs.current_turn].creature_list[_gs.selected_object_index]
+		} else {
+			return undefined;
+		}
+	}
+
 	render = () => {
 		const _GS = this.state.game_state;
+		const selected_creature = this.get_selected_creature();
 	
 		return (
 			<div
@@ -404,11 +415,11 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 				</div>
 				<>
 				{
-					ƒ.if(_GS.selected_object_index !== undefined,
+					(selected_creature !== undefined ?
 						<Label_and_Data_Pair
-							label={'Selected Unit #:'}
-							data={`${_GS.selected_object_index}`}
-						/>,
+							label={'Selected Unit:'}
+							data={`${selected_creature.yield_prettyprint_name()}`}
+						/> :
 						<Label_and_Data_Pair
 							label={''}
 							data={`No Unit Selected.`}
