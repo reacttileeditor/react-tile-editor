@@ -14,6 +14,8 @@ import { Pathfinder } from "./Pathfinding";
 import { Creature, PathNodeWithDirection } from "./Creature";
 
 import "./Primary_View.scss";
+import "./Game_Status_Display.scss";
+
 import { Point2D, Rectangle } from './interfaces';
 
 interface Game_View_Props {
@@ -390,16 +392,30 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 		const _GS = this.state.game_state;
 	
 		return (
-			<div>
-				<div>
-					{`turn: ${_GS.current_turn}`}
-				</div>
+			<div
+				className="game_status_display"
+			>
+				<Label_and_Data_Pair
+					label={'Turn #:'}
+					data={`${_GS.current_turn}`}
+				/>
 				<div>
 					{/*`creatures: ${_.size(_GS.creature_list)}`*/}
 				</div>
-				<div>
-					{ `${ƒ.if(_GS.selected_object_index !== undefined, _GS.selected_object_index)}` }
-				</div>
+				<>
+				{
+					ƒ.if(_GS.selected_object_index !== undefined,
+						<Label_and_Data_Pair
+							label={'Selected Unit #:'}
+							data={`${_GS.selected_object_index}`}
+						/>,
+						<Label_and_Data_Pair
+							label={''}
+							data={`No Unit Selected.`}
+						/>
+					)
+				}
+				</>
 				<button
 					onClick={(evt)=>{this.props.advance_turn()}}
 				>
@@ -410,7 +426,14 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 	}
 }
 
-
+class Label_and_Data_Pair extends React.Component <{label: string, data: string}> {
+	render = () => (
+		<div className="label_and_data_pair">
+			<div className="label">{this.props.label}</div>
+			<div className="data">{this.props.data}</div>
+		</div>
+	)
+}
 
 export class Game_View extends React.Component <Game_View_Props> {
 	render_loop_interval: number|undefined;
@@ -462,7 +485,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 	}
 
 	render() {
-		return <div className="master_node">
+		return <div className="game_node">
 			<Canvas_View
 				{...this.props}
 				dimensions={this.props.dimensions}

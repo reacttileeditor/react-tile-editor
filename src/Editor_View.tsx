@@ -130,7 +130,7 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 	}
 
 	render() {
-		return <div className="master_node">
+		return <div className="editor_node">
 			
 			<Canvas_View
 				{...this.props}

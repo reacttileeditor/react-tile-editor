@@ -57,9 +57,17 @@ export class Primary_View extends React.Component <Props, State> {
 
 	render() {
 		return (
-		<div>
-			<button onClick={ () => { this.setState({is_edit_mode: !this.state.is_edit_mode}); } }>Toggle</button>
-			<div className="master_node">
+		<div
+			className="master_node"
+		>
+			<button
+				onClick={ () => { this.setState({is_edit_mode: !this.state.is_edit_mode}); } }
+			>
+				{this.state.is_edit_mode ? 'Toggle to Game' : 'Toggle to Editor'}
+			</button>
+			<div
+				className="master_flex_wrapper"
+			>
 				{
 					this.state.is_edit_mode
 					?
