@@ -69,9 +69,10 @@ export class Blit_Manager {
 	_OffScreenBuffer: HTMLCanvasElement;
 	osb_ctx: CanvasRenderingContext2D;
 	_dimensions: Point2D;
+	show_info: boolean;
 
 /*----------------------- initialization and asset loading -----------------------*/
-	constructor( ctx: CanvasRenderingContext2D, dimensions: Point2D ) {
+	constructor( ctx: CanvasRenderingContext2D, dimensions: Point2D, show_info: boolean ) {
 		this.ctx = ctx;
 		
 		this._dimensions = _.cloneDeep(dimensions);
@@ -79,7 +80,7 @@ export class Blit_Manager {
 		this._OffScreenBuffer.width = dimensions.x;
 		this._OffScreenBuffer.height = dimensions.y;
 		this.osb_ctx = (this._OffScreenBuffer.getContext("2d") as CanvasRenderingContext2D);
-
+		this.show_info = show_info;
 		
 		this._Draw_List = [];
 		this.fps_tracker = {
@@ -223,7 +224,9 @@ export class Blit_Manager {
 		})
 
 		//follow up with a few bits of utility-drawing:
-		this.draw_fps();
+		if(this.show_info){
+			this.draw_fps();
+		}
 
 		//var bitmap = this._OffScreenBuffer.transferToImageBitmap();
 		this.ctx.drawImage(this._OffScreenBuffer, 0, 0);
@@ -288,14 +291,14 @@ export class Blit_Manager {
 
 	draw_fps_text = (value: number) => {
 		this.osb_ctx.save();
-		this.osb_ctx.font = '12px Helvetica, sans-serif';
+		this.osb_ctx.font = '10px Helvetica, sans-serif';
 		this.osb_ctx.textAlign = 'center';
 		this.osb_ctx.shadowColor = "rgba(255, 0, 0, 0.5)";
 	    this.osb_ctx.shadowOffsetY = 2;
 	    this.osb_ctx.shadowBlur = 3;
 	    this.osb_ctx.fillStyle = "#ffffff";
 		this.osb_ctx.textBaseline = 'middle';
-		this.osb_ctx.fillText(value.toString(), (this.osb_ctx.canvas.width - 10), 10);
+		this.osb_ctx.fillText(`FPS: ${value.toString()}`, (this.osb_ctx.canvas.width - 26), 10);
 		this.osb_ctx.restore();
 	}
 

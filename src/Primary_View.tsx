@@ -48,7 +48,7 @@ export class Primary_View extends React.Component <Props, State> {
 
 	initialize_tilemap_manager = (ctx: CanvasRenderingContext2D) => {
 		if( !this._Tilemap_Manager ){
-			this._Blit_Manager = new Blit_Manager(ctx, this.default_canvas_size);
+			this._Blit_Manager = new Blit_Manager(ctx, this.default_canvas_size, true);
 			this._Tilemap_Manager = new Tilemap_Manager(this._Asset_Manager, this._Blit_Manager);
 		} else {
 			this._Blit_Manager.reset_context(ctx);
