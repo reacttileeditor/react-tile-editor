@@ -80,6 +80,11 @@ export class Creature {
 		this.creature_basetype_delegate.yield_creature_image()
 	)
 
+	yield_prettyprint_name = () => (
+		this.creature_basetype_delegate.yield_prettyprint_name()
+	)
+
+
 	instantiate_basetype_delegate = ():CreatureType => {
 		switch(this.type_name){
 			case 'hermit':
@@ -321,6 +326,8 @@ class Creature_Base_Type {
 		}
 	}
 
+	yield_prettyprint_name = () => ( 'Generic Unit' )
+
 	yield_moves_per_turn = (): number => ( 1 )
 
 	yield_creature_image = () => ( '' )
@@ -331,6 +338,7 @@ class CT_Hermit extends Creature_Base_Type {
 
 	yield_moves_per_turn = () => ( 5 )
 	yield_creature_image = () => ( 'hermit' )
+	yield_prettyprint_name = () => ( 'Hermit' )
 
 }
 
@@ -373,6 +381,7 @@ class CT_Peasant extends Creature_Base_Type {
 
 	yield_moves_per_turn = () => ( 8 )
 	yield_creature_image = () => ( 'peasant-se' )
+	yield_prettyprint_name = () => ( 'Peasant' )
 
 }
 
@@ -380,5 +389,6 @@ class CT_Skeleton extends Creature_Base_Type {
 
 	yield_moves_per_turn = () => ( 8 )
 	yield_creature_image = () => ( 'skeleton' )
+	yield_prettyprint_name = () => ( 'Skeleton' )
 
 }
