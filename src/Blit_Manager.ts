@@ -291,14 +291,17 @@ export class Blit_Manager {
 
 	draw_fps_text = (value: number) => {
 		this.osb_ctx.save();
-		this.osb_ctx.font = '10px Helvetica, sans-serif';
-		this.osb_ctx.textAlign = 'center';
-		this.osb_ctx.shadowColor = "rgba(255, 0, 0, 0.5)";
-	    this.osb_ctx.shadowOffsetY = 2;
-	    this.osb_ctx.shadowBlur = 3;
+		this.osb_ctx.imageSmoothingEnabled = false;
+		this.osb_ctx.font = '16px pixel, sans-serif';
+		this.osb_ctx.textAlign = 'left';
+
+		// for later reference:  https://stackoverflow.com/questions/4261090/html5-canvas-and-anti-aliasing/4261139
+		//this.osb_ctx.shadowColor = "rgba(255, 0, 0, 0.5)";
+	    //this.osb_ctx.shadowOffsetY = 2;
+	    //this.osb_ctx.shadowBlur = 3;
 	    this.osb_ctx.fillStyle = "#ffffff";
 		this.osb_ctx.textBaseline = 'middle';
-		this.osb_ctx.fillText(`FPS: ${value.toString()}`, (this.osb_ctx.canvas.width - 26), 10);
+		this.osb_ctx.fillText(`FPS: ${value.toString()}`, (this.osb_ctx.canvas.width - 40), 10);
 		this.osb_ctx.restore();
 	}
 

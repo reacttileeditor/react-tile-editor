@@ -25,6 +25,16 @@ module.exports = {
 				}]
             },
 			{
+				test: /\.(ttf|eot|woff|woff2|otf|mp4)$/,
+				use: {
+					loader: 'file-loader',
+					options: {
+						name: '[name].[ext]',
+						outputPath: '/'
+					}
+				}
+			},
+			{
 				test: /\.(t|j)sx?$/,
 				exclude: /node_modules/,
 				use: {
