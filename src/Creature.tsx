@@ -80,8 +80,15 @@ export class Creature {
 		this.creature_basetype_delegate.yield_creature_image()
 	)
 
-	yield_prettyprint_name = () => (
-		this.creature_basetype_delegate.yield_prettyprint_name()
+
+
+
+
+
+/*----------------------- basetype management -----------------------*/
+
+	get_info = ():CreatureType => (
+		this.creature_basetype_delegate
 	)
 
 
@@ -98,7 +105,9 @@ export class Creature {
 				return new CT_Skeleton();
 		}
 	}
-	
+
+/*----------------------- movement -----------------------*/
+
 	set_path = (new_path: Array<Point2D>, _Tilemap_Manager: Tilemap_Manager) => {
 		this.path_this_turn = new_path;
 		this.path_reachable_this_turn = this.yield_path_reachable_this_turn(new_path);

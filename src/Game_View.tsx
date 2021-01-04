@@ -423,7 +423,7 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 					(selected_creature !== undefined ?
 						<Label_and_Data_Pair
 							label={'Selected Unit:'}
-							data={`${selected_creature.yield_prettyprint_name()}`}
+							data={`${selected_creature.get_info().yield_prettyprint_name()}`}
 						/> :
 						<Label_and_Data_Pair
 							label={''}
