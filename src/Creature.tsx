@@ -337,9 +337,13 @@ class Creature_Base_Type {
 
 	yield_prettyprint_name = () => ( 'Generic Unit' )
 
-	yield_moves_per_turn = (): number => ( 1 )
 
 	yield_creature_image = () => ( '' )
+/*----------------------- stats -----------------------*/
+	yield_moves_per_turn = (): number => ( 1 )
+	yield_damage = (): number => ( 5 )
+	yield_max_hitpoints = (): number => ( 100 )
+
 
 }
 

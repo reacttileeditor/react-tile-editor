@@ -415,9 +415,7 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 					label={'Turn #:'}
 					data={`${_GS.current_turn}`}
 				/>
-				<div>
-					{/*`creatures: ${_.size(_GS.creature_list)}`*/}
-				</div>
+				<br />
 				<>
 				{
 					(selected_creature !== undefined ?
@@ -432,6 +430,27 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 					)
 				}
 				</>
+				<>
+				{
+					(selected_creature !== undefined)
+					&&
+					<>
+						<Label_and_Data_Pair
+							label={'Hitpoints:'}
+							data={`${selected_creature.get_info().yield_max_hitpoints()}`}
+						/>
+						<Label_and_Data_Pair
+							label={'Moves:'}
+							data={`${selected_creature.get_info().yield_moves_per_turn()}`}
+						/>
+						<Label_and_Data_Pair
+							label={'Damage:'}
+							data={`${selected_creature.get_info().yield_damage()}`}
+						/>
+					</>
+				}
+				</>
+
 			</div>
 		)
 	}
