@@ -147,6 +147,7 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 					return	<Tile_Palette_Element
 								asset_manager={this.props._Asset_Manager}
 								tile_name={value}
+								asset_name={''}
 								key={value}
 								highlight={this.state.selected_tile_type == value}
 								handle_click={ () => this.setState({selected_tile_type: value}) }

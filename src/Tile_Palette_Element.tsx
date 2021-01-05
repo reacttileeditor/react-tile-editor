@@ -12,6 +12,7 @@ interface Props {
 	asset_manager: Asset_Manager,
 	highlight: boolean,
 	tile_name: string,
+	asset_name: string,
 	handle_click(): void, 
 }
 
@@ -63,14 +64,34 @@ export class Tile_Palette_Element extends React.Component <Props> {
 		let { consts } = this.props.asset_manager;
 
 		this._Blit_Manager.fill_canvas_with_solid_color();
-		this.props.asset_manager.draw_all_assets_for_tile_type(
-			this.props.tile_name,
-			this._Blit_Manager,
-			{
-				x: Math.floor(this.default_canvas_size.x/2),
-				y: Math.floor(this.default_canvas_size.y/2)
-			},
-		);
+
+		if(  _.size(this.props.tile_name) > 0 ){
+			this.props.asset_manager.draw_all_assets_for_tile_type(
+				this.props.tile_name,
+				this._Blit_Manager,
+				{
+					x: Math.floor(this.default_canvas_size.x/2),
+					y: Math.floor(this.default_canvas_size.y/2)
+				},
+			);
+		}
+
+		if( _.size(this.props.asset_name) > 0 ){
+			this.props.asset_manager.draw_image_for_asset_name({
+				asset_name:					this.props.asset_name,
+				_BM:						this._Blit_Manager,
+				pos:						{
+					x: Math.floor(this.default_canvas_size.x/2),
+					y: Math.floor(this.default_canvas_size.y)
+				},
+				zorder:						12,
+				current_milliseconds:		0,
+				opacity:					1.0,
+				horizontally_flipped:		false,
+				vertically_flipped:			false,
+			})
+		}
+
 		this._Blit_Manager.draw_entire_frame();
 	}
 	
@@ -87,7 +108,8 @@ export class Tile_Palette_Element extends React.Component <Props> {
 				height={this.default_canvas_size.y}
 				style={ {
 					width: this.default_canvas_size.x * 2,
-					height: this.default_canvas_size.y * 2
+					height: this.default_canvas_size.y * 2,
+					imageRendering: 'pixelated',
 				} }
 			
 				onClick={ this.handle_mouse_click }

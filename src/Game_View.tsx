@@ -371,10 +371,13 @@ class Game_Turn_State {
 interface Game_Status_Display_Props {
 	_Game_Manager: Game_Manager,
 	advance_turn: Function,
+	_Asset_Manager: Asset_Manager;
 }
 
 
-class Game_Status_Display extends React.Component <Game_Status_Display_Props, {game_state: Game_State}> {
+class Game_Status_Display extends React.Component <Game_Status_Display_Props, {
+	game_state: Game_State,
+}> {
 	constructor( props: Game_Status_Display_Props ) {
 		super( props );
 
@@ -435,6 +438,13 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {g
 					(selected_creature !== undefined)
 					&&
 					<>
+						<Tile_Palette_Element
+							asset_manager={this.props._Asset_Manager}
+							tile_name={''}
+							asset_name={`${selected_creature.get_info().yield_creature_image()}`}
+							highlight={false}
+							handle_click={ ()=>{} }
+						/>
 						<Label_and_Data_Pair
 							label={'Hitpoints:'}
 							data={`${selected_creature.get_info().yield_max_hitpoints()}`}
@@ -526,6 +536,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 			<Game_Status_Display
 				ref={(node) => {this.gsd = node!;}}
 				_Game_Manager={this._Game_Manager}
+				_Asset_Manager={this.props._Asset_Manager}
 				advance_turn={this._Game_Manager.advance_turn}
 			/>
 		</div>;
