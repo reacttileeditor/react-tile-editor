@@ -10,7 +10,7 @@ import { Point2D, Rectangle } from './interfaces';
 
 interface Props {
 	asset_manager: Asset_Manager,
-	selected_tile_type: string,
+	highlight: boolean,
 	tile_name: string,
 	handle_click(): void, 
 }
@@ -80,7 +80,7 @@ export class Tile_Palette_Element extends React.Component <Props> {
 	
 
 	render() {
-		return <div className={`tile_cell${ this.props.selected_tile_type == this.props.tile_name ? ' active' : ''}`}>
+		return <div className={`tile_cell${ this.props.highlight ? ' active' : ''}`}>
 			<canvas
 				ref={(node) => {this.canvas = node!;}}
 				width={this.default_canvas_size.x}
