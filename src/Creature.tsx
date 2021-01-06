@@ -30,6 +30,7 @@ export class Creature {
 	path_reachable_this_turn_with_directions: Array<PathNodeWithDirection>;
 	animation_this_turn: Array<Anim_Schedule_Element>;
 	type_name: string;
+	team: number;
 
 	creature_basetype_delegate: CreatureType;
 
@@ -38,6 +39,7 @@ export class Creature {
 		direction?: Direction,
 		planned_tile_pos: Point2D,
 		type_name: string,
+		team: number,
 		unique_id?: string,
 	}) {
 		this.tile_pos = p.tile_pos;
@@ -49,6 +51,7 @@ export class Creature {
 		this.path_reachable_this_turn = [];
 		this.path_reachable_this_turn_with_directions = [];
 		this.animation_this_turn = [];
+		this.team = p.team;
 		
 		if(p.unique_id != undefined){
 			this.unique_id = p.unique_id;

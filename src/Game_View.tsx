@@ -94,17 +94,25 @@ class Game_Manager {
 			selected_object_index: undefined,
 			turn_list: [{
 				creature_list: [new Creature({
-					tile_pos: {x: 0, y: 6},
+					tile_pos: {x: 1, y: 6},
 					planned_tile_pos: {x: 0, y: 6},
 					type_name: 'hermit',
+					team: 1,
 				}), new Creature({
 					tile_pos: {x: 2, y: 4},
 					planned_tile_pos: {x: 2, y: 4},
 					type_name: 'peasant',
+					team: 1,
 				}), new Creature({
 					tile_pos: {x: 4, y: 4},
 					planned_tile_pos: {x: 4, y: 4},
 					type_name: 'skeleton',
+					team: 2,
+				}), new Creature({
+					tile_pos: {x: 5, y: 8},
+					planned_tile_pos: {x: 5, y: 8},
+					type_name: 'skeleton',
+					team: 2,
 				})],
 			}],
 		};
@@ -173,6 +181,7 @@ class Game_Manager {
 						planned_tile_pos: new_position.position,
 						type_name: creature.type_name,
 						unique_id: creature.unique_id,
+						team: creature.team,
 					})
 				})
 			}]
@@ -442,6 +451,11 @@ class Game_Status_Display extends React.Component <Game_Status_Display_Props, {
 					(selected_creature !== undefined)
 					&&
 					<>
+						<Label_and_Data_Pair
+							label={'Team:'}
+							data={`${selected_creature.team}`}
+						/>
+
 						<Tile_Palette_Element
 							asset_manager={this.props._Asset_Manager}
 							tile_name={''}
