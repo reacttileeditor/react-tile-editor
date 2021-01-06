@@ -43,12 +43,14 @@ export class Canvas_View extends React.Component <Props, State> {
 	componentDidMount() {
 		this.ctx = this.canvas!.getContext("2d")!;
 		this.props.initialize_tilemap_manager(this.ctx);
-		document.addEventListener('keydown', (evt)=>{this.props.handle_canvas_keydown(evt)}  );
+		document.addEventListener('keydown', this.handle_canvas_keydown as unknown as EventListener );
 	}
 
 	componentWillUnmount() {
 		document.removeEventListener ('mouseup',   this.mouseupListener as unknown as EventListener,   {capture: true});
 		document.removeEventListener ('mousemove', this.mousemoveListener as unknown as EventListener, {capture: true});
+		document.removeEventListener ('keydown', this.handle_canvas_keydown as unknown as EventListener);
+
 	}	
 
 /*----------------------- event handling -----------------------*/
@@ -57,6 +59,10 @@ export class Canvas_View extends React.Component <Props, State> {
 
 		Events, like in photoshop, are modal; once you start rotating an image, the program is essentially 'locked' into a rotation mode until you let go of the mouse.  Because of this, we handle everything basically as a central 'switchboard', right here.
 	*/
+	handle_canvas_keydown = (evt: React.KeyboardEvent<HTMLCanvasElement>)=>{
+		this.props.handle_canvas_keydown(evt);
+	}
+
 	track_canvas_move = ( e: React.MouseEvent<HTMLCanvasElement> ) => {
 		var mousePosUnconstrained = this.get_mouse_pos_for_action(e, false);
 		var mousePos = this.get_mouse_pos_for_action(e, true);

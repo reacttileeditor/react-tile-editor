@@ -131,6 +131,10 @@ export class Asset_Manager {
 				name: "cursor_green",
 				not_a_tile: true,
 			},{
+				url: "map-cursor-red.png",
+				name: "cursor_red",
+				not_a_tile: true,
+			},{
 				url: "map-cursor-green-small.png",
 				name: "cursor_green_small",
 				not_a_tile: true,
@@ -150,6 +154,9 @@ export class Asset_Manager {
 			},{
 				url: "char2.png",
 				name: "peasant-se",
+			},{
+				url: "char3.png",
+				name: "skeleton",
 			},{
 				url: "char2-se-walk.png",
 				name: "peasant-se-walk",

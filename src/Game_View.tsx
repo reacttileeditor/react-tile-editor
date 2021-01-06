@@ -101,6 +101,10 @@ class Game_Manager {
 					tile_pos: {x: 2, y: 4},
 					planned_tile_pos: {x: 2, y: 4},
 					type_name: 'peasant',
+				}), new Creature({
+					tile_pos: {x: 4, y: 4},
+					planned_tile_pos: {x: 4, y: 4},
+					type_name: 'skeleton',
 				})],
 			}],
 		};
