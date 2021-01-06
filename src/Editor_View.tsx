@@ -108,26 +108,31 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 		
 	}
 
-	handle_canvas_keydown = (event:  React.KeyboardEvent<HTMLCanvasElement>) => {
-		switch (event.key) {
-			case "Down": // IE/Edge specific value
-			case "ArrowDown":
-				this.props._Blit_Manager.adjust_viewport_pos(0,40);
-				break;
-			case "Up": // IE/Edge specific value
-			case "ArrowUp":
-				this.props._Blit_Manager.adjust_viewport_pos(0,-40);
-				break;
-			case "Left": // IE/Edge specific value
-			case "ArrowLeft":
-				this.props._Blit_Manager.adjust_viewport_pos(-40,0);
-				break;
-			case "Right": // IE/Edge specific value
-			case "ArrowRight":
-				this.props._Blit_Manager.adjust_viewport_pos(40,0);
-				break;
+	handle_canvas_keys_down = (keys: Array<string>) => {
+		let move = { x: 0, y: 0};
+
+		if( _.includes(keys, 'ArrowDown') ){
+			move.y += 40;
 		}
+
+		if( _.includes(keys, 'ArrowUp') ){
+			move.y -= 40;
+		}
+
+		if( _.includes(keys, 'ArrowLeft') ){
+			move.x -= 40;
+		}
+
+		if( _.includes(keys, 'ArrowRight') ){
+			move.x += 40;
+		}
+
+		this.props._Blit_Manager.adjust_viewport_pos(move.x, move.y);
+
 	}
+
+
+
 
 	render() {
 		return <div className="editor_node">
@@ -136,7 +141,7 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 				{...this.props}
 				dimensions={this.props.dimensions}
 				handle_canvas_click={this.handle_canvas_click}
-				handle_canvas_keydown={this.handle_canvas_keydown}
+				handle_canvas_keys_down={this.handle_canvas_keys_down}
 				handle_canvas_mouse_move={this.handle_canvas_mouse_move}
 			/>
 			<div className="tile_palette">

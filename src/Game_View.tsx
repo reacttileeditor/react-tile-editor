@@ -534,7 +534,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 				{...this.props}
 				dimensions={this.props.dimensions}
 				handle_canvas_click={ this._Game_Manager.handle_click }
-				handle_canvas_keydown={ ()=>{ /*console.log('game_keydown')*/} }
+				handle_canvas_keys_down={ ()=>{ /*console.log('game_keydown')*/} }
 				handle_canvas_mouse_move={ ()=>{ /*console.log('game_mouse_move')*/} }
 			/>
 			<Game_Status_Display

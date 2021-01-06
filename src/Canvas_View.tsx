@@ -14,7 +14,7 @@ interface Props {
 	dimensions: Point2D,
 	
 	handle_canvas_click: Function,
-	handle_canvas_keydown: Function,
+	handle_canvas_keys_down: (keys: Array<string>) => void,
 	handle_canvas_mouse_move: Function,
 }
 
@@ -29,11 +29,13 @@ export class Canvas_View extends React.Component <Props, State> {
 	ctx!: CanvasRenderingContext2D;
 	render_loop_interval: number|undefined;
 	canvas!: HTMLCanvasElement;
+	keys_currently_pressed: Array<string>;
 
 /*----------------------- initialization and asset loading -----------------------*/
 	constructor( props: Props ) {
 		super( props );
 		
+		this.keys_currently_pressed = [];
 		this.state = {
 			mousedown_pos: undefined,
 		}
@@ -44,12 +46,14 @@ export class Canvas_View extends React.Component <Props, State> {
 		this.ctx = this.canvas!.getContext("2d")!;
 		this.props.initialize_tilemap_manager(this.ctx);
 		document.addEventListener('keydown', this.handle_canvas_keydown as unknown as EventListener );
+		document.addEventListener('keyup', this.handle_canvas_keyup as unknown as EventListener );
 	}
 
 	componentWillUnmount() {
 		document.removeEventListener ('mouseup',   this.mouseupListener as unknown as EventListener,   {capture: true});
 		document.removeEventListener ('mousemove', this.mousemoveListener as unknown as EventListener, {capture: true});
 		document.removeEventListener ('keydown', this.handle_canvas_keydown as unknown as EventListener);
+		document.removeEventListener ('keyup', this.handle_canvas_keyup as unknown as EventListener);
 
 	}	
 
@@ -60,8 +64,20 @@ export class Canvas_View extends React.Component <Props, State> {
 		Events, like in photoshop, are modal; once you start rotating an image, the program is essentially 'locked' into a rotation mode until you let go of the mouse.  Because of this, we handle everything basically as a central 'switchboard', right here.
 	*/
 	handle_canvas_keydown = (evt: React.KeyboardEvent<HTMLCanvasElement>)=>{
-		this.props.handle_canvas_keydown(evt);
+		this.keys_currently_pressed = _.uniq( _.concat(this.keys_currently_pressed, evt.key) )
+
+
+		this.props.handle_canvas_keys_down( this.keys_currently_pressed );
 	}
+
+	handle_canvas_keyup = (evt: React.KeyboardEvent<HTMLCanvasElement>)=>{
+		this.keys_currently_pressed = _.uniq( _.filter(this.keys_currently_pressed, (val)=>(val != evt.key)) )
+
+
+		this.props.handle_canvas_keys_down( this.keys_currently_pressed );
+	}
+
+
 
 	track_canvas_move = ( e: React.MouseEvent<HTMLCanvasElement> ) => {
 		var mousePosUnconstrained = this.get_mouse_pos_for_action(e, false);
@@ -130,7 +146,7 @@ export class Canvas_View extends React.Component <Props, State> {
 
 
 	mousedownListener = (e: React.MouseEvent<HTMLCanvasElement>) => {
-		console.warn(this.extract_which_mouse_button(e));
+//		console.warn(this.extract_which_mouse_button(e));
 		this.handle_canvas_click(e);
 		this.captureMouseEvents(e);
 	}
