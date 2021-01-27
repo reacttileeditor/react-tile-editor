@@ -398,6 +398,29 @@ export class Asset_Manager {
 				ping_pong: true,
 				pad: 2,
 			},{
+				url: "water-tile-sheet.png",
+				name: "water-ripples",
+				bounds: {
+					x: 1,
+					y: 1,
+					w: 54,
+					h: 34,
+				},
+				frames: 8,
+				frame_duration: 200,
+				pad: 2,
+			},{
+				url: "water-underlay.png",
+				name: "water-underlay",
+				bounds: {
+					x: 1,
+					y: 1,
+					w: 54,
+					h: 34,
+				},
+
+				pad: 2,
+			},{
 				url: "animation_test.png",
 				name: "animation_test",
 				bounds: {
@@ -498,7 +521,10 @@ export class Asset_Manager {
 					name: "water",
 					variants: [{
 						graphics: [{
-							id: 'water-base1',
+							id: 'water-underlay',
+							zorder: -1,
+						},{
+							id: 'water-ripples',
 							zorder: 0,
 						},{
 							id: 'water-edge-nw1',
