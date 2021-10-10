@@ -4,7 +4,7 @@ import _ from "lodash";
 
 import Prando from 'prando';
 
-var PATH_PREFIX = "/dist/assets/"
+var PATH_PREFIX = "./dist/assets/"
 import { Blit_Manager } from "./Blit_Manager";
 import * as Utils from "./Utils";
 
@@ -411,7 +411,7 @@ export class Asset_Manager {
 				pad: 2,
 			},{
 				url: "water-underlay.png",
-				name: "water-underlay",
+				name: "water-underlay2",
 				bounds: {
 					x: 1,
 					y: 1,
@@ -419,6 +419,18 @@ export class Asset_Manager {
 					h: 34,
 				},
 
+				pad: 2,
+			},{
+				url: "water-underlay-tile-sheet.png",
+				name: "water-underlay",
+				bounds: {
+					x: 1,
+					y: 1,
+					w: 54,
+					h: 34,
+				},
+				frames: 8,
+				frame_duration: 180,
 				pad: 2,
 			},{
 				url: "animation_test.png",
