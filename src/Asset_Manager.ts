@@ -293,6 +293,24 @@ export class Asset_Manager {
 				},
 			},{
 				url: "hex-tile-experiment-tiles.png",
+				name: "scrub-dirt-tall1",
+				bounds: {
+					x: 57,
+					y: 313,
+					w: 54,
+					h: 48,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
+				name: "scrub-dirt-tall2",
+				bounds: {
+					x: 113,
+					y: 313,
+					w: 54,
+					h: 48,
+				},
+			},{
+				url: "hex-tile-experiment-tiles.png",
 				name: "sand1",
 				bounds: {
 					x: 1,
@@ -508,6 +526,19 @@ export class Asset_Manager {
 					},{
 						graphics: [{
 							id: 'scrub-dirt2',
+							zorder: 3,
+						}],
+					}],
+				},{
+					name: "scrub-dirt-tall",
+					variants: [{
+						graphics: [{
+							id: 'scrub-dirt-tall1',
+							zorder: 3,
+						}],
+					},{
+						graphics: [{
+							id: 'scrub-dirt-tall2',
 							zorder: 3,
 						}],
 					}],

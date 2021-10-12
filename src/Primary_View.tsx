@@ -89,6 +89,16 @@ export class Primary_View extends React.Component <Props, State> {
 						initialize_tilemap_manager={this.initialize_tilemap_manager}
 					/>
 				}
+				<div className="instructional_text">
+					{
+						this.state.is_edit_mode
+						?
+						<>Press <strong>Arrow Keys</strong> to scroll the map.<br/>
+						Select tiles from the sidebar to place them on the map.</>
+						:
+						<>Press <strong>Arrow Keys</strong> to scroll the map.</>
+					}
+				</div>
 			</div>
 		</div>
 		);
