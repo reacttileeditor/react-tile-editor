@@ -439,6 +439,17 @@ export class Asset_Manager {
 
 				pad: 2,
 			},{
+				url: "water-underlay-placid.png",
+				name: "water-underlay-placid",
+				bounds: {
+					x: 1,
+					y: 1,
+					w: 54,
+					h: 34,
+				},
+
+				pad: 2,
+			},{
 				url: "water-underlay-tile-sheet.png",
 				name: "water-underlay",
 				bounds: {
@@ -574,7 +585,7 @@ export class Asset_Manager {
 							zorder: 1,
 							restrictions:	[
 												[/.*/, /(dirt|grass|menhir|sand)/],
-													[/.*/, /water/, /.*/],
+													[/.*/, /(water|water-still)/, /.*/],
 														[/.*/, /.*/]
 											]
 						},{
@@ -582,7 +593,7 @@ export class Asset_Manager {
 							zorder: 1,
 							restrictions:	[
 												[/(dirt|grass|menhir|sand)/, /.*/],
-													[/.*/, /water/, /.*/],
+													[/.*/, /(water|water-still)/, /.*/],
 														[/.*/, /.*/]
 											]
 						},{
@@ -590,7 +601,7 @@ export class Asset_Manager {
 							zorder: 1,
 							restrictions:	[
 														[/.*/, /.*/],
-													[/(dirt|grass|menhir|sand)/, /water/, /.*/],
+													[/(dirt|grass|menhir|sand)/, /(water|water-still)/, /.*/],
 														[/.*/, /.*/]
 											]
 						},{
@@ -598,7 +609,7 @@ export class Asset_Manager {
 							zorder: 1,
 							restrictions:	[
 														[/.*/, /.*/],
-													[/.*/, /water/, /(dirt|grass|menhir|sand)/],
+													[/.*/, /(water|water-still)/, /(dirt|grass|menhir|sand)/],
 														[/.*/, /.*/]
 											]
 						},{
@@ -606,7 +617,7 @@ export class Asset_Manager {
 							zorder: 1,
 							restrictions:	[
 														[/.*/, /.*/],
-													[/.*/, /water/, /.*/],
+													[/.*/, /(water|water-still)/, /.*/],
 														[/.*/, /(dirt|grass|menhir|sand)/]
 											]
 						},{
@@ -614,7 +625,63 @@ export class Asset_Manager {
 							zorder: 1,
 							restrictions:	[
 														[/.*/, /.*/],
-													[/.*/, /water/, /.*/],
+													[/.*/, /(water|water-still)/, /.*/],
+														[ /(dirt|grass|menhir|sand)/, /.*/]
+											]
+						}],
+					}],
+				},{
+					name: "water-placid",
+					variants: [{
+						graphics: [{
+							id: 'water-underlay-placid',
+							zorder: -1,
+						},{
+							id: 'water-edge-nw1',
+							zorder: 1,
+							restrictions:	[
+												[/.*/, /(dirt|grass|menhir|sand)/],
+													[/.*/, /(water|water-still)/, /.*/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'water-edge-ne1',
+							zorder: 1,
+							restrictions:	[
+												[/(dirt|grass|menhir|sand)/, /.*/],
+													[/.*/, /(water|water-still)/, /.*/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'water-edge-e1',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/(dirt|grass|menhir|sand)/, /(water|water-still)/, /.*/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'water-edge-w1',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/.*/, /(water|water-still)/, /(dirt|grass|menhir|sand)/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'water-edge-sw1',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/.*/, /(water|water-still)/, /.*/],
+														[/.*/, /(dirt|grass|menhir|sand)/]
+											]
+						},{
+							id: 'water-edge-se1',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/.*/, /(water|water-still)/, /.*/],
 														[ /(dirt|grass|menhir|sand)/, /.*/]
 											]
 						}],
