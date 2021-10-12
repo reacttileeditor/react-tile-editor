@@ -96,7 +96,9 @@ export class Primary_View extends React.Component <Props, State> {
 						<>Press <strong>Arrow Keys</strong> to scroll the map.<br/>
 						Select tiles from the sidebar to place them on the map.</>
 						:
-						<>Press <strong>Arrow Keys</strong> to scroll the map.</>
+						<>Press <strong>Arrow Keys</strong> to scroll the map.<br/>
+						Select units by clicking on them.<br/>Select a destination for those units by clicking on the destination tile, or click back on the original tile to cancel a move.<br/>
+						Once all units have orders, click <strong>Next Turn</strong>.</>
 					}
 				</div>
 			</div>
