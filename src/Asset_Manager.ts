@@ -473,6 +473,33 @@ export class Asset_Manager {
 				frames: 4,
 				frame_duration: 200,
 				ping_pong: true
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-horizontal-bar",
+				bounds: {
+					x: 57,
+					y: 1,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-se-bar",
+				bounds: {
+					x: 113,
+					y: 1,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-ne-bar",
+				bounds: {
+					x: 1,
+					y: 1,
+					w: 54,
+					h: 34,
+				},
 			}],
 			raw_image_list: {},
 			assets_meta: {},
@@ -724,8 +751,39 @@ export class Asset_Manager {
 							zorder: 12,
 						}],
 					}],
-				}
-				
+				},
+
+				{
+					name: "arrow-green",
+					variants: [{
+						graphics: [{
+							id: 'arrow-horizontal-bar',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/arrow/, /arrow/, /arrow/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'arrow-se-bar',
+							zorder: 1,
+							restrictions:	[
+														[/arrow/, /.*/],
+													[/.*/, /arrow/, /.*/],
+														[/.*/, /arrow/]
+											]
+						},{
+							id: 'arrow-ne-bar',
+							zorder: 1,
+							restrictions:	[
+														[/.*/, /arrow/],
+													[/.*/, /arrow/, /.*/],
+														[/arrow/, /.*/]
+											]
+						}],
+					}],
+				},				
+
 				/*,{
 					name: "anim_test",
 					variants: [{
