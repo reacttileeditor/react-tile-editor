@@ -500,7 +500,63 @@ export class Asset_Manager {
 					w: 54,
 					h: 34,
 				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-w-to-se-bar",
+				bounds: {
+					x: 57,
+					y: 37,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-nw-to-e-bar",
+				bounds: {
+					x: 113,
+					y: 37,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-sw-to-e-bar",
+				bounds: {
+					x: 57,
+					y: 73,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-w-to-ne-bar",
+				bounds: {
+					x: 113,
+					y: 73,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-se-to-ne-bar",
+				bounds: {
+					x: 1,
+					y: 37,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-sw-to-nw-bar",
+				bounds: {
+					x: 1,
+					y: 73,
+					w: 54,
+					h: 34,
+				},
 			}],
+
+
 			raw_image_list: {},
 			assets_meta: {},
 			
@@ -758,7 +814,7 @@ export class Asset_Manager {
 					variants: [{
 						graphics: [{
 							id: 'arrow-horizontal-bar',
-							zorder: 1,
+							zorder: 12,
 							restrictions:	[
 														[/.*/, /.*/],
 													[/arrow/, /arrow/, /arrow/],
@@ -766,7 +822,7 @@ export class Asset_Manager {
 											]
 						},{
 							id: 'arrow-se-bar',
-							zorder: 1,
+							zorder: 12,
 							restrictions:	[
 														[/arrow/, /.*/],
 													[/.*/, /arrow/, /.*/],
@@ -774,11 +830,59 @@ export class Asset_Manager {
 											]
 						},{
 							id: 'arrow-ne-bar',
-							zorder: 1,
+							zorder: 12,
 							restrictions:	[
 														[/.*/, /arrow/],
 													[/.*/, /arrow/, /.*/],
 														[/arrow/, /.*/]
+											]
+						},{
+							id: 'arrow-w-to-se-bar',
+							zorder: 12,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/arrow/, /arrow/, /.*/],
+														[/.*/, /arrow/]
+											]
+						},{
+							id: 'arrow-nw-to-e-bar',
+							zorder: 12,
+							restrictions:	[
+														[/arrow/, /.*/],
+													[/.*/, /arrow/, /arrow/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'arrow-sw-to-e-bar',
+							zorder: 12,
+							restrictions:	[
+														[/.*/, /.*/],
+													[/.*/, /arrow/, /arrow/],
+														[/arrow/, /.*/]
+											]
+						},{
+							id: 'arrow-w-to-ne-bar',
+							zorder: 12,
+							restrictions:	[
+														[/.*/, /arrow/],
+													[/arrow/, /arrow/, /.*/],
+														[/.*/, /.*/]
+											]
+						},{
+							id: 'arrow-sw-to-nw-bar',
+							zorder: 12,
+							restrictions:	[
+														[/arrow/, /.*/],
+													[/.*/, /arrow/, /.*/],
+														[/arrow/, /.*/]
+											]
+						},{
+							id: 'arrow-se-to-ne-bar',
+							zorder: 12,
+							restrictions:	[
+														[/.*/, /arrow/],
+													[/.*/, /arrow/, /.*/],
+														[/.*/, /arrow/]
 											]
 						}],
 					}],
