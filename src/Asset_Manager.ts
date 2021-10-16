@@ -113,7 +113,13 @@ export class Asset_Manager {
 //		this.state = {
 //			tileStatus: null,
 //		};
-		
+
+/*
+		special notes on this horrifying "negative match" regex:
+		https://stackoverflow.com/questions/6449131/javascript-regular-expression-to-not-match-a-word
+		https://stackoverflow.com/questions/406230/regular-expression-to-match-a-line-that-doesnt-contain-a-word
+*/
+
 		this.consts = {
 			tile_width: 38, //38
 			tile_height: 15, //21
@@ -554,6 +560,60 @@ export class Asset_Manager {
 					w: 54,
 					h: 34,
 				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-se-endcap",
+				bounds: {
+					x: 113,
+					y: 145,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-ne-endcap",
+				bounds: {
+					x: 1,
+					y: 109,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-sw-endcap",
+				bounds: {
+					x: 1,
+					y: 145,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-nw-endcap",
+				bounds: {
+					x: 113,
+					y: 109,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-e-endcap",
+				bounds: {
+					x: 57,
+					y: 145,
+					w: 54,
+					h: 34,
+				},
+			},{
+				url: "arrow-tiles.png",
+				name: "arrow-w-endcap",
+				bounds: {
+					x: 57,
+					y: 109,
+					w: 54,
+					h: 34,
+				},
 			}],
 
 
@@ -883,6 +943,54 @@ export class Asset_Manager {
 														[/.*/, /arrow/],
 													[/.*/, /arrow/, /.*/],
 														[/.*/, /arrow/]
+											]
+						},{
+							id: 'arrow-nw-endcap',
+							zorder: 12,
+							restrictions:	[
+														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/],
+													[/^((?!(arrow)).)*$/, /arrow/, /^((?!(arrow)).)*$/],
+														[/^((?!(arrow)).)*$/, /arrow/]
+											]
+						},{
+							id: 'arrow-ne-endcap',
+							zorder: 12,
+							restrictions:	[
+														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/],
+													[/^((?!(arrow)).)*$/, /arrow/, /^((?!(arrow)).)*$/],
+														[/arrow/, /^((?!(arrow)).)*$/]
+											]
+						},{
+							id: 'arrow-se-endcap',
+							zorder: 12,
+							restrictions:	[
+														[/arrow/, /^((?!(arrow)).)*$/],
+													[/^((?!(arrow)).)*$/, /arrow/, /^((?!(arrow)).)*$/],
+														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/]
+											]
+						},{
+							id: 'arrow-sw-endcap',
+							zorder: 12,
+							restrictions:	[
+														[/^((?!(arrow)).)*$/, /arrow/],
+													[/^((?!(arrow)).)*$/, /arrow/, /^((?!(arrow)).)*$/],
+														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/]
+											]
+						},{
+							id: 'arrow-e-endcap',
+							zorder: 12,
+							restrictions:	[
+														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/],
+													[/arrow/, /arrow/, /^((?!(arrow)).)*$/],
+														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/]
+											]
+						},{
+							id: 'arrow-w-endcap',
+							zorder: 12,
+							restrictions:	[
+														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/],
+													[/^((?!(arrow)).)*$/, /arrow/, /arrow/],
+														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/]
 											]
 						}],
 					}],
