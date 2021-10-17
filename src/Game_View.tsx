@@ -293,7 +293,14 @@ class Game_Manager {
 							vertically_flipped:			false,
 					})
 
+
+						this._Tilemap_Manager.clear_tile_map('ui');
+
 						_.map(val.path_this_turn, (path_val, path_idx) => {
+							this._Tilemap_Manager.modify_tile_status(path_val, 'arrow-green', 'ui');
+						});
+
+						/*_.map(val.path_this_turn, (path_val, path_idx) => {
 							let asset_name = ƒ.if( _.includes(val.path_reachable_this_turn, path_val),
 								'cursor_green_small',
 								'cursor_red_small'
@@ -309,7 +316,7 @@ class Game_Manager {
 								horizontally_flipped:		false,
 								vertically_flipped:			false,
 							})
-						})
+						})*/
 					}
 				})
 			}

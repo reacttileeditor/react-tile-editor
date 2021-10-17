@@ -994,7 +994,17 @@ export class Asset_Manager {
 													[/^((?!(arrow)).)*$/, /arrow/, /arrow/],
 														[/^((?!(arrow)).)*$/, /^((?!(arrow)).)*$/]
 											]
-						}],
+						}
+						// ,{
+						// 	id: 'arrow-w-endcap',
+						// 	zorder: 12,
+						// 	restrictions:	[
+						// 								[/.*/, /.*/],
+						// 							[/.*/, /arrow/, /.*/],
+						// 								[/.*/, /.*/]
+						// 					]
+						// }
+						],
 					}],
 				},				
 
@@ -1139,16 +1149,19 @@ export class Asset_Manager {
 	get_asset_data_for_tile_at_zorder = (tile_name: string, zorder: number):Array<GraphicItemGeneric> => {
 		let { raw_image_list, image_data_list, assets_meta, tile_types } = this.static_vals;
 		
-		
-		let tile_variants = this.get_tile_variant_data(tile_name);
+		if( tile_name != '' ){
+			let tile_variants = this.get_tile_variant_data(tile_name);
 
-		if( _.size(tile_variants) ){
-			let tile_data = _.filter(
-				tile_variants[this._tile_dice( tile_variants.length ) -1].graphics,
-				(value, index) => {return value.zorder == zorder}
-			);
-			
-			return tile_data;
+			if( _.size(tile_variants) ){
+				let tile_data = _.filter(
+					tile_variants[this._tile_dice( tile_variants.length ) -1].graphics,
+					(value, index) => {return value.zorder == zorder}
+				);
+				
+				return tile_data;
+			} else {
+				return [];
+			}
 		} else {
 			return [];
 		}

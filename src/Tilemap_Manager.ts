@@ -70,7 +70,9 @@ export class Tilemap_Manager {
 				];
 			});
 		});
-	
+
+		this.clear_tile_map('ui');	
+
 		this.state.initialized = true;
 	}
 
@@ -88,6 +90,15 @@ export class Tilemap_Manager {
 		}
 	}
 
+	clear_tile_map = ( tilemap_name: TileMapKeys ) => {
+		let { consts, yield_tile_name_list, static_vals } = this._AM;
+
+		this.state.tile_maps[tilemap_name] = _.range(consts.col_height).map( (row_value, row_index) => {
+			return _.range(consts.row_length).map( (col_value, col_index) => {
+				return ''
+			});
+		});			
+	}
 
 
 /*----------------------- draw ops -----------------------*/
@@ -105,25 +116,27 @@ export class Tilemap_Manager {
 
 	draw_tiles_for_zorder = (zorder: number) => {
 
-		_.map(this.state.tile_maps as unknown as Dictionary<TileMap>, (tile_map,idx) => {
+		_.map(this.state.tile_maps as unknown as Dictionary<TileMap>, (tile_map, tilemap_name) => {
 			tile_map.map( (row_value, row_index) => {
 				row_value.map( (col_value, col_index) => {
 
 					let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
 					let pos = {x: col_index, y: row_index};
-						
+					
+
 					this.draw_tile_at_coords(
 												pos,
 												tile_name,
-												zorder
+												zorder,
+												tilemap_name as unknown as TileMapKeys
 											);
 				});
 			});
-		}
+		});
 	}
 
 	
-	draw_tile_at_coords = ( pos: Point2D, tile_name: string, zorder: number) => {
+	draw_tile_at_coords = ( pos: Point2D, tile_name: string, zorder: number, tilemap_name: TileMapKeys) => {
 		let { consts } = this._AM;
 
 			/*
@@ -138,7 +151,7 @@ export class Tilemap_Manager {
 															zorder,
 						/* x */								(pos.x + 0) * consts.tile_width + universal_hex_offset,
 						/* y */								(pos.y + 0) * consts.tile_height,
-						/* comparator */					this.get_tile_comparator_sample_for_pos(pos),
+						/* comparator */					this.get_tile_comparator_sample_for_pos(pos, tilemap_name),
 															this._BM.fps_tracker.current_millisecond
 														);
 	}
@@ -163,12 +176,12 @@ export class Tilemap_Manager {
 		pos.y < this._AM.consts.col_height 
 	)
 
-	get_tile_comparator_sample_for_pos = ( pos: Point2D ): TileComparatorSample => {
+	get_tile_comparator_sample_for_pos = ( pos: Point2D, tilemap_name: TileMapKeys ): TileComparatorSample => {
 		const tpc = this.get_tile_position_comparator_for_pos(pos);
 		
 		const val = _.map(tpc, (row_val, row_idx) => {
 			return _.map(row_val, (col_val, col_idx) => {
-				return this.get_tile_name_for_pos( col_val )
+				return this.get_tile_name_for_pos( col_val, tilemap_name )
 			})
 		});
 		
@@ -200,19 +213,19 @@ export class Tilemap_Manager {
 		}) as TilePositionComparatorSample;
 	}
 	
-	get_tile_name_for_pos = ( pos: Point2D ) => {
+	get_tile_name_for_pos = ( pos: Point2D, tilemap_name: TileMapKeys ) => {
 		/*
 			This enforces "safe access", and will always return a string.  If it's outside the bounds of the tile map, we return an empty string.
 		*/
 		if(
-			pos.y > (_.size(this.state.tile_maps.terrain) - 1) ||
+			pos.y > (_.size(this.state.tile_maps[tilemap_name]) - 1) ||
 			pos.y < 0 ||
-			pos.x > (_.size(this.state.tile_maps.terrain[pos.y]) - 1) ||
+			pos.x > (_.size(this.state.tile_maps[tilemap_name][pos.y]) - 1) ||
 			pos.x < 0
 		){
 			return '';
 		} else {
-			return this.state.tile_maps.terrain[pos.y][pos.x];
+			return this.state.tile_maps[tilemap_name][pos.y][pos.x];
 		}
 	}
 	
