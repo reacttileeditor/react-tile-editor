@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import _ from "lodash";
+import _, { Dictionary } from "lodash";
 
 import { Asset_Manager } from "./Asset_Manager";
 import { Blit_Manager } from "./Blit_Manager";
@@ -13,9 +13,20 @@ import { TileComparatorSample, TilePositionComparatorSample } from "./Asset_Mana
 import { Point2D, Rectangle } from './interfaces';
 
 interface tileViewState {
-	tileStatus: Array<Array<string>>,
+	tile_maps: TileMaps,
 	initialized: boolean,
 }
+
+interface _TileMaps<T> {
+	terrain: T,
+	ui: T,
+}
+
+type TileMaps =  _TileMaps<TileMap>;
+
+type TileMapKeys = keyof TileMaps;
+
+type TileMap = Array<Array<string>>;
 
 export enum Direction {
 	north_east,
@@ -27,7 +38,6 @@ export enum Direction {
 }
 
 
-
 export class Tilemap_Manager {
 	state: tileViewState;
 	_AM: Asset_Manager;
@@ -37,7 +47,10 @@ export class Tilemap_Manager {
 	constructor(_Asset_Manager: Asset_Manager, _Blit_Manager : Blit_Manager ) {
 		
 		this.state = {
-			tileStatus: [['']],
+			tile_maps: {
+				terrain: [['']],
+				ui: [['']],
+			},
 			initialized: false,
 		};
 		
@@ -50,7 +63,7 @@ export class Tilemap_Manager {
 		let { consts, yield_tile_name_list, static_vals } = this._AM;
 
 
-		this.state.tileStatus = _.range(consts.col_height).map( (row_value, row_index) => {
+		this.state.tile_maps.terrain = _.range(consts.col_height).map( (row_value, row_index) => {
 			return _.range(consts.row_length).map( (col_value, col_index) => {
 				return yield_tile_name_list()[
 					Utils.dice( _.size( yield_tile_name_list() ) ) -1 
@@ -63,14 +76,14 @@ export class Tilemap_Manager {
 
 
 /*----------------------- state mutation -----------------------*/
-	modify_tile_status = ( pos: Point2D, selected_tile_type: string ): void => {
+	modify_tile_status = ( pos: Point2D, selected_tile_type: string, tilemap_name: TileMapKeys ): void => {
 		let { consts, static_vals } = this._AM;
 		
 		if(
 			this.is_within_map_bounds( pos )
 		){
 			if(selected_tile_type && selected_tile_type != ''){
-				this.state.tileStatus[pos.y][pos.x] = selected_tile_type;
+				this.state.tile_maps[tilemap_name][pos.y][pos.x] = selected_tile_type;
 			}
 		}
 	}
@@ -92,19 +105,21 @@ export class Tilemap_Manager {
 
 	draw_tiles_for_zorder = (zorder: number) => {
 
-		this.state.tileStatus.map( (row_value, row_index) => {
-			row_value.map( (col_value, col_index) => {
+		_.map(this.state.tile_maps as unknown as Dictionary<TileMap>, (tile_map,idx) => {
+			tile_map.map( (row_value, row_index) => {
+				row_value.map( (col_value, col_index) => {
 
-				let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
-				let pos = {x: col_index, y: row_index};
-					
-				this.draw_tile_at_coords(
-											pos,
-											tile_name,
-											zorder
-										);
+					let tile_name = this.get_tile_name_for_tile_at_pos_with_data( {x: row_index, y: col_index}, col_value);
+					let pos = {x: col_index, y: row_index};
+						
+					this.draw_tile_at_coords(
+												pos,
+												tile_name,
+												zorder
+											);
+				});
 			});
-		});
+		}
 	}
 
 	
@@ -190,14 +205,14 @@ export class Tilemap_Manager {
 			This enforces "safe access", and will always return a string.  If it's outside the bounds of the tile map, we return an empty string.
 		*/
 		if(
-			pos.y > (_.size(this.state.tileStatus) - 1) ||
+			pos.y > (_.size(this.state.tile_maps.terrain) - 1) ||
 			pos.y < 0 ||
-			pos.x > (_.size(this.state.tileStatus[pos.y]) - 1) ||
+			pos.x > (_.size(this.state.tile_maps.terrain[pos.y]) - 1) ||
 			pos.x < 0
 		){
 			return '';
 		} else {
-			return this.state.tileStatus[pos.y][pos.x];
+			return this.state.tile_maps.terrain[pos.y][pos.x];
 		}
 	}
 	

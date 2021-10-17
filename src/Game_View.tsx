@@ -211,7 +211,7 @@ class Game_Manager {
 					(val) => ( val.calculate_total_anim_duration() )
 				),
 				(left, right) => ( ƒ.if( left > right, left, right) )
-			) ?? 0;
+			);// ?? 0;
 		} else {
 			return 0;
 		}

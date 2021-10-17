@@ -97,7 +97,8 @@ export class Editor_View extends React.Component <Editor_View_Props, Editor_View
 	handle_canvas_click = (pos: Point2D) => {
 		this.props._Tilemap_Manager.modify_tile_status(
 			this.props._Tilemap_Manager.convert_pixel_coords_to_tile_coords(pos),
-			this.state.selected_tile_type
+			this.state.selected_tile_type,
+			'terrain'
 		);
 	}
 
