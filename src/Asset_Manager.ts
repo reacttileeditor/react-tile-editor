@@ -1139,12 +1139,16 @@ export class Asset_Manager {
 		
 		let tile_variants = this.get_tile_variant_data(tile_name);
 
-		let tile_data = _.filter(
-			tile_variants[this._tile_dice( tile_variants.length ) -1].graphics,
-			(value, index) => {return value.zorder == zorder}
-		);
-		
-		return tile_data;
+		if( _.size(tile_variants) ){
+			let tile_data = _.filter(
+				tile_variants[this._tile_dice( tile_variants.length ) -1].graphics,
+				(value, index) => {return value.zorder == zorder}
+			);
+			
+			return tile_data;
+		} else {
+			return [];
+		}
 	}
 
 
@@ -1162,7 +1166,7 @@ export class Asset_Manager {
 	
 		let final_array: Array<number> = _.uniq(combined_number_arrays);
 	
-		return final_array;
+		return final_array ? final_array : [];
 		
 	}
 
