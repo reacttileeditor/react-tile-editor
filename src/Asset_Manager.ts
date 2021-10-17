@@ -52,6 +52,7 @@ interface AssetsMetaSingleImageData {
 
 interface TileItem {
 	name: string,
+	omit_from_random_map_generation?: boolean,
 	variants: Array<VariantItem>,
 };
 
@@ -871,6 +872,7 @@ export class Asset_Manager {
 
 				{
 					name: "arrow-green",
+					omit_from_random_map_generation: true,
 					variants: [{
 						graphics: [{
 							id: 'arrow-horizontal-bar',
@@ -1034,9 +1036,10 @@ export class Asset_Manager {
 
 	yield_tile_name_list = () => {
 		return _.sortedUniq(
-			_.map( this.static_vals.tile_types, (value,index)=>{
-				return value.name;
-			})
+			_.map( 
+				_.filter(this.static_vals.tile_types, (val) => (val.omit_from_random_map_generation != true)),
+				(value,index)=>(value.name)
+			)
 		);
 	}
 
