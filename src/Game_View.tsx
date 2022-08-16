@@ -211,7 +211,7 @@ class Game_Manager {
 					(val) => ( val.calculate_total_anim_duration() )
 				),
 				(left, right) => ( ƒ.if( left > right, left, right) )
-			);// ?? 0;
+			) as number;
 		} else {
 			return 0;
 		}
@@ -230,97 +230,107 @@ class Game_Manager {
 		this.update_game_state_for_ui(this.game_state);
 		
 		
-			if(this.animation_state.is_animating_turn_end){
+		if(this.animation_state.is_animating_turn_end){
+			this.do_live_game_rendering();
+		} else {
+			this.do_paused_game_rendering();
+		}
+	}
+
+	do_live_game_rendering = () => {
+		/*
+			This is for when the game is "live" and actually progressing through time.  The player's set up their moves, and hit "go".
+		*/
+		if(this.get_time_offset() > this.get_total_anim_duration() ){
+			this.animation_state.is_animating_turn_end = false;
+		} else {
+			_.map( this.get_previous_turn_state().creature_list, (val,idx) => {
+				const direction = val.yield_direction_for_time_in_post_turn_animation(this.get_time_offset());
+
+				this._Asset_Manager.draw_image_for_asset_name({
+					asset_name:					val.yield_walk_asset_for_direction( direction ), //i.e. 'peasant-se-walk',
+					_BM:						this._Blit_Manager,
+					pos:						val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
+					zorder:						12,
+					current_milliseconds:		this.get_time_offset(),
+					opacity:					1.0,
+					horizontally_flipped:		this.get_flip_state_from_direction(direction),
+					vertically_flipped:			false,
+				})
+			})
+		}
+	}
+
+	do_paused_game_rendering = () => {
+		/*
+			This particularly means "paused at end of turn".
+		*/
+		_.map( this.get_current_turn_state().creature_list, (val,idx) => {
+			this._Asset_Manager.draw_image_for_asset_name({
+				asset_name:					val.yield_stand_asset_for_direction(val.facing_direction),
+				_BM:						this._Blit_Manager,
+				pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+				zorder:						12,
+				current_milliseconds:		0,
+				opacity:					1.0,
+				horizontally_flipped:		this.get_flip_state_from_direction(val.facing_direction),
+				vertically_flipped:			false,
+			})
+
+			/*
+				Draw the "ghost" image of the position the unit will be in at the end of their move.
+			*/
+			this._Asset_Manager.draw_image_for_asset_name({
+				asset_name:					val.yield_stand_asset_for_direction(val.facing_direction),
+				_BM:						this._Blit_Manager,
+				pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
+				zorder:						12,
+				current_milliseconds:		0,
+				opacity:					0.5,
+				horizontally_flipped:		this.get_flip_state_from_direction(val.facing_direction),
+				vertically_flipped:			false,
+			})			
 	
-				//console.log(this.get_time_offset());
-				//console.log('pos:', val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ) );
-				if(this.get_time_offset() > this.get_total_anim_duration() ){
-					this.animation_state.is_animating_turn_end = false;
-				} else {
-					_.map( this.get_previous_turn_state().creature_list, (val,idx) => {
-						const direction = val.yield_direction_for_time_in_post_turn_animation(this.get_time_offset());
+	
+			if(this.game_state.selected_object_index == idx){
+				this._Asset_Manager.draw_image_for_asset_name ({
+					asset_name:					'cursor_green',
+					_BM:						this._Blit_Manager,
+					pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
+					zorder:						10,
+					current_milliseconds:		0,
+					opacity:					1.0,
+					horizontally_flipped:		false,
+					vertically_flipped:			false,
+				})
 
-						this._Asset_Manager.draw_image_for_asset_name({
-							asset_name:					val.yield_walk_asset_for_direction( direction ), //i.e. 'peasant-se-walk',
-							_BM:						this._Blit_Manager,
-							pos:						val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
-							zorder:						12,
-							current_milliseconds:		this.get_time_offset(),
-							opacity:					1.0,
-							horizontally_flipped:		this.get_flip_state_from_direction(direction),
-							vertically_flipped:			false,
-						})
-					})
-				}
+				this._Tilemap_Manager.clear_tile_map('ui');
 
-			} else {
-				_.map( this.get_current_turn_state().creature_list, (val,idx) => {
-					this._Asset_Manager.draw_image_for_asset_name({
-						asset_name:					val.yield_stand_asset_for_direction(val.facing_direction),
+				_.map(val.path_this_turn, (path_val, path_idx) => {
+					this._Tilemap_Manager.modify_tile_status(path_val, 'arrow-green', 'ui');
+				});
+
+				/*_.map(val.path_this_turn, (path_val, path_idx) => {
+					let asset_name = ƒ.if( _.includes(val.path_reachable_this_turn, path_val),
+						'cursor_green_small',
+						'cursor_red_small'
+					);
+				
+					this._Asset_Manager.draw_image_for_asset_name ({
+						asset_name:					asset_name,
 						_BM:						this._Blit_Manager,
-						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
-						zorder:						12,
+						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(path_val),
+						zorder:						9,
 						current_milliseconds:		0,
 						opacity:					1.0,
-						horizontally_flipped:		this.get_flip_state_from_direction(val.facing_direction),
+						horizontally_flipped:		false,
 						vertically_flipped:			false,
 					})
-
-					/*
-						Draw the "ghost" image of the position the unit will be in at the end of their move.
-					*/
-					this._Asset_Manager.draw_image_for_asset_name({
-						asset_name:					val.yield_stand_asset_for_direction(val.facing_direction),
-						_BM:						this._Blit_Manager,
-						pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.planned_tile_pos),
-						zorder:						12,
-						current_milliseconds:		0,
-						opacity:					0.5,
-						horizontally_flipped:		this.get_flip_state_from_direction(val.facing_direction),
-						vertically_flipped:			false,
-					})			
-			
-			
-					if(this.game_state.selected_object_index == idx){
-						this._Asset_Manager.draw_image_for_asset_name ({
-							asset_name:					'cursor_green',
-							_BM:						this._Blit_Manager,
-							pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(val.tile_pos),
-							zorder:						10,
-							current_milliseconds:		0,
-							opacity:					1.0,
-							horizontally_flipped:		false,
-							vertically_flipped:			false,
-					})
-
-
-						this._Tilemap_Manager.clear_tile_map('ui');
-
-						_.map(val.path_this_turn, (path_val, path_idx) => {
-							this._Tilemap_Manager.modify_tile_status(path_val, 'arrow-green', 'ui');
-						});
-
-						/*_.map(val.path_this_turn, (path_val, path_idx) => {
-							let asset_name = ƒ.if( _.includes(val.path_reachable_this_turn, path_val),
-								'cursor_green_small',
-								'cursor_red_small'
-							);
-						
-							this._Asset_Manager.draw_image_for_asset_name ({
-								asset_name:					asset_name,
-								_BM:						this._Blit_Manager,
-								pos:						this._Tilemap_Manager.convert_tile_coords_to_pixel_coords(path_val),
-								zorder:						9,
-								current_milliseconds:		0,
-								opacity:					1.0,
-								horizontally_flipped:		false,
-								vertically_flipped:			false,
-							})
-						})*/
-					}
-				})
+				})*/
 			}
+		})
 	}
+
 
 	handle_click = (pos: Point2D) => {
 // 		this.game_state.creature_list = [{

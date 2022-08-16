@@ -33,6 +33,11 @@ export class Creature {
 	team: number;
 
 	creature_basetype_delegate: CreatureType;
+	transient_state: {
+		pixel_pos: Point2D
+	}
+
+
 
 	constructor(p: {
 		tile_pos: Point2D,
@@ -60,6 +65,10 @@ export class Creature {
 		}
 		
 		this.creature_basetype_delegate = this.instantiate_basetype_delegate();
+
+		this.transient_state = {
+			pixel_pos: {x:0, y: 0}
+		}
 	}
 	
 	yield_move_cost_for_tile_type = (tile_type: string): number|null => (
@@ -123,11 +132,11 @@ export class Creature {
 		this.path_reachable_this_turn_with_directions = this.yield_directional_path_reachable_this_turn(this.path_this_turn_with_directions);
 
 
-		console.log("directional path", this.path_this_turn_with_directions)
+		//console.log("directional path", this.path_this_turn_with_directions)
 
 		this.build_anim_from_path(_Tilemap_Manager);
 
-		console.log('anim:', this.animation_this_turn)
+		//console.log('anim:', this.animation_this_turn)
 	}
 	
 	yield_path_reachable_this_turn = (new_path: Array<Point2D>):Array<Point2D> => {
@@ -248,6 +257,12 @@ export class Creature {
 			0
 		)
 	}
+
+	process_single_frame = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number) => {
+		this.transient_state.pixel_pos = this.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
+	}
+
+
 
 	yield_animation_segment_for_time_offset = (offset_in_ms: number): Anim_Schedule_Element|undefined => (
 		_.find(this.animation_this_turn, (val) => {
