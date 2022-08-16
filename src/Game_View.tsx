@@ -226,15 +226,24 @@ class Game_Manager {
 		)
 	)
 
-	do_one_frame_of_rendering = () => {
+	do_one_frame_of_rendering_and_processing = () => {
 		this.update_game_state_for_ui(this.game_state);
 		
 		
 		if(this.animation_state.is_animating_turn_end){
+			this.do_live_game_processing();
 			this.do_live_game_rendering();
 		} else {
 			this.do_paused_game_rendering();
 		}
+	}
+
+	do_live_game_processing = () => {
+		_.map( this.get_previous_turn_state().creature_list, (val,idx) => {
+			const direction = val.yield_direction_for_time_in_post_turn_animation(this.get_time_offset());
+
+			val.process_single_frame(this._Tilemap_Manager, this.get_time_offset())
+		})		
 	}
 
 	do_live_game_rendering = () => {
@@ -250,7 +259,7 @@ class Game_Manager {
 				this._Asset_Manager.draw_image_for_asset_name({
 					asset_name:					val.yield_walk_asset_for_direction( direction ), //i.e. 'peasant-se-walk',
 					_BM:						this._Blit_Manager,
-					pos:						val.yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
+					pos:						val.transient_state.pixel_pos, //yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
 					zorder:						12,
 					current_milliseconds:		this.get_time_offset(),
 					opacity:					1.0,
@@ -533,7 +542,7 @@ export class Game_View extends React.Component <Game_View_Props> {
 	render_canvas = () => {
 		if(this.awaiting_render){
 			this.props._Tilemap_Manager.do_one_frame_of_rendering();
-			this._Game_Manager.do_one_frame_of_rendering();
+			this._Game_Manager.do_one_frame_of_rendering_and_processing();
 			this.awaiting_render = false;
 			this.iterate_render_loop();
 		} else {

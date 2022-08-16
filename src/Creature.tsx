@@ -260,6 +260,13 @@ export class Creature {
 
 	process_single_frame = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number) => {
 		this.transient_state.pixel_pos = this.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
+
+		
+		/*
+			PLANS:
+			- calculate which tile we're moving into, so that we know where we end up "stopping"
+			- start doing rudimentary AI behavior, where we take shots at enemies if they're in-range.
+		*/
 	}
 
 
