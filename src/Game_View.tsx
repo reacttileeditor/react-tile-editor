@@ -31,6 +31,8 @@ interface Game_State {
 	current_turn: number,
 	selected_object_index?: number,
 	turn_list: Array<Individual_Game_Turn_State>,
+	prior_frame_state: Individual_Game_Turn_State,
+	current_frame_state: Individual_Game_Turn_State,
 }
 
 interface Individual_Game_Turn_State {
@@ -44,7 +46,9 @@ const Individual_Game_Turn_State_Init = {
 const GameStateInit: Game_State = {
 	current_turn: 0,
 	selected_object_index: undefined,
-	turn_list: []
+	turn_list: [],
+	prior_frame_state: Individual_Game_Turn_State_Init,
+	current_frame_state: Individual_Game_Turn_State_Init,
 };
 
 interface AnimationState {
@@ -89,32 +93,37 @@ class Game_Manager {
 			time_turn_end_anim_started__in_ms: 0
 		};
 
+		const first_turn_state_init = {
+			creature_list: [new Creature({
+				tile_pos: {x: 1, y: 6},
+				planned_tile_pos: {x: 0, y: 6},
+				type_name: 'hermit',
+				team: 1,
+			}), new Creature({
+				tile_pos: {x: 2, y: 4},
+				planned_tile_pos: {x: 2, y: 4},
+				type_name: 'peasant',
+				team: 1,
+			}), new Creature({
+				tile_pos: {x: 4, y: 4},
+				planned_tile_pos: {x: 4, y: 4},
+				type_name: 'skeleton',
+				team: 2,
+			}), new Creature({
+				tile_pos: {x: 5, y: 8},
+				planned_tile_pos: {x: 5, y: 8},
+				type_name: 'skeleton',
+				team: 2,
+			})],
+		};
+
+
 		this.game_state = {
 			current_turn: 0,
 			selected_object_index: undefined,
-			turn_list: [{
-				creature_list: [new Creature({
-					tile_pos: {x: 1, y: 6},
-					planned_tile_pos: {x: 0, y: 6},
-					type_name: 'hermit',
-					team: 1,
-				}), new Creature({
-					tile_pos: {x: 2, y: 4},
-					planned_tile_pos: {x: 2, y: 4},
-					type_name: 'peasant',
-					team: 1,
-				}), new Creature({
-					tile_pos: {x: 4, y: 4},
-					planned_tile_pos: {x: 4, y: 4},
-					type_name: 'skeleton',
-					team: 2,
-				}), new Creature({
-					tile_pos: {x: 5, y: 8},
-					planned_tile_pos: {x: 5, y: 8},
-					type_name: 'skeleton',
-					team: 2,
-				})],
-			}],
+			turn_list: [first_turn_state_init],
+			prior_frame_state: first_turn_state_init,
+			current_frame_state: first_turn_state_init,
 		};
 		
 		this._Pathfinder = new Pathfinder();
@@ -239,10 +248,10 @@ class Game_Manager {
 	}
 
 	do_live_game_processing = () => {
-		_.map( this.get_previous_turn_state().creature_list, (val,idx) => {
+		this.game_state.current_frame_state.creature_list = _.map( this.game_state.prior_frame_state.creature_list, (val,idx) => {
 			const direction = val.yield_direction_for_time_in_post_turn_animation(this.get_time_offset());
 
-			val.process_single_frame(this._Tilemap_Manager, this.get_time_offset())
+			return val.process_single_frame(this._Tilemap_Manager, this.get_time_offset())
 		})		
 	}
 

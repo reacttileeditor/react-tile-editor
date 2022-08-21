@@ -258,9 +258,13 @@ export class Creature {
 		)
 	}
 
-	process_single_frame = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number) => {
-		this.transient_state.pixel_pos = this.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
+	process_single_frame = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number): Creature => {
 
+		const newObj = _.cloneDeep(this);
+
+		newObj.transient_state.pixel_pos = newObj.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
+
+		return newObj;
 		
 		/*
 			PLANS:
