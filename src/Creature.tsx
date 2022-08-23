@@ -13,11 +13,14 @@ import { Tilemap_Manager, Direction } from "./Tilemap_Manager";
 import { Pathfinder, Pathfinding_Result } from "./Pathfinding";
 
 import { Point2D, Rectangle } from './interfaces';
+import { Custom_Object } from "./Custom_Object";
 
 export type PathNodeWithDirection = {
 	position: Point2D,
 	direction: Direction,
 }
+
+type CreatureTypeName = 'hermit' | 'peasant' | 'skeleton';
 
 export class Creature {
 	tile_pos: Point2D;
@@ -29,7 +32,7 @@ export class Creature {
 	path_reachable_this_turn: Array<Point2D>;
 	path_reachable_this_turn_with_directions: Array<PathNodeWithDirection>;
 	animation_this_turn: Array<Anim_Schedule_Element>;
-	type_name: string;
+	type_name: CreatureTypeName;
 	team: number;
 
 	creature_basetype_delegate: CreatureType;
@@ -43,7 +46,7 @@ export class Creature {
 		tile_pos: Point2D,
 		direction?: Direction,
 		planned_tile_pos: Point2D,
-		type_name: string,
+		type_name: CreatureTypeName,
 		team: number,
 		unique_id?: string,
 	}) {
@@ -105,17 +108,11 @@ export class Creature {
 
 
 	instantiate_basetype_delegate = ():CreatureType => {
-		switch(this.type_name){
-			case 'hermit':
-				return new CT_Hermit();
-				break;
-			case 'peasant':
-				return new CT_Peasant();
-				break;            
-			case 'skeleton':
-			default:
-				return new CT_Skeleton();
-		}
+		return {
+			hermit: new CT_Hermit(),
+			peasant: new CT_Peasant(),
+			skeleton: new CT_Peasant(),
+		}[this.type_name];
 	}
 
 /*----------------------- movement -----------------------*/
@@ -258,13 +255,21 @@ export class Creature {
 		)
 	}
 
-	process_single_frame = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number): Creature => {
+	process_single_frame = (_Tilemap_Manager: Tilemap_Manager, offset_in_ms: number): {new_state: Creature, spawnees: Array<Custom_Object> } => {
 
-		const newObj = _.cloneDeep(this);
+		const new_obj = _.cloneDeep(this);
 
-		newObj.transient_state.pixel_pos = newObj.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
+		new_obj.transient_state.pixel_pos = new_obj.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
 
-		return newObj;
+		const spawnees = ƒ.if(offset_in_ms == 100, [new Custom_Object({
+			pixel_pos: new_obj.transient_state.pixel_pos,
+			type_name: 'red_dot',
+		})], []);
+
+		return {
+			new_state: new_obj,
+			spawnees: spawnees
+		};
 		
 		/*
 			PLANS:

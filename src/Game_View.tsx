@@ -17,6 +17,7 @@ import "./Primary_View.scss";
 import "./Game_Status_Display.scss";
 
 import { Point2D, Rectangle } from './interfaces';
+import { Custom_Object } from "./Custom_Object";
 
 interface Game_View_Props {
 	_Asset_Manager: Asset_Manager,
@@ -36,11 +37,13 @@ interface Game_State {
 }
 
 interface Individual_Game_Turn_State {
-	creature_list: Array<Creature>
+	creature_list: Array<Creature>,
+	custom_object_list: Array<Custom_Object>,
 }
 
 const Individual_Game_Turn_State_Init = {
-	creature_list: []
+	creature_list: [],
+	custom_object_list: [],
 }
 
 const GameStateInit: Game_State = {
@@ -115,6 +118,7 @@ class Game_Manager {
 				type_name: 'skeleton',
 				team: 2,
 			})],
+			custom_object_list: [],
 		};
 
 
@@ -192,7 +196,9 @@ class Game_Manager {
 						unique_id: creature.unique_id,
 						team: creature.team,
 					})
-				})
+				}),
+
+				custom_object_list: [], //<- probably persist it from the previous turn?
 			}]
 		);	
 
@@ -248,11 +254,24 @@ class Game_Manager {
 	}
 
 	do_live_game_processing = () => {
-		this.game_state.current_frame_state.creature_list = _.map( this.game_state.prior_frame_state.creature_list, (val,idx) => {
-			const direction = val.yield_direction_for_time_in_post_turn_animation(this.get_time_offset());
+		const spawnees: Array<Custom_Object> = [];
 
+		this.game_state.current_frame_state.creature_list = _.map( this.game_state.prior_frame_state.creature_list, (val,idx) => {
+			const processed_entity = val.process_single_frame(this._Tilemap_Manager, this.get_time_offset());
+
+			_.map(processed_entity.spawnees, (val)=>{ spawnees.push(val) });
+
+			return processed_entity.new_state; 
+		}),
+		
+
+		
+		this.game_state.current_frame_state.custom_object_list = _.concat( this.game_state.current_frame_state.custom_object_list, spawnees);
+
+
+		this.game_state.current_frame_state.custom_object_list = _.map( this.game_state.prior_frame_state.custom_object_list, (val,idx) => {
 			return val.process_single_frame(this._Tilemap_Manager, this.get_time_offset())
-		})		
+		});
 	}
 
 	do_live_game_rendering = () => {
