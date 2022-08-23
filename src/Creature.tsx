@@ -111,7 +111,7 @@ export class Creature {
 		return {
 			hermit: new CT_Hermit(),
 			peasant: new CT_Peasant(),
-			skeleton: new CT_Peasant(),
+			skeleton: new CT_Skeleton(),
 		}[this.type_name];
 	}
 
@@ -392,6 +392,15 @@ class CT_Hermit extends Creature_Base_Type {
 class CT_Peasant extends Creature_Base_Type {
 
 	yield_walk_asset_for_direction = (direction:Direction):string => {
+		/*return {
+			Direction.north_east: 'peasant-ne-walk',
+			Direction.north_west:'peasant-ne-walk',
+			Direction.east: 'peasant-ne-walk',
+			Direction.south_east: 'peasant-se-walk',
+			Direction.west: 'peasant-se-walk',
+			Direction.south_west: 'peasant-se-walk',			
+		}[direction];*/
+
 		switch(direction){
 			case Direction.north_east:
 				return 'peasant-ne-walk'; break;

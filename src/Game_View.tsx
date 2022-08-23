@@ -126,8 +126,8 @@ class Game_Manager {
 			current_turn: 0,
 			selected_object_index: undefined,
 			turn_list: [first_turn_state_init],
-			prior_frame_state: first_turn_state_init,
-			current_frame_state: first_turn_state_init,
+			prior_frame_state: Individual_Game_Turn_State_Init,
+			current_frame_state: Individual_Game_Turn_State_Init,
 		};
 		
 		this._Pathfinder = new Pathfinder();
@@ -156,51 +156,55 @@ class Game_Manager {
 		const reserved_tiles : Array<PathNodeWithDirection> = [];
 
 		//push a new turn onto the end of the turns array
-		this.game_state.turn_list = _.concat(
-			this.game_state.turn_list,
-			[{
-				/*
-					This new turn is functionally identical to the last turn, except that we go through the creatures in it, and "resolve" their moves - we change their "real" position to what their planned position had been, and we "clear out" their plans (i.e. make them identical to where they currently are).
-					
-					When we have other verbs, we'd add them here.
-				*/
-				creature_list: _.map( this.get_current_turn_state().creature_list, (creature, idx) => {
-					let new_position =
-						_.find(
-							_.reverse(creature.path_reachable_this_turn_with_directions),
+		const new_turn_state = {
+			/*
+				This new turn is functionally identical to the last turn, except that we go through the creatures in it, and "resolve" their moves - we change their "real" position to what their planned position had been, and we "clear out" their plans (i.e. make them identical to where they currently are).
+				
+				When we have other verbs, we'd add them here.
+			*/
+			creature_list: _.map( this.get_current_turn_state().creature_list, (creature, idx) => {
+				let new_position =
+					_.find(
+						_.reverse(creature.path_reachable_this_turn_with_directions),
 // 							ƒ.dump(_.slice( creature.path_this_turn,
 // 								0, //_.size(creature.path_this_turn) - creature.yield_moves_per_turn(),
 // 								creature.yield_moves_per_turn()
 // 							)),
-							(path_element) => {
-								return (_.find(reserved_tiles, path_element) === undefined); 
-							}
-						);
-			
-					console.error(`new pos ${new_position}`);
-					if( new_position == undefined){ //if we didn't find *any* open slots, give up and remain at our current pos
-						new_position = {
-							position: creature.tile_pos,
-							direction: creature.facing_direction,
-						};
-					} else {
-						reserved_tiles.push(new_position);
-					}
-			
-			
-					return new Creature({
-						tile_pos: new_position.position,
-						direction: new_position.direction,
-						planned_tile_pos: new_position.position,
-						type_name: creature.type_name,
-						unique_id: creature.unique_id,
-						team: creature.team,
-					})
-				}),
+						(path_element) => {
+							return (_.find(reserved_tiles, path_element) === undefined); 
+						}
+					);
+		
+				console.error(`new pos ${new_position}`);
+				if( new_position == undefined){ //if we didn't find *any* open slots, give up and remain at our current pos
+					new_position = {
+						position: creature.tile_pos,
+						direction: creature.facing_direction,
+					};
+				} else {
+					reserved_tiles.push(new_position);
+				}
+		
+		
+				return new Creature({
+					tile_pos: new_position.position,
+					direction: new_position.direction,
+					planned_tile_pos: new_position.position,
+					type_name: creature.type_name,
+					unique_id: creature.unique_id,
+					team: creature.team,
+				})
+			}),
 
-				custom_object_list: [], //<- probably persist it from the previous turn?
-			}]
+			custom_object_list: [], //<- probably persist it from the previous turn?
+		}
+
+		this.game_state.turn_list = _.concat(
+			this.game_state.turn_list,
+			[new_turn_state]
 		);	
+		this.game_state.prior_frame_state = this.get_previous_turn_state()
+
 
 		var date = new Date();
 	
@@ -254,24 +258,34 @@ class Game_Manager {
 	}
 
 	do_live_game_processing = () => {
-		const spawnees: Array<Custom_Object> = [];
+		/*
+			Process all of the existing creatures, and collate a list of any Custom_Objects they're going to spawn.
+		*/
 
+		const spawnees: Array<Custom_Object> = [];
 		this.game_state.current_frame_state.creature_list = _.map( this.game_state.prior_frame_state.creature_list, (val,idx) => {
 			const processed_entity = val.process_single_frame(this._Tilemap_Manager, this.get_time_offset());
 
 			_.map(processed_entity.spawnees, (val)=>{ spawnees.push(val) });
 
 			return processed_entity.new_state; 
-		}),
-		
+		});
 
-		
+		/*
+			Add the new custom_objects to our existing list, and then process them.
+		*/
+			
 		this.game_state.current_frame_state.custom_object_list = _.concat( this.game_state.current_frame_state.custom_object_list, spawnees);
-
 
 		this.game_state.current_frame_state.custom_object_list = _.map( this.game_state.prior_frame_state.custom_object_list, (val,idx) => {
 			return val.process_single_frame(this._Tilemap_Manager, this.get_time_offset())
 		});
+
+		/*
+			Clear our "double-buffering" by replacing the old 'prior frame state' with our finished new frame.
+		*/
+
+		this.game_state.prior_frame_state = this.game_state.current_frame_state;
 	}
 
 	do_live_game_rendering = () => {
@@ -281,7 +295,7 @@ class Game_Manager {
 		if(this.get_time_offset() > this.get_total_anim_duration() ){
 			this.animation_state.is_animating_turn_end = false;
 		} else {
-			_.map( this.get_previous_turn_state().creature_list, (val,idx) => {
+			_.map( this.game_state.current_frame_state.creature_list, (val,idx) => {
 				const direction = val.yield_direction_for_time_in_post_turn_animation(this.get_time_offset());
 
 				this._Asset_Manager.draw_image_for_asset_name({
