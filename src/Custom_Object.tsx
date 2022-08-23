@@ -15,7 +15,7 @@ type CustomObjectTypeName = 'red_dot';
 export class Custom_Object {
 	pixel_pos: Point2D;
 	unique_id: string;
-	type_name: string;
+	type_name: CustomObjectTypeName;
 
 
 
@@ -57,8 +57,14 @@ export class Custom_Object {
 
 		newObj.pixel_pos.y += 3;
 
-		console.log(this.pixel_pos.y, newObj.pixel_pos.y)
-		return newObj;
+		console.log(`old: ${this.pixel_pos.y}   new: ${newObj.pixel_pos.y}`)
+		//return _.cloneDeep(newObj);
+
+		return new Custom_Object({
+			pixel_pos: {x: this.pixel_pos.x, y:this.pixel_pos.y - 1},
+			type_name: this.type_name,
+			unique_id: this.unique_id
+		)
 	}
 
 	yield_image = () => (

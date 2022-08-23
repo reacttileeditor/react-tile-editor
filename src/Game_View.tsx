@@ -202,7 +202,8 @@ class Game_Manager {
 		this.game_state.turn_list = _.concat(
 			this.game_state.turn_list,
 			[new_turn_state]
-		);	
+		);
+		console.log('setting state at end of turn')
 		this.game_state.prior_frame_state = this.get_previous_turn_state()
 
 
@@ -277,17 +278,23 @@ class Game_Manager {
 
 		
 
-		const objects = _.cloneDeep(_.concat( this.game_state.prior_frame_state.custom_object_list, spawnees))
+		var objects = _.concat( _.cloneDeep(this.game_state.prior_frame_state.custom_object_list), _.cloneDeep(spawnees));
+		console.log('spawnees', _.map( spawnees, (val)=>(val.pixel_pos.y)) )
+
+		console.log('prev', _.map( this.game_state.prior_frame_state.custom_object_list, (val)=>(val.pixel_pos.y)) )
 
 		this.game_state.current_frame_state.custom_object_list = _.map( objects, (val,idx) => {
-			return val.process_single_frame(this._Tilemap_Manager, this.get_time_offset())
+			return ƒ.dump(val.process_single_frame(this._Tilemap_Manager, this.get_time_offset()))
 		});
 
 		/*
 			Clear our "double-buffering" by replacing the old 'prior frame state' with our finished new frame.
 		*/
+		console.log('curr', _.map( this.game_state.current_frame_state.custom_object_list, (val)=>(val.pixel_pos.y)) )
 
 		this.game_state.prior_frame_state = _.cloneDeep(this.game_state.current_frame_state);
+
+
 	}
 
 	do_live_game_rendering = () => {
