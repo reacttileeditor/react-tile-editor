@@ -261,7 +261,7 @@ export class Creature {
 
 		new_obj.transient_state.pixel_pos = new_obj.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
 
-		const spawnees = ƒ.if(offset_in_ms == 100, [new Custom_Object({
+		const spawnees = ƒ.if(offset_in_ms >= 20 && offset_in_ms <= 100 && this.type_name == 'peasant', [new Custom_Object({
 			pixel_pos: new_obj.transient_state.pixel_pos,
 			type_name: 'red_dot',
 		})], []);

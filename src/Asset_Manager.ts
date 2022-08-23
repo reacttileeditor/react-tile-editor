@@ -165,6 +165,9 @@ export class Asset_Manager {
 				url: "char3.png",
 				name: "skeleton",
 			},{
+				url: "red_dot.png",
+				name: "red_dot",
+			},{
 				url: "char2-se-walk.png",
 				name: "peasant-se-walk",
 				frames: 8,

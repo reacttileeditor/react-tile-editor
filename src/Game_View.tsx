@@ -274,10 +274,12 @@ class Game_Manager {
 		/*
 			Add the new custom_objects to our existing list, and then process them.
 		*/
-			
-		this.game_state.current_frame_state.custom_object_list = _.concat( this.game_state.current_frame_state.custom_object_list, spawnees);
 
-		this.game_state.current_frame_state.custom_object_list = _.map( this.game_state.prior_frame_state.custom_object_list, (val,idx) => {
+		
+
+		const objects = _.cloneDeep(_.concat( this.game_state.prior_frame_state.custom_object_list, spawnees))
+
+		this.game_state.current_frame_state.custom_object_list = _.map( objects, (val,idx) => {
 			return val.process_single_frame(this._Tilemap_Manager, this.get_time_offset())
 		});
 
@@ -285,7 +287,7 @@ class Game_Manager {
 			Clear our "double-buffering" by replacing the old 'prior frame state' with our finished new frame.
 		*/
 
-		this.game_state.prior_frame_state = this.game_state.current_frame_state;
+		this.game_state.prior_frame_state = _.cloneDeep(this.game_state.current_frame_state);
 	}
 
 	do_live_game_rendering = () => {
@@ -309,6 +311,19 @@ class Game_Manager {
 					vertically_flipped:			false,
 				})
 			})
+
+			_.map( this.game_state.current_frame_state.custom_object_list, (val,idx) => {
+				this._Asset_Manager.draw_image_for_asset_name({
+					asset_name:					val.yield_image(),
+					_BM:						this._Blit_Manager,
+					pos:						val.pixel_pos, //yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
+					zorder:						13,
+					current_milliseconds:		this.get_time_offset(),
+					opacity:					1.0,
+					horizontally_flipped:		false,
+					vertically_flipped:			false,
+				})
+			})			
 		}
 	}
 
