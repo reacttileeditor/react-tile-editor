@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import _ from "lodash";
+import _, { find } from "lodash";
 import { v4 as uuid } from "uuid";
 
 import { ƒ } from "./Utils";
@@ -101,10 +101,22 @@ class Custom_Object_Base_Type {
 		get_game_state: () => Game_State,	
 	): { pixel_pos: Point2D } => {
 
-		console.log(get_game_state().current_turn);
+		const target = find( get_game_state().current_frame_state.creature_list, (val) => (
+			val.type_name === 'hermit'
+		));
+
+		let addend = {x: 0, y: -1};
+
+		if(target){
+//			console.log(target.transient_state.pixel_pos)
+			const target_pos = target.transient_state.pixel_pos;
+
+			addend = { x: (target_pos.x - prior_pixel_pos.x) / 50.0, y: (target_pos.y - prior_pixel_pos.y) / 50.0 }
+		}
+
 
 		return {
-			pixel_pos: {x: prior_pixel_pos.x, y: prior_pixel_pos.y - 1},
+			pixel_pos: {x: prior_pixel_pos.x + addend.x, y: prior_pixel_pos.y + addend.y},
 		}
 	}
 
