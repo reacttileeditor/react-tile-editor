@@ -263,7 +263,7 @@ export class Creature {
 
 		const spawnees = ƒ.if(offset_in_ms >= 20 && offset_in_ms <= 100 && this.type_name == 'peasant', [new Custom_Object({
 			pixel_pos: new_obj.transient_state.pixel_pos,
-			type_name: 'red_dot',
+			type_name: 'shot',
 		})], []);
 
 		return {

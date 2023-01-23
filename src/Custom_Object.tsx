@@ -10,12 +10,13 @@ import { Tilemap_Manager, Direction } from "./Tilemap_Manager";
 import { Point2D, Rectangle } from './interfaces';
 
 
-type CustomObjectTypeName = 'red_dot';
+type CustomObjectTypeName = 'shot';
 
 export class Custom_Object {
 	pixel_pos: Point2D;
 	unique_id: string;
 	type_name: CustomObjectTypeName;
+	basetype_delegate: CustomObjectType;
 
 
 
@@ -33,6 +34,9 @@ export class Custom_Object {
 		} else {
 			this.unique_id = uuid();
 		}
+
+		this.basetype_delegate = this.instantiate_basetype_delegate();
+
 	}
 
 
@@ -41,6 +45,12 @@ export class Custom_Object {
 
 
 /*----------------------- basetype management -----------------------*/
+	instantiate_basetype_delegate = ():CustomObjectType => (
+		{
+			shot: new CO_Shot(),
+		}[this.type_name]
+	)
+
 
 	// get_info = ():CreatureType => (
 	// 	this.creature_basetype_delegate
@@ -55,20 +65,48 @@ export class Custom_Object {
 		let newObj = _.cloneDeep(this);
 
 
-		newObj.pixel_pos.y += 3;
 
 		console.log(`old: ${this.pixel_pos.y}   new: ${newObj.pixel_pos.y}`)
-		//return _.cloneDeep(newObj);
+
 
 		return new Custom_Object({
-			pixel_pos: {x: this.pixel_pos.x, y:this.pixel_pos.y - 1},
+			pixel_pos: this.basetype_delegate.process_single_frame(this.pixel_pos).pixel_pos,
 			type_name: this.type_name,
 			unique_id: this.unique_id
-		)
+		})
 	}
+
+	yield_image = () => (
+		this.basetype_delegate.yield_image()
+	)
+
+}
+
+
+
+
+type CustomObjectType = CO_Shot;
+
+
+class Custom_Object_Base_Type {
+
+	process_single_frame = (prior_pixel_pos: Point2D): { pixel_pos: Point2D } => {
+
+
+		return {
+			pixel_pos: {x: prior_pixel_pos.x, y: prior_pixel_pos.y - 1},
+		}
+	}
+
 
 	yield_image = () => (
 		'red_dot'
 	)
+}
 
+class CO_Shot extends Custom_Object_Base_Type {
+
+	yield_image = () => (
+		'red_dot'
+	)
 }
