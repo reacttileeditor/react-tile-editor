@@ -8,6 +8,7 @@ import { ƒ } from "./Utils";
 import { Tilemap_Manager, Direction } from "./Tilemap_Manager";
 
 import { Point2D, Rectangle } from './interfaces';
+import { Game_State } from "./Game_View";
 
 
 type CustomObjectTypeName = 'shot';
@@ -17,17 +18,21 @@ export class Custom_Object {
 	unique_id: string;
 	type_name: CustomObjectTypeName;
 	basetype_delegate: CustomObjectType;
+	get_game_state: () => Game_State;
 
 
 
 
 	constructor(p: {
+		get_game_state: () => Game_State,
 		pixel_pos: Point2D,
 		type_name: CustomObjectTypeName,
 		unique_id?: string,
 	}) {
 		this.pixel_pos = p.pixel_pos;
 		this.type_name = p.type_name;
+		this.get_game_state = p.get_game_state;
+
 		
 		if(p.unique_id != undefined){
 			this.unique_id = p.unique_id;
@@ -70,7 +75,8 @@ export class Custom_Object {
 
 
 		return new Custom_Object({
-			pixel_pos: this.basetype_delegate.process_single_frame(this.pixel_pos).pixel_pos,
+			get_game_state: this.get_game_state,
+			pixel_pos: this.basetype_delegate.process_single_frame(this.pixel_pos, this.get_game_state).pixel_pos,
 			type_name: this.type_name,
 			unique_id: this.unique_id
 		})
@@ -90,8 +96,12 @@ type CustomObjectType = CO_Shot;
 
 class Custom_Object_Base_Type {
 
-	process_single_frame = (prior_pixel_pos: Point2D): { pixel_pos: Point2D } => {
+	process_single_frame = (
+		prior_pixel_pos: Point2D, 
+		get_game_state: () => Game_State,	
+	): { pixel_pos: Point2D } => {
 
+		console.log(get_game_state().current_turn);
 
 		return {
 			pixel_pos: {x: prior_pixel_pos.x, y: prior_pixel_pos.y - 1},

@@ -28,7 +28,7 @@ interface Game_View_Props {
 	dimensions: Point2D,
 }
 
-interface Game_State {
+export interface Game_State {
 	current_turn: number,
 	selected_object_index?: number,
 	turn_list: Array<Individual_Game_Turn_State>,
@@ -98,21 +98,25 @@ class Game_Manager {
 
 		const first_turn_state_init = {
 			creature_list: [new Creature({
+				get_game_state: this.get_game_state,
 				tile_pos: {x: 1, y: 6},
 				planned_tile_pos: {x: 0, y: 6},
 				type_name: 'hermit',
 				team: 1,
 			}), new Creature({
+				get_game_state: this.get_game_state,
 				tile_pos: {x: 2, y: 4},
 				planned_tile_pos: {x: 2, y: 4},
 				type_name: 'peasant',
 				team: 1,
 			}), new Creature({
+				get_game_state: this.get_game_state,
 				tile_pos: {x: 4, y: 4},
 				planned_tile_pos: {x: 4, y: 4},
 				type_name: 'skeleton',
 				team: 2,
 			}), new Creature({
+				get_game_state: this.get_game_state,
 				tile_pos: {x: 5, y: 8},
 				planned_tile_pos: {x: 5, y: 8},
 				type_name: 'skeleton',
@@ -132,6 +136,10 @@ class Game_Manager {
 		
 		this._Pathfinder = new Pathfinder();
 	}
+
+	get_game_state = () => (
+		this.game_state
+	)
 
 	set_update_function = (func: Function) => {
  		this.update_game_state_for_ui = func;
@@ -187,6 +195,7 @@ class Game_Manager {
 		
 		
 				return new Creature({
+					get_game_state: this.get_game_state,
 					tile_pos: new_position.position,
 					direction: new_position.direction,
 					planned_tile_pos: new_position.position,

@@ -14,6 +14,7 @@ import { Pathfinder, Pathfinding_Result } from "./Pathfinding";
 
 import { Point2D, Rectangle } from './interfaces';
 import { Custom_Object } from "./Custom_Object";
+import { Game_State } from "./Game_View";
 
 export type PathNodeWithDirection = {
 	position: Point2D,
@@ -34,6 +35,7 @@ export class Creature {
 	animation_this_turn: Array<Anim_Schedule_Element>;
 	type_name: CreatureTypeName;
 	team: number;
+	get_game_state: () => Game_State;
 
 	creature_basetype_delegate: CreatureType;
 	transient_state: {
@@ -43,6 +45,7 @@ export class Creature {
 
 
 	constructor(p: {
+		get_game_state:  () => Game_State,
 		tile_pos: Point2D,
 		direction?: Direction,
 		planned_tile_pos: Point2D,
@@ -60,6 +63,7 @@ export class Creature {
 		this.path_reachable_this_turn_with_directions = [];
 		this.animation_this_turn = [];
 		this.team = p.team;
+		this.get_game_state = p.get_game_state;
 		
 		if(p.unique_id != undefined){
 			this.unique_id = p.unique_id;
@@ -262,6 +266,7 @@ export class Creature {
 		new_obj.transient_state.pixel_pos = new_obj.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
 
 		const spawnees = ƒ.if(offset_in_ms >= 20 && offset_in_ms <= 100 && this.type_name == 'peasant', [new Custom_Object({
+			get_game_state: this.get_game_state,
 			pixel_pos: new_obj.transient_state.pixel_pos,
 			type_name: 'shot',
 		})], []);
