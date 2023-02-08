@@ -13,17 +13,21 @@ import { Tilemap_Manager, Direction } from "./Tilemap_Manager";
 import { Pathfinder, Pathfinding_Result } from "./Pathfinding";
 
 import { Point2D, Rectangle } from './interfaces';
-import { Custom_Object } from "./Custom_Object";
+import { CustomObjectType, CustomObjectTypeName, Custom_Object } from "./Custom_Object";
 import { Game_State } from "./Game_View";
+import { Base_Object } from "./Base_Object";
 
 export type PathNodeWithDirection = {
 	position: Point2D,
 	direction: Direction,
 }
 
-type CreatureTypeName = 'hermit' | 'peasant' | 'skeleton';
+export type CreatureTypeName = 'hermit' | 'peasant' | 'skeleton';
 
-export class Creature {
+
+
+
+export class Creature extends Base_Object {
 	tile_pos: Point2D;
 	facing_direction: Direction;
 	planned_tile_pos: Point2D;
@@ -38,9 +42,7 @@ export class Creature {
 	get_game_state: () => Game_State;
 
 	creature_basetype_delegate: CreatureType;
-	transient_state: {
-		pixel_pos: Point2D
-	}
+	pixel_pos: Point2D;
 
 
 
@@ -53,6 +55,12 @@ export class Creature {
 		team: number,
 		unique_id?: string,
 	}) {
+		super({
+			get_game_state:  p.get_game_state,
+			type_name: p.type_name,
+			pixel_pos: {x:0, y: 0},
+		})
+
 		this.tile_pos = p.tile_pos;
 		this.facing_direction = ƒ.if(p.direction !== undefined, p.direction, Direction.south_east);
 		this.type_name = p.type_name;
@@ -73,9 +81,8 @@ export class Creature {
 		
 		this.creature_basetype_delegate = this.instantiate_basetype_delegate();
 
-		this.transient_state = {
-			pixel_pos: {x:0, y: 0}
-		}
+		this.pixel_pos = {x:0, y: 0};
+		
 	}
 	
 	yield_move_cost_for_tile_type = (tile_type: string): number|null => (
@@ -263,11 +270,11 @@ export class Creature {
 
 		const new_obj = _.cloneDeep(this);
 
-		new_obj.transient_state.pixel_pos = new_obj.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
+		new_obj.pixel_pos = new_obj.yield_position_for_time_in_post_turn_animation(_Tilemap_Manager, offset_in_ms)
 
 		const spawnees = ƒ.if(offset_in_ms >= 20 && offset_in_ms <= 100 && this.type_name == 'peasant', [new Custom_Object({
 			get_game_state: this.get_game_state,
-			pixel_pos: new_obj.transient_state.pixel_pos,
+			pixel_pos: new_obj.pixel_pos,
 			type_name: 'shot',
 		})], []);
 
@@ -357,7 +364,7 @@ type Anim_Schedule_Element = {
 }
 
 
-type CreatureType = CT_Hermit | CT_Peasant | CT_Skeleton;
+export type CreatureType = CT_Hermit | CT_Peasant | CT_Skeleton;
 
 
 class Creature_Base_Type {

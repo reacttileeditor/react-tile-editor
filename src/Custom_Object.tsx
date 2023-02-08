@@ -9,14 +9,15 @@ import { Tilemap_Manager, Direction } from "./Tilemap_Manager";
 
 import { Point2D, Rectangle } from './interfaces';
 import { Game_State } from "./Game_View";
+import { CreatureTypeName } from "./Creature";
 
 
-type CustomObjectTypeName = 'shot';
+export type CustomObjectTypeName = 'shot';
 
 export class Custom_Object {
 	pixel_pos: Point2D;
 	unique_id: string;
-	type_name: CustomObjectTypeName;
+	type_name: CustomObjectTypeName & CreatureTypeName;
 	basetype_delegate: CustomObjectType;
 	get_game_state: () => Game_State;
 
@@ -26,7 +27,7 @@ export class Custom_Object {
 	constructor(p: {
 		get_game_state: () => Game_State,
 		pixel_pos: Point2D,
-		type_name: CustomObjectTypeName,
+		type_name: CustomObjectTypeName & CreatureTypeName,
 		unique_id?: string,
 	}) {
 		this.pixel_pos = p.pixel_pos;
@@ -91,7 +92,7 @@ export class Custom_Object {
 
 
 
-type CustomObjectType = CO_Shot;
+export type CustomObjectType = CO_Shot;
 
 
 class Custom_Object_Base_Type {
@@ -109,7 +110,7 @@ class Custom_Object_Base_Type {
 
 		if(target){
 //			console.log(target.transient_state.pixel_pos)
-			const target_pos = target.transient_state.pixel_pos;
+			const target_pos = target.pixel_pos;
 
 			addend = { x: (target_pos.x - prior_pixel_pos.x) / 50.0, y: (target_pos.y - prior_pixel_pos.y) / 50.0 }
 		}

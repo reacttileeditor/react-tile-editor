@@ -319,7 +319,7 @@ class Game_Manager {
 				this._Asset_Manager.draw_image_for_asset_name({
 					asset_name:					val.yield_walk_asset_for_direction( direction ), //i.e. 'peasant-se-walk',
 					_BM:						this._Blit_Manager,
-					pos:						val.transient_state.pixel_pos, //yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
+					pos:						val.pixel_pos, //yield_position_for_time_in_post_turn_animation( this._Tilemap_Manager, this.get_time_offset() ),
 					zorder:						12,
 					current_milliseconds:		this.get_time_offset(),
 					opacity:					1.0,
