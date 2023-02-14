@@ -18,7 +18,6 @@ export class Base_Object {
 	pixel_pos: Point2D;
 	unique_id: string;
 	type_name: CombinedObjectTypes;
-	basetype_delegate: CustomObjectType & CreatureType;
 	get_game_state: () => Game_State;
 
 
@@ -41,19 +40,12 @@ export class Base_Object {
 			this.unique_id = uuid();
 		}
 
-		this.basetype_delegate = this.instantiate_basetype_delegate();
 
 	}
 
 
 
 
-
-
-/*----------------------- basetype management -----------------------*/
-	instantiate_basetype_delegate = (): unknown => (
-		null
-	)
 
 
 

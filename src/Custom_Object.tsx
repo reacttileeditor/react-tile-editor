@@ -17,7 +17,7 @@ export type CustomObjectTypeName = 'shot';
 export class Custom_Object {
 	pixel_pos: Point2D;
 	unique_id: string;
-	type_name: CustomObjectTypeName & CreatureTypeName;
+	type_name: CustomObjectTypeName;
 	basetype_delegate: CustomObjectType;
 	get_game_state: () => Game_State;
 
@@ -27,7 +27,7 @@ export class Custom_Object {
 	constructor(p: {
 		get_game_state: () => Game_State,
 		pixel_pos: Point2D,
-		type_name: CustomObjectTypeName & CreatureTypeName,
+		type_name: CustomObjectTypeName,
 		unique_id?: string,
 	}) {
 		this.pixel_pos = p.pixel_pos;

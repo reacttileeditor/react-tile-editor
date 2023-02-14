@@ -275,7 +275,7 @@ export class Creature extends Base_Object {
 		const spawnees = ƒ.if(offset_in_ms >= 20 && offset_in_ms <= 100 && this.type_name == 'peasant', [new Custom_Object({
 			get_game_state: this.get_game_state,
 			pixel_pos: new_obj.pixel_pos,
-			type_name: 'shot',
+			type_name: 'shot' as CustomObjectTypeName,
 		})], []);
 
 		return {
